@@ -1,0 +1,9 @@
+use_rules('mingw.lru')
+
+name = 'conio_test'
+
+addpar{
+  use = { 'lwml' },
+  start = name .. '.cc',
+  dest = name .. '.exe',
+}

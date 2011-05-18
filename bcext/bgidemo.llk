@@ -1,0 +1,9 @@
+use_rules('mingw.lru', { gui = true } )
+
+name = 'bgidemo'
+
+addpar{
+  use = { 'lwml' },
+  start = name .. '.cc',
+  dest = name .. '.exe',
+}
