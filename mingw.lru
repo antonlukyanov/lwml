@@ -223,7 +223,7 @@ addpar{
     is_nontransitive = false,
   },
 
-  ['.svn'] = {
+  ['.hg'] = {
   },
 
   ['.xpm'] = {
@@ -300,7 +300,7 @@ addpar{
 
     local file = io.open('revision.hg','wt')
     file:write('// This is automatically generated file -- do not edit!\n\n')
-    file:write('#define SVN_VER "', ver,'"\n')
+    file:write('#define HG_VER "', ver,'"\n')
     file:close()
   end,
 }
