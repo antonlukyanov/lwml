@@ -286,15 +286,19 @@ addpar{
 
   prepare = function( base_dir, proj_dir )
     local ver = 'none'
-    local pipe, err = io.popen(string.format('svnversion %s', '.'))
+    local pipe, err = io.popen('hg parents --template "{date|shortdate} {node|short}\n"', 'rt')
     if pipe == nil then
       io.stderr:write('cannot get version: ', err, '\n')
     else
-      ver = pipe:read('*line') or ver
+      local s = pipe:read('*line')
+      if s then
+        local y, m, d, h = s:match('^%d%d(%d%d)%-(%d%d)%-(%d%d) (%x%x%x%x%x%x)%x%x%x%x%x%x$')
+        ver = y..m..d..'-'..h
+      end
       pipe:close()
     end
 
-    local file = io.open('revision.svn','wt')
+    local file = io.open('revision.hg','wt')
     file:write('// This is automatically generated file -- do not edit!\n\n')
     file:write('#define SVN_VER "', ver,'"\n')
     file:close()
