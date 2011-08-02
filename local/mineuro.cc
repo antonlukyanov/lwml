@@ -41,14 +41,14 @@ real std_equation_param::fka( real u ) const
 
 // scheme
 
-scheme::scheme( referer<i_equation_param> eq, int pp1, real val )
-  : _tl(pp1 + 1)
+scheme::scheme( referer<i_equation_param> eq, int pp1, real val, int history_len )
+  : _tl(history_len < pp1 + 1 ? pp1 + 1 : history_len)
 {
   _eq = eq;
   _pp1 = pp1;
   _dt = 1.0 / real_cast(pp1);
   _t = 0.0;
-  for( int j = pp1; j >= 0; j-- )
+  for( int j = _tl.size() - 1; j >= 0; j-- )
     _tl.push(log(_eq->u0(-j * _dt)));
 
   _val = val;

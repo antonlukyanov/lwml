@@ -81,17 +81,17 @@ public:
 
 class scheme : public i_dynel { // public refcount
 private:
-  scheme( referer<i_equation_param> eq, int pp1, real val );
+  scheme( referer<i_equation_param> eq, int pp1, real val, int history_len );
 
 public:
   // pp1 -- число точек на единицу длины
   // val -- уровень, соответствующий началу спайка
-  static referer<scheme> create( referer<i_equation_param> eq, int pp1, real val = 1.0 ) {
-    return referer<scheme>(new(lwml_alloc) scheme(eq, pp1, val));
+  static referer<scheme> create( referer<i_equation_param> eq, int pp1, real val = 1.0, int history_len = 0 ) {
+    return referer<scheme>(new(lwml_alloc) scheme(eq, pp1, val, history_len));
   }
 
   referer<scheme> clone() {
-    scheme* ptr = new(lwml_alloc) scheme(_eq, _pp1, _val);
+    scheme* ptr = new(lwml_alloc) scheme(_eq, _pp1, _val, _tl.size());
     ptr->_tl = _tl;
     ptr->_t = _t;
     return referer<scheme>(ptr);
@@ -109,6 +109,9 @@ public:
   bool is_inspike() const    { return exp(_tl[0]) >= _val; }
   bool is_spikestart() const { return exp(_tl[1]) < _val && exp(_tl[0]) >= _val; }
   bool is_spikeend() const   { return exp(_tl[1]) >= _val && exp(_tl[0]) < _val; }
+  bool is_inspike( real val ) const    { return exp(_tl[0]) >= val; }
+  bool is_spikestart( real val ) const { return exp(_tl[1]) < val && exp(_tl[0]) >= val; }
+  bool is_spikeend( real val ) const   { return exp(_tl[1]) >= val && exp(_tl[0]) < val; }
   bool is_up() const         { return _tl[1] <= _tl[0]; }
   bool is_dn() const         { return _tl[1] > _tl[0]; }
   bool is_max() const        { return _tl[2] <= _tl[1] && _tl[1] > _tl[0]; }
