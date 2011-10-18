@@ -42,7 +42,7 @@ private:
   int _bitspersample;
   int _alignment;
   int _datasize;
-  t_membuf<char> _data;
+  t_membuf<uchar> _data;
 
   int wait4data( referer<stream> file );
   int wait4fmt( referer<stream> file );

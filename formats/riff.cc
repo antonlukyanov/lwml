@@ -33,10 +33,10 @@ const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * OUT_BITSPERBYTE;
 
 inline int OUT_BYTESPERSEC( int sps )
 {
-  return OUT_CHANNELS * sps * OUT_BITSPERSAMPLE / 8;
+  return OUT_CHANNELS * sps * OUT_BYTESPERSAMPLE;
 }
 
-const int OUT_ALIGNMENT = OUT_CHANNELS * OUT_BITSPERSAMPLE / 8;
+const int OUT_ALIGNMENT = OUT_CHANNELS * OUT_BYTESPERSAMPLE; // число байтов на отсчет (во всех каналах)
 
 inline int ALIGN2EVEN( int size )
 {
@@ -50,7 +50,7 @@ inline bool ISODD( int size )
 
 inline int DATA_SIZE( int size )
 {
-  return size * OUT_BYTESPERSAMPLE;
+  return OUT_CHANNELS * size * OUT_BYTESPERSAMPLE;
 }
 
 // размеры чанков data (заголовок + данные)
@@ -145,14 +145,14 @@ public:
   int alignment() const { return _alignment; }
 
 private:
-                           // WaveFormat
-  uint16 _formattag;         // категори формата
+                          // WaveFormat
+  uint16 _formattag;         // категория формата
   uint16 _channels;          // число каналов
-  uint32 _samplespersec;     // частота дискретизации
-  uint32 _bytespersec;       // число байт в секунду
+  uint32 _samplespersec;     // частота дискретизации (самплов в секунду в одном канале)
+  uint32 _bytespersec;       // число байт в секунду для всех каналов
   uint16 _alignment;         // выравнивание данных
-                           // FormatSpecific
-  uint16  _bitspersample;    // разрдность дискретизации
+                          // FormatSpecific
+  uint16  _bitspersample;    // разрядность сампла (в одном канале)
 };
 
 fmtchunk::fmtchunk( referer<stream> file, int size )
@@ -218,12 +218,12 @@ riffwave_reader::riffwave_reader( const char *nm )
   if( !chh.is_riff() )
     throw ex_riff("bad riff-chunk, <%s>", nm);
 
-  // проверить заголовок WAVE-формы
+  // проверить чанк WAVE
   waveformhdr wfh(file);
   if( !wfh.is_wave() )
     throw ex_riff("bad wave-chunk, <%s>", nm);
 
-  // дождатьс чанка fmt и прочитать
+  // дождаться чанка fmt и прочитать
   int fmtsize = wait4fmt(file);
   fmtchunk fmt(file, fmtsize);
   _channels = fmt.channels();
@@ -233,7 +233,7 @@ riffwave_reader::riffwave_reader( const char *nm )
   if( _bitspersample != 8 && _bitspersample != 16 )
     runtime("can't read RIFF WAVE file with given bitrate (%d)", _bitspersample);
 
-  // дождатьс данных и прочитать
+  // дождаться данных и прочитать
   _datasize = wait4data(file);
   read_data(file, _datasize);
 }
