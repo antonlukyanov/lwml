@@ -22,21 +22,31 @@ const int WAVEFORMID_SIZE = 4;      // размер инентификатора WAVE-формы
 
 const int PCMFORMAT_ID      = 1;   // идентификатор PCM-формата
 const int FMTCHUNK_DATASIZE = 16;  // размер данных чанка fmt
+const int FMTCHUNK_SIZE = CHUNKHDR_SIZE + FMTCHUNK_DATASIZE; // (заголовок + данные)
+
+// out parameters
 
 const int OUT_CHANNELS       = 1;  // число каналов при выводе
 const int OUT_BYTESPERSAMPLE = 2;  // байт на отсчет при выводе
-const int OUT_BITSPERBYTE    = 8;  // число битов в байте при выводе
-
-// ALIGNMENT - число байтов на отсчет
-
-const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * OUT_BITSPERBYTE;
+const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * 8;
+const int OUT_ALIGNMENT = OUT_CHANNELS * OUT_BYTESPERSAMPLE; // число байтов на отсчет (во всех каналах)
 
 inline int OUT_BYTESPERSEC( int sps )
 {
   return OUT_CHANNELS * sps * OUT_BYTESPERSAMPLE;
 }
 
-const int OUT_ALIGNMENT = OUT_CHANNELS * OUT_BYTESPERSAMPLE; // число байтов на отсчет (во всех каналах)
+inline int DATA_SIZE( int size )
+{
+  return OUT_CHANNELS * size * OUT_BYTESPERSAMPLE;
+}
+
+inline int DATACHUNK_SIZE( int size )
+{
+  return CHUNKHDR_SIZE + DATA_SIZE(size);
+}
+
+// common
 
 inline int ALIGN2EVEN( int size )
 {
@@ -47,20 +57,6 @@ inline bool ISODD( int size )
 {
   return size & 0x01;
 }
-
-inline int DATA_SIZE( int size )
-{
-  return OUT_CHANNELS * size * OUT_BYTESPERSAMPLE;
-}
-
-// размеры чанков data (заголовок + данные)
-
-inline int DATACHUNK_SIZE( int size )
-{
-  return CHUNKHDR_SIZE + DATA_SIZE(size);
-}
-
-const int FMTCHUNK_SIZE = CHUNKHDR_SIZE + FMTCHUNK_DATASIZE;
 
 // параметры сигнала
 
@@ -145,14 +141,14 @@ public:
   int alignment() const { return _alignment; }
 
 private:
-                          // WaveFormat
   uint16 _formattag;         // категория формата
   uint16 _channels;          // число каналов
+  uint16  _bitspersample;    // разрядность сампла (в одном канале)
   uint32 _samplespersec;     // частота дискретизации (самплов в секунду в одном канале)
   uint32 _bytespersec;       // число байт в секунду для всех каналов
   uint16 _alignment;         // выравнивание данных
-                          // FormatSpecific
-  uint16  _bitspersample;    // разрядность сампла (в одном канале)
+  // _bytespersec = (_channels * _samplespersec * _bitspersample)/8
+  // _alignment = (nChannels * nBitsPerSample)/8
 };
 
 fmtchunk::fmtchunk( referer<stream> file, int size )
@@ -271,9 +267,9 @@ void riffwave_saver::write_fmt( referer<stream> file, int sps )
   uint16 formattag = PCMFORMAT_ID;           // категори формата
   uint16 channels = OUT_CHANNELS;            // число каналов
   uint32 samplespersec = sps;                // частота дискретизации
+  uint16 bitspersample = OUT_BITSPERSAMPLE;  // разрдность дискретизации
   uint32 bytespersec = OUT_BYTESPERSEC(sps); // число байт в секунду
   uint16 alignment = OUT_ALIGNMENT;          // выравнивание данных
-  uint16 bitspersample = OUT_BITSPERSAMPLE;  // разрдность дискретизации
 
   file->write(&formattag, sizeof(formattag));
   file->write(&channels, sizeof(channels));
