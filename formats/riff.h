@@ -22,7 +22,9 @@ DEF_EX_TYPE_MSG(ex_integrity, ex_riff, "incorrect riff");
 
 class riffwave_reader : public value {
 public:
-  riffwave_reader( const char* );
+  // Параметр bufsize задает размер буфера для варианта буфериованного чтения данных.
+  // Если значение этого параметра равно 0 (по умолчанию), то все данные читаются сразу.
+  riffwave_reader( const char*, int bufsize = 0 );
 
   void printinfo( referer<stream> ) const;
 
@@ -30,23 +32,32 @@ public:
   int samplespersec() const { return _samplespersec; }
   int bitspersample() const { return _bitspersample; }
 
-  int size() const { return _datasize / _alignment; }
+  int data_size() const { return _datasize / _alignment; }
 
   enum channel { LEFT, RIGHT };
 
   int operator()( int j, channel ch = LEFT ) const;
 
+  void seek( int pos );
+  int tell() const { return _bufpos; }
+  int buf_size() const { return _bufsize; }
+
 private:
+  referer<stream> _file;
+
   int _channels;
-  int _samplespersec;
-  int _bitspersample;
-  int _alignment;
-  int _datasize;
+  int _samplespersec; // в одном канале
+  int _bitspersample; // в одном канале
+  int _alignment;     // байтов на один отсчет обоих каналов
+  int _datasize;      // всего данных в байтах
+  int _datapos;       // позиция начала данных в файле в байтах
+
+  int _bufpos;           // текущая позиция буфера в отсчетах
+  int _bufsize;          // размер заполненной части буфера
   t_membuf<uchar> _data;
 
-  int wait4data( referer<stream> file );
-  int wait4fmt( referer<stream> file );
-  void read_data( referer<stream> file, int size );
+  int wait4data();
+  int wait4fmt();
 };
 
 class riffwave_saver : public scope {
