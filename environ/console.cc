@@ -106,7 +106,7 @@ bool console_progress_renderer::up( int st )
 void console::abort( const char *msg )
 {
   zzz_ex("lwml:console", "abort: %s", msg);
-  print_msg("abort", msg);
+  print_msg_error("abort", msg);
   ::exit(1);
 }
 
@@ -114,14 +114,14 @@ void console::usage( const char *name, const char *usage )
 {
   zzz_ex("lwml:console", "app: %s", name);
   zzz_ex("lwml:console", "usage: %s", usage);
-  print_msg2(name, cstrng::form("Usage: %s", usage).ascstr());
+  print_msg_usage(name, cstrng::form("Usage: %s", usage).ascstr());
   ::exit(1);
 }
 
 void console::handlex( const ex_base& ex )
 {
   zzz_ex("lwml:console", "exception: %s", ex.msg());
-  print_msg("exception", ex.msg());
+  print_msg_error("exception", ex.msg());
   ::exit(1);
 }
 
@@ -160,7 +160,7 @@ namespace {
   bool _use_sysmsg = false;
 };
 
-void console::print_msg( const char* title, const char* msg )
+void console::print_msg_error( const char* title, const char* msg )
 {
 #if _USE_WIN32API_
   if( _use_sysmsg )
@@ -174,12 +174,12 @@ void console::print_msg( const char* title, const char* msg )
 #else
   fflush(stdout);
   fflush(stderr);
-    fprintf(stderr, "\n");
+  fprintf(stderr, "\n");
   fprintf(stderr, "%s: %s\n", title, msg);
 #endif
 }
 
-void console::print_msg2( const char* title, const char* msg )
+void console::print_msg_usage( const char* title, const char* msg )
 {
 #if _USE_WIN32API_
   if( _use_sysmsg )
