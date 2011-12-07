@@ -23,19 +23,19 @@ namespace lwml {
 
 class filler : public scope {
 public:
-  template<typename T>
-  static void mark_4n( T& bim, int x, int y, int mark );
+  template<typename T, typename elT>
+  static void mark_4n( T& bim, int x, int y, elT mark );
 };
 
 // implementation
 
-template<typename T>
-void filler::mark_4n( T& bim, int x, int y, int mark ){
+template<typename T, typename elT>
+void filler::mark_4n( T& bim, int x, int y, elT mark ){
   t_list<int_point> stack(t_list<int_point>::MANUAL_PACK);
 
   int lx = bim.col();
   int ly = bim.str();
-  int what = bim(y, x);
+  elT what = bim(y, x);
   stack.put(int_point(x, y));
   while( !stack.is_empty() ){
     int_point p = stack.get();
