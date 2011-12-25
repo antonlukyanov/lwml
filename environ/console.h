@@ -67,8 +67,8 @@ public:
   static strng get_opt( char ch );  // получить аргумент опции как строку
 
 private:
-  static void print_msg( const char* title, const char* msg );
-  static void print_msg2( const char* title, const char* msg );
+  static void print_msg_error( const char* title, const char* msg );
+  static void print_msg_usage( const char* title, const char* msg );
 };
 
 }; // namespace lwml

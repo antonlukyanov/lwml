@@ -172,66 +172,80 @@ fmtchunk::fmtchunk( referer<stream> file, int size )
 
 // riff wave reader
 
-int riffwave_reader::wait4data( referer<stream> file )
+int riffwave_reader::wait4data()
 {
   chunkhdr chh;
   while( 1 ){
-    chh.read(file);
+    chh.read(_file);
     if( chh.is_data() )
       break;
     else
-      chh.skipdata(file);
+      chh.skipdata(_file);
   }
   return chh.size();
 }
 
-int riffwave_reader::wait4fmt( referer<stream> file )
+int riffwave_reader::wait4fmt()
 {
   chunkhdr chh;
   while( 1 ){
-    chh.read(file);
+    chh.read(_file);
     if( chh.is_fmt() )
       break;
     else
-      chh.skipdata(file);
+      chh.skipdata(_file);
   }
   return chh.size();
 }
 
-void riffwave_reader::read_data( referer<stream> file, int size )
+void riffwave_reader::seek( int pos )
 {
-  _data.resize(size);
-  file->read(_data.access_raw_data(), size);
+  test_index(pos, data_size());
+  _bufpos = pos;
+  _bufsize = t_min(data_size() - pos, _data.len() / _alignment);
+  _file->seek(_datapos + pos * _alignment);
+  _file->read(_data.access_raw_data(), _bufsize * _alignment);
 }
 
-riffwave_reader::riffwave_reader( const char *nm )
+riffwave_reader::riffwave_reader( const char *nm, int bufsize )
 {
   // открыть файл
-  referer<stream> file = stream::create(nm, fmREAD, fmBINARY);
+  _file = stream::create(nm, fmREAD, fmBINARY);
 
   // проверить чанк RIFF
-  chunkhdr chh(file);
+  chunkhdr chh(_file);
   if( !chh.is_riff() )
     throw ex_riff("bad riff-chunk, <%s>", nm);
 
   // проверить чанк WAVE
-  waveformhdr wfh(file);
+  waveformhdr wfh(_file);
   if( !wfh.is_wave() )
     throw ex_riff("bad wave-chunk, <%s>", nm);
 
   // дождаться чанка fmt и прочитать
-  int fmtsize = wait4fmt(file);
-  fmtchunk fmt(file, fmtsize);
+  int fmtsize = wait4fmt();
+  fmtchunk fmt(_file, fmtsize);
   _channels = fmt.channels();
   _samplespersec = fmt.samplespersec();
   _bitspersample = fmt.bitspersample();
-  _alignment = fmt.alignment();
   if( _bitspersample != 8 && _bitspersample != 16 )
-    runtime("can't read RIFF WAVE file with given bitrate (%d)", _bitspersample);
+    throw ex_riff("can't read RIFF WAVE file with given bitspersample (%d)", _bitspersample);
+  _alignment = fmt.alignment();
+  if( _alignment * 8 != _channels * _bitspersample )
+    throw ex_riff("incorrect value of alignment field in RIFF fmt chunk");
 
   // дождаться данных и прочитать
-  _datasize = wait4data(file);
-  read_data(file, _datasize);
+  _datasize = wait4data();
+  _datapos = _file->tell();
+  if( _datasize % _alignment != 0 )
+    throw ex_riff("incorrect data size in RIFF data chunk");
+
+  if( bufsize > 0 ) // задан размер буфера
+    _data.resize(bufsize * _alignment);
+  else // буфер вмещает все данные из файла
+    _data.resize(_datasize);
+
+  seek(0);
 }
 
 void riffwave_reader::printinfo( referer<stream> file ) const
@@ -244,7 +258,7 @@ void riffwave_reader::printinfo( referer<stream> file ) const
 
 int riffwave_reader::operator()( int j, channel ch ) const
 {
-  test_index(j, size());
+  test_index(j, buf_size());
   if( ch == RIGHT && _channels != 2 )
     fail_assert("can't read right channel for mono RIFF WAVE");
 
