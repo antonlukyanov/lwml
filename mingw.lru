@@ -47,6 +47,7 @@ function init_rules( mode )
   if mode.prof then ld('-pg') end
   if mode.gui then ld('-mwindows') end
   if mode.dll then ld('-shared -Wl,--out-implib,${dst_bn}.a') end
+  if mode.static then ld('-static') end
 
   libs('-llua51')
   if mode.libs then
