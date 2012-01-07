@@ -11,7 +11,10 @@ real real_nan()
 {
   static const char nan_repr[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0xff };
 
-  return *(double*)nan_repr;
+  typedef const char* cpchar_aliased __attribute__((__may_alias__));
+  cpchar_aliased nan_repr_cpca = nan_repr;
+
+  return *(double*)nan_repr_cpca;
 }
 
 bool is_nan( real xx )

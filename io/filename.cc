@@ -119,7 +119,7 @@ strng filename::denorm( const char* fname )
 {
   strng fn(fname);
   int pos = fn.len()-1;
-  if( fn[pos] == '/' || fn[pos] == '\\' )
+  if( fn.at(pos) == '/' || fn.at(pos) == '\\' )
     fn.setchar(pos, 0);
   return fn;
 }
@@ -207,7 +207,7 @@ strng filename::norm_path( const char* path, delimiter delim, case_sensitivity c
   for( int j = 0; j < res.len(); j++ )
     if( res[j] == '\\' || res[j] == '/' )
       res.setchar(j, slash);
-  if( res.len() != 0 && res[res.len()-1] != slash )
+  if( res.len() != 0 && res.at(res.len()-1) != slash )
     res.concat(slash);
   return (cs == CASE_SENS) ? res : res.tolower(_FILENAME_CODEPAGE_);
 }

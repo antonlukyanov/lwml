@@ -76,6 +76,9 @@ public:
     return _data[j]; 
   }
 
+  // Константный оператор индексирования без проверки.
+  const char& at( int j ) const  { return _data[j]; }
+
   // Замещение символа.
   cstrng& setchar( int j, char ch ) { 
     int len = this->len();

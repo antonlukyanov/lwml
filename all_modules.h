@@ -126,3 +126,19 @@
 #include "circle.h"
 #include "spline.h"
 #include "gj3d.h"
+
+//
+
+#include "cwt.h"
+#include "cwt_drv.h"
+#include "expfilt.h"
+#include "fftutl.h"
+#include "filler.h"
+#include "i_stream.h"
+#include "incstat.h"
+#include "mcontr.h"
+#include "platforms.h"
+#include "rfft2d.h"
+#include "spiral.h"
+#include "conio2.h"
+//#include "winbgi.h"
