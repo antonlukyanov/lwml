@@ -72,9 +72,13 @@ char* mem::vform( const char* fmt, va_list va )
     int nchars;
 
 #if defined(_MSC_VER)  
-    nchars = _vsnprintf(buf, size, fmt, va);
+  nchars = _vsnprintf(buf, size, fmt, va);
 #else
+  #if USE_SNPRINTF_BUG_WORKAROUND
+    nchars = _vsnprintf(buf, size, fmt, va);
+  #else
     nchars = vsnprintf(buf, size, fmt, va);
+  #endif
 #endif
 
     if( nchars >= 0 && nchars < size )

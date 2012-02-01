@@ -21,17 +21,21 @@ char* prot_strcpy( char* dst, const char* src, int buflen )
 }
 
 // Функция snprintf может записать ровно buflen символов и вернуть число buflen.
-// В этом случае считается, что произошло перепонение буфера и следует использовать
+// В этом случае считается, что произошло переполнение буфера и следует использовать
 // буфер большей длины.
-// В функци prot_vsprintf() при переполнении происходит простое обрезание результата
+// В функции prot_vsprintf() при переполнении происходит простое обрезание результата
 // и возвращается признак ошибки.
 int prot_vsprintf( char* buf, int buflen, const char* fmt, va_list va )
 {
   int numch;
 #if defined(_MSC_VER)  
-   numch = _vsnprintf(buf, buflen, fmt, va);
+  numch = _vsnprintf(buf, buflen, fmt, va);
 #else
-   numch = vsnprintf(buf, buflen, fmt, va);
+  #if USE_SNPRINTF_BUG_WORKAROUND
+    numch = _vsnprintf(buf, buflen, fmt, va);
+  #else
+    numch = vsnprintf(buf, buflen, fmt, va);
+  #endif
 #endif
 
   if( numch >= 0 && numch < buflen )
