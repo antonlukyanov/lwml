@@ -7,7 +7,7 @@ namespace lwml {
 void lanczos::warp( vector &dst, const vector &src, real r )
 {
   if( r < 1 )
-    runtime("bad radius (r=%lf) in lanczos::warp()", r);
+    runtime("bad radius (r=%f) in lanczos::warp()", r);
 
   int n1 = src.len(), n2 = dst.len();
 
@@ -28,11 +28,11 @@ void lanczos::warp( vector &dst, const vector &src, real r )
 real lanczos::calc( const vector &src, real x, real r )
 {
   if( r < 1 )
-    runtime("bad radius (r=%lf) in lanczos::calc()", r);
+    runtime("bad radius (r=%f) in lanczos::calc()", r);
 
   int len = src.len();
   if( x < 0 || x > len-1 )
-    runtime("argument out of bounds in lanczos::calc(), x=%lf", x);
+    runtime("argument out of bounds in lanczos::calc(), x=%f", x);
 
   int start = t_max<int>(0, int_cast(ceil(x-r)));
   int stop = t_min<int>(len-1, int_cast(floor(x+r)));

@@ -20,7 +20,7 @@ funcdata::funcdata( const char* fname )
     if( !file->get_str(line) )
       throw ex_funcdata("%s", fname);
     double x, y;
-    if( sscanf(line.ascstr(), "%lf %lf", &x, &y) != 2 )
+    if( sscanf(line.ascstr(), "%f %f", &x, &y) != 2 )
       throw ex_funcdata("%s", fname);
     vx[j] = x;
     vy[j] = y;

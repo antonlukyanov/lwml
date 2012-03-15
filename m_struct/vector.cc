@@ -49,7 +49,7 @@ void real_vector::read_raw_data( const char* fname )
 
   real buf;
   int sz = 0;
-  while( fscanf(file->file(), "%lf", &buf) == 1 )
+  while( fscanf(file->file(), "%f", &buf) == 1 )
     sz++;
   if( sz == 0 )
     throw ex_vector("%s", fname);
@@ -57,7 +57,7 @@ void real_vector::read_raw_data( const char* fname )
   alloc(sz);
   file->seek(0);
   for( int j = 0; j < _len; j++ ){
-    if( fscanf(file->file(), "%lf", &buf) != 1 ){
+    if( fscanf(file->file(), "%f", &buf) != 1 ){
       dealloc();
       throw ex_vector("%s", fname);
     }
@@ -78,7 +78,7 @@ bool real_vector::read_data( referer<stream> file, const char* fname )
     alloc(sz);
     for( int j = 0; j < _len; j++ ){
       real buf;
-      if( fscanf(file->file(), "%lf", &buf) != 1 ){
+      if( fscanf(file->file(), "%f", &buf) != 1 ){
         dealloc();
         throw ex_vector("%s", fname);
       }

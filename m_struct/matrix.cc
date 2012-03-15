@@ -58,7 +58,7 @@ void real_matrix::read_data( referer<stream> file, const char* fname )
   for( int i = 0; i < nstr; i++ ){
     for( int j = 0; j < ncol; j++ ){
       real buf;
-      if( fscanf(file->file(), "%lf", &buf) != 1 ){
+      if( fscanf(file->file(), "%f", &buf) != 1 ){
         dealloc();
         throw ex_matrix("%s", fname);
       }

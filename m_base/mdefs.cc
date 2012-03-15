@@ -79,7 +79,7 @@ int intervals::val2idx( real x, real ax, real bx, int len )
 {
   int idx = int_cast(len * (x - ax) / (bx - ax));
   if( x < ax || bx < x )
-    runtime("argument (%lf) out of interval (%lf, %lf)", x, ax, bx);
+    runtime("argument (%f) out of interval (%f, %f)", x, ax, bx);
   return (idx == len) ? len - 1 : idx;
 }
 
