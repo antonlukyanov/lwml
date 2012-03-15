@@ -31,11 +31,7 @@ int prot_vsprintf( char* buf, int buflen, const char* fmt, va_list va )
 #if defined(_MSC_VER)  
   numch = _vsnprintf(buf, buflen, fmt, va);
 #else
-  #if USE_SNPRINTF_BUG_WORKAROUND
-    numch = _vsnprintf(buf, buflen, fmt, va);
-  #else
-    numch = vsnprintf(buf, buflen, fmt, va);
-  #endif
+  numch = vsnprintf(buf, buflen, fmt, va);
 #endif
 
   if( numch >= 0 && numch < buflen )

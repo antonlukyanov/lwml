@@ -40,12 +40,6 @@ namespace lwml {
 #define _FILENAME_CODEPAGE_ alphabet::alWIN
 #define _CONSOLE_CODEPAGE_ alphabet::alALT
 
-// Использовать функции _snprintf()/_vsnprintf() 
-// вместо функций _snprintf()/_vsnprintf(),
-// которые в gcc 4.6.2 работают некорректно.
-
-#define USE_SNPRINTF_BUG_WORKAROUND 1
-
 }; // namespace lwml
 
 #endif // _LWMLCONF_
