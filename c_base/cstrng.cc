@@ -91,7 +91,7 @@ bool cstrng::str2int_ex( int* res, const char* str )
 
 bool cstrng::str2real_ex( real* res, const char* str )
 {
-  return (sscanf(str, "%f", res) == 1);
+  return (sscanf(str, "%lf", res) == 1);
 }
 
 int cstrng::str2int( const char* str )
