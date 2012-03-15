@@ -156,7 +156,7 @@ cstrng cstrng::time2str( float sec )
   sec -= hour * 3600;
   int min = int_cast(sec / 60.0);
   sec -= min * 60;
-  prot_sprintf(buf, TIME_BUFSZ, "%d:%d:%.2lf", hour, min, sec);
+  prot_sprintf(buf, TIME_BUFSZ, "%d:%d:%.2f", hour, min, sec);
   return cstrng(buf);
 }
 
