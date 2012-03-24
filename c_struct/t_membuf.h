@@ -64,6 +64,17 @@ public:
     _data = raw_realloc<T>(_data, _len = new_len);
   }
 
+  // Изменение размера массива.
+  // В случае увеличения размера второй аргумент
+  // задает начальное состояние добавляемых элементов.
+  void resize( int new_len, const T& t0 )
+  {
+    int copy_len = t_min<int>(_len, new_len);
+    _data = raw_realloc<T>(_data, _len = new_len);
+    for( int j = copy_len; j < new_len; j++ )
+      _data[j] = t0;
+  }
+
   // Установка значений всех элементов массива.
   void set_val( const T& val )
   {
@@ -87,6 +98,11 @@ public:
     #endif
     return _data[j];
   }
+
+  // Индексирование без проверки индекса.
+  // Для применения в надежных алгоритмах.
+        T& at( int j )       { return _data[j]; }
+  const T& at( int j ) const { return _data[j]; }
 
   // Низкоуровневый доступ к "сырым" данным.
         T* access_raw_data()       { return _data; }

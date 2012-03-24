@@ -105,6 +105,11 @@ public:
     return _data[j];
   }
 
+  // Индексирование без проверки индекса.
+  // Для применения в надежных алгоритмах.
+        T& at( int j )       { return _data[j]; }
+  const T& at( int j ) const { return _data[j]; }
+
   // Низкоуровневый доступ к "сырым" данным.
         T* access_raw_data()       { return _data; }
   const T* access_raw_data() const { return _data; }
