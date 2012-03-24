@@ -80,7 +80,7 @@ public:
 
   // Протолкнуть в конец очереди.
   t_ring<T>& roll( const T& el ) {
-    if( _len == _size ) 
+    if( _len == _size )
       pop();
     return push(el);
   }
@@ -111,13 +111,22 @@ public:
 
   // Операторы индексирования.
   T& operator[]( int j ) {
-    test_index(j, _len);
+    #if _CHECK_IDX_
+      test_index(j, _len);
+    #endif
     return _data[(_finish - j + _size) % _size];
   }
   const T& operator[]( int j ) const {
-    test_index(j, _len);
+    #if _CHECK_IDX_
+      test_index(j, _len);
+    #endif
     return _data[(_finish - j + _size) % _size];
   }
+
+  // Индексирование без проверки индекса.
+  // Для применения в надежных алгоритмах.
+        T& at( int j )       { return _data[(_finish - j + _size) % _size]; }
+  const T& at( int j ) const { return _data[(_finish - j + _size) % _size]; }
 
 private:
   int   _size;         // максимальный размер очереди
