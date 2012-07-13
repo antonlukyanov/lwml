@@ -106,4 +106,29 @@ uint llogsrv::get_ct()
   return _getct();
 }
 
+void llogsrv::set_mode( uint mask )
+{
+  if( !_is_active )
+    return;
+  _lock.lock();
+  try {
+    if( mask & LOG_ON )
+      _is_log = true;
+    else if( mask & LOG_OFF )
+      _is_log = false;
+    if( mask & DUMP_ON )
+      _is_dump = true;
+    else if( mask & DUMP_OFF )
+      _is_dump = false;
+    if( mask & JIT_ON )
+      _is_jit = true;
+    else if( mask & JIT_OFF )
+      _is_jit = false;
+  } catch(...){
+    _lock.unlock();
+    throw;
+  }
+  _lock.unlock();
+}
+
 }; // namespace lwml
