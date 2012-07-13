@@ -15,7 +15,7 @@ namespace lwml {
 // Потомки переопределяют чистую виртуальную функцию func(),
 // принимающую вектор и возвращающую вещественное число.
 
-class i_vfunction  : public interface {
+class i_vfunction : public interface {
 public:
   // Переопределяемая функция.
   virtual real func( const vector& ) const = 0;
