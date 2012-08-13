@@ -286,17 +286,31 @@ addpar{
   end,
 
   prepare = function( base_dir, proj_dir )
-    local ver = 'none'
-    local pipe, err = io.popen('hg parents --template "{date|shortdate} {node|short}\n"', 'rt')
-    if pipe == nil then
-      io.stderr:write('cannot get version: ', err, '\n')
-    else
-      local s = pipe:read('*line')
-      if s then
-        local y, m, d, h = s:match('^%d%d(%d%d)%-(%d%d)%-(%d%d) (%x%x%x%x%x%x)%x%x%x%x%x%x$')
-        ver = y..m..d..'-'..h
+    pipeline = function( cmd )
+      local pipe, err = io.popen(cmd, 'rt')
+      if pipe == nil then
+        io.stderr:write('error: ', err, '\n')
+        return nil
+      else
+        local s = pipe:read('*line')
+        pipe:close()
+        return s
       end
-      pipe:close()
+    end
+    
+    local ver = 'none'
+    local date = pipeline('hg parents --template "{date|shortdate}\n"')
+    local id = pipeline('hg identify -i\n"')
+    if not date or not id then
+      io.stderr:write('error: cannot get revision info\n')
+    else
+      local y, m, d = date:match('^%d%d(%d%d)%-(%d%d)%-(%d%d)$')
+      local h, mod =  id:match('^(%x+)(%+?)$')
+      print('<'..date..'>', '<'..id..'>')
+      print(y, m, d, h, mod)
+      
+      ver = y..m..d..'-'..h:sub(1,6)..(mod=='+' and 'M' or '')
+      print(ver)
     end
 
     local file = io.open('revision.hg','wt')
