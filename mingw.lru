@@ -306,11 +306,7 @@ addpar{
     else
       local y, m, d = date:match('^%d%d(%d%d)%-(%d%d)%-(%d%d)$')
       local h, mod =  id:match('^(%x+)(%+?)$')
-      print('<'..date..'>', '<'..id..'>')
-      print(y, m, d, h, mod)
-      
       ver = y..m..d..'-'..h:sub(1,6)..(mod=='+' and 'M' or '')
-      print(ver)
     end
 
     local file = io.open('revision.hg','wt')
