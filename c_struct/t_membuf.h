@@ -92,6 +92,10 @@ public:
         T* access_raw_data()       { return _data; }
   const T* access_raw_data() const { return _data; }
 
+  int comp( int i, int j ) const {
+    return (_data[i] < _data[j]) ? -1 : (_data[i] > _data[j]) ? 1 : 0;
+  }
+
 private:
   int   _len;
   T*    _data;

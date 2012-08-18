@@ -145,6 +145,10 @@ public:
       resize(_len + _len/2);
   }
 
+  int comp( int i, int j ) const {
+    return (_data[i] < _data[j]) ? -1 : (_data[i] > _data[j]) ? 1 : 0;
+  }
+
 private:
   int   _size;
   int   _len;
