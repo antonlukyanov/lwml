@@ -264,8 +264,8 @@ int riffwave_reader::operator()( int j, channel ch ) const
 
   int sample = j * _alignment;
   if( ch == RIGHT ) sample += (_bitspersample == 8) ? 1 : 2;
-  uint16 buf = (_bitspersample == 8) ? _data[sample] : (_data[sample+1] << 8) | _data[sample];
-  return static_cast<int16>(buf); //!! TODO: исправить
+  int16 res = (_bitspersample == 8) ? _data[sample] : (_data[sample+1] << 8) | _data[sample];
+  return res;
 }
 
 // riff wave saver
