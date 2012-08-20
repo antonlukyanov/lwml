@@ -24,28 +24,6 @@ const int PCMFORMAT_ID      = 1;   // идентификатор PCM-формата
 const int FMTCHUNK_DATASIZE = 16;  // размер данных чанка fmt
 const int FMTCHUNK_SIZE = CHUNKHDR_SIZE + FMTCHUNK_DATASIZE; // (заголовок + данные)
 
-// out parameters
-
-const int OUT_CHANNELS       = 1;  // число каналов при выводе
-const int OUT_BYTESPERSAMPLE = 2;  // байт на отсчет при выводе
-const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * 8;
-const int OUT_ALIGNMENT = OUT_CHANNELS * OUT_BYTESPERSAMPLE; // число байтов на отсчет (во всех каналах)
-
-inline int OUT_BYTESPERSEC( int sps )
-{
-  return OUT_CHANNELS * sps * OUT_BYTESPERSAMPLE;
-}
-
-inline int DATA_SIZE( int size )
-{
-  return OUT_CHANNELS * size * OUT_BYTESPERSAMPLE;
-}
-
-inline int DATACHUNK_SIZE( int size )
-{
-  return CHUNKHDR_SIZE + DATA_SIZE(size);
-}
-
 // common
 
 inline int ALIGN2EVEN( int size )
@@ -264,9 +242,46 @@ int riffwave_reader::operator()( int j, channel ch ) const
 
   int sample = j * _alignment;
   if( ch == RIGHT ) sample += (_bitspersample == 8) ? 1 : 2;
-  uint16 buf = (_bitspersample == 8) ? _data[sample] : (_data[sample+1] << 8) | _data[sample];
-  return static_cast<int16>(buf); //!! TODO: исправить
+  int16 res = (_bitspersample == 8) ? _data[sample] : (_data[sample+1] << 8) | _data[sample];
+  return res;
 }
+
+// out parameters
+
+namespace {
+  const int OUT_BYTESPERSAMPLE = 2;  // байт на отсчет при выводе
+  const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * 8;
+
+  inline int OUT_ALIGNMENT( int channels ) // число байтов на отсчет (во всех каналах)
+  {
+    return channels * OUT_BYTESPERSAMPLE;
+  }
+
+  inline int OUT_BYTESPERSEC( int sps, int channels )
+  {
+    return channels * sps * OUT_BYTESPERSAMPLE;
+  }
+
+  inline int DATA_SIZE( int size, int channels )
+  {
+    return channels * size * OUT_BYTESPERSAMPLE;
+  }
+
+  inline int DATACHUNK_SIZE( int size, int channels )
+  {
+    return CHUNKHDR_SIZE + DATA_SIZE(size, channels);
+  }
+
+  void calc_min_max( const vector& v, real* min, real* max )
+  {
+    *min = v.min();
+    *max = v.max();
+    if( *max == *min )
+      *max = *min + 1.0;
+    if( *min == *min + 1.0 || *max == *max + 1.0 )
+      throw ex_sing();
+  }
+};
 
 // riff wave saver
 
@@ -276,17 +291,17 @@ void riffwave_saver::write_chunkhdr( referer<stream> file, const char *id, uint3
   file->write(&sz, sizeof(uint32));
 }
 
-void riffwave_saver::write_fmt( referer<stream> file, int sps )
+void riffwave_saver::write_fmt( referer<stream> file, int sps, int channels )
 {
-  uint16 formattag = PCMFORMAT_ID;           // категори формата
-  uint16 channels = OUT_CHANNELS;            // число каналов
-  uint32 samplespersec = sps;                // частота дискретизации
-  uint16 bitspersample = OUT_BITSPERSAMPLE;  // разрдность дискретизации
-  uint32 bytespersec = OUT_BYTESPERSEC(sps); // число байт в секунду
-  uint16 alignment = OUT_ALIGNMENT;          // выравнивание данных
+  uint16 formattag = PCMFORMAT_ID;                      // категори формата
+  uint16 channels_buf = channels;                       // число каналов
+  uint32 samplespersec = sps;                           // частота дискретизации
+  uint16 bitspersample = OUT_BITSPERSAMPLE;             // разрдность дискретизации
+  uint32 bytespersec = OUT_BYTESPERSEC(sps, channels);  // число байт в секунду
+  uint16 alignment = OUT_ALIGNMENT(channels);           // выравнивание данных
 
   file->write(&formattag, sizeof(formattag));
-  file->write(&channels, sizeof(channels));
+  file->write(&channels_buf, sizeof(channels_buf));
   file->write(&samplespersec, sizeof(samplespersec));
   file->write(&bytespersec, sizeof(bytespersec));
   file->write(&alignment, sizeof(alignment));
@@ -295,19 +310,29 @@ void riffwave_saver::write_fmt( referer<stream> file, int sps )
 
 void riffwave_saver::write_data( referer<stream> file, const vector& v )
 {
-  real min = v.min();
-  real max = v.max();
-  if( max == min )
-    max = min + 1.0;
-  if( min == min + 1.0 || max == max + 1.0 )
-    throw ex_sing();
-
+  real min, max;
+  calc_min_max(v, &min, &max);
   for( int j = 0; j < v.len(); j++ ){
     uint16 buf = scale::interval(v[j], min, max, PCM16_MIN, PCM16_MAX);
-    uchar lo = buf & 0x00FF;
-    uchar hi = (buf >> 8) & 0x00FF;
-    file->write(&lo, sizeof(lo));
-    file->write(&hi, sizeof(hi));
+    file->write(&buf, sizeof(buf));
+  }
+}
+
+void riffwave_saver::write_data( referer<stream> file, const int_vector& v )
+{
+  for( int j = 0; j < v.len(); j++ ){
+    uint16 buf = v[j];
+    file->write(&buf, sizeof(buf));
+  }
+}
+
+void riffwave_saver::write_data( referer<stream> file, const int_vector& vl, const int_vector& vr )
+{
+  for( int j = 0; j < vl.len(); j++ ){
+    uint16 lbuf = vl[j];
+    uint16 rbuf = vr[j];
+    file->write(&lbuf, sizeof(lbuf));
+    file->write(&rbuf, sizeof(rbuf));
   }
 }
 
@@ -317,23 +342,49 @@ void riffwave_saver::write_align( referer<stream> file )
   file->write(&buf, sizeof(uchar));
 }
 
-void riffwave_saver::put( const char* name, const vector& x, int sps )
+void riffwave_saver::write_pref( referer<stream> file, int len, int channels, int sps )
+{
+  int riff_size = WAVEFORMID_SIZE + FMTCHUNK_SIZE + DATACHUNK_SIZE(len, channels);
+  write_chunkhdr(file, RIFFCHUNK_ID, ALIGN2EVEN(riff_size));              // RIFF-chunk
+  file->write(WAVEFORM_ID, WAVEFORMID_SIZE);                              // WAVE-form
+  write_chunkhdr(file, FMTCHUNK_ID, FMTCHUNK_DATASIZE);                   // fmt_chunk
+  write_fmt(file, sps, channels);
+  write_chunkhdr(file, DATACHUNK_ID, DATA_SIZE(len, channels));           // data_chunk hdr
+}
+
+void riffwave_saver::write_suff( referer<stream> file, int len, int channels )
+{
+  int riff_size = WAVEFORMID_SIZE + FMTCHUNK_SIZE + DATACHUNK_SIZE(len, channels);
+  if( ISODD(riff_size) ) // alignment
+    write_align(file);
+}
+
+void riffwave_saver::write( const char* name, const vector& x, int sps )
 {
   referer<stream> file = stream::create(name, fmWRITE, fmBINARY);
 
-  int riff_size = WAVEFORMID_SIZE + FMTCHUNK_SIZE + DATACHUNK_SIZE(x.len());
-  // RIFF-chunk
-  write_chunkhdr(file, RIFFCHUNK_ID, ALIGN2EVEN(riff_size));
-  // WAVE-form
-  file->write(WAVEFORM_ID, WAVEFORMID_SIZE);
-  // fmt_chunk
-  write_chunkhdr(file, FMTCHUNK_ID, FMTCHUNK_DATASIZE);
-  write_fmt(file, sps);
-  // data_chunk
-  write_chunkhdr(file, DATACHUNK_ID, DATA_SIZE(x.len()));
+  write_pref(file, x.len(), 1/*channels*/, sps);
   write_data(file, x);
-  // alignment
-  if( ISODD(riff_size) ) write_align(file);
+  write_suff(file, x.len(), 1/*channels*/);
+}
+
+void riffwave_saver::write( const char* name, const int_vector& x, int sps )
+{
+  referer<stream> file = stream::create(name, fmWRITE, fmBINARY);
+
+  write_pref(file, x.len(), 1/*channels*/, sps);
+  write_data(file, x);
+  write_suff(file, x.len(), 1/*channels*/);
+}
+
+void riffwave_saver::write( const char* name, const int_vector& xl, const int_vector& xr, int sps )
+{
+  test_size(xl.len(), xr.len());
+  referer<stream> file = stream::create(name, fmWRITE, fmBINARY);
+
+  write_pref(file, xl.len(), 2/*channels*/, sps);
+  write_data(file, xl, xr);
+  write_suff(file, xl.len(), 2/*channels*/);
 }
 
 // данные хрантся в старших bitspersample битах

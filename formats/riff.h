@@ -9,6 +9,7 @@
 
 #include "defs.h"
 #include "vector.h"
+#include "ivector.h"
 #include "stream.h"
 #include "t_membuf.h"
 
@@ -62,13 +63,23 @@ private:
 
 class riffwave_saver : public scope {
 public:
-  static void put( const char*, const vector&, int sps );
+  static void write( const char*, const vector&, int sps );
+    // запись одного канала с масштабированием
+  static void write( const char* name, const int_vector& x, int sps );
+    // запись одного канала без масштабирования
+  static void write( const char* name, const int_vector& lx, const int_vector& rx, int sps );
+    // запись двух каналов без масштабирования
 
 private:
   static void write_chunkhdr( referer<stream> file, const char *id, uint32 sz );
-  static void write_fmt( referer<stream> file, int sps );
+  static void write_fmt( referer<stream> file, int sps, int channels );
   static void write_data( referer<stream> file, const vector& );
+  static void write_data( referer<stream> file, const int_vector& v );
+  static void write_data( referer<stream> file, const int_vector& vl, const int_vector& vr );
   static void write_align( referer<stream> file );
+
+  static void write_pref( referer<stream> file, int len, int channels, int sps );
+  static void write_suff( referer<stream> file, int len, int channels );
 };
 
 }; // namespace lwml
