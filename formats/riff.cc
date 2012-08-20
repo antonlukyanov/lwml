@@ -248,28 +248,40 @@ int riffwave_reader::operator()( int j, channel ch ) const
 
 // out parameters
 
-const int OUT_BYTESPERSAMPLE = 2;  // байт на отсчет при выводе
-const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * 8;
+namespace {
+  const int OUT_BYTESPERSAMPLE = 2;  // байт на отсчет при выводе
+  const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * 8;
 
-const int OUT_ALIGNMENT( int channels ) // число байтов на отсчет (во всех каналах)
-{
-  return channels * OUT_BYTESPERSAMPLE;
-}
+  inline int OUT_ALIGNMENT( int channels ) // число байтов на отсчет (во всех каналах)
+  {
+    return channels * OUT_BYTESPERSAMPLE;
+  }
 
-inline int OUT_BYTESPERSEC( int sps, int channels )
-{
-  return channels * sps * OUT_BYTESPERSAMPLE;
-}
+  inline int OUT_BYTESPERSEC( int sps, int channels )
+  {
+    return channels * sps * OUT_BYTESPERSAMPLE;
+  }
 
-inline int DATA_SIZE( int size, int channels )
-{
-  return channels * size * OUT_BYTESPERSAMPLE;
-}
+  inline int DATA_SIZE( int size, int channels )
+  {
+    return channels * size * OUT_BYTESPERSAMPLE;
+  }
 
-inline int DATACHUNK_SIZE( int size, int channels )
-{
-  return CHUNKHDR_SIZE + DATA_SIZE(size, channels);
-}
+  inline int DATACHUNK_SIZE( int size, int channels )
+  {
+    return CHUNKHDR_SIZE + DATA_SIZE(size, channels);
+  }
+
+  void calc_min_max( const vector& v, real* min, real* max )
+  {
+    *min = v.min();
+    *max = v.max();
+    if( *max == *min )
+      *max = *min + 1.0;
+    if( *min == *min + 1.0 || *max == *max + 1.0 )
+      throw ex_sing();
+  }
+};
 
 // riff wave saver
 
@@ -298,13 +310,8 @@ void riffwave_saver::write_fmt( referer<stream> file, int sps, int channels )
 
 void riffwave_saver::write_data( referer<stream> file, const vector& v )
 {
-  real min = v.min();
-  real max = v.max();
-  if( max == min )
-    max = min + 1.0;
-  if( min == min + 1.0 || max == max + 1.0 )
-    throw ex_sing();
-
+  real min, max;
+  calc_min_max(v, &min, &max);
   for( int j = 0; j < v.len(); j++ ){
     uint16 buf = scale::interval(v[j], min, max, PCM16_MIN, PCM16_MAX);
     file->write(&buf, sizeof(buf));
