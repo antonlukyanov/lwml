@@ -318,6 +318,14 @@ void riffwave_saver::write_data( referer<stream> file, const vector& v )
   }
 }
 
+void riffwave_saver::write_data( referer<stream> file, const int_vector& v )
+{
+  for( int j = 0; j < v.len(); j++ ){
+    uint16 buf = v[j];
+    file->write(&buf, sizeof(buf));
+  }
+}
+
 void riffwave_saver::write_align( referer<stream> file )
 {
   uchar buf = 0;
@@ -325,6 +333,20 @@ void riffwave_saver::write_align( referer<stream> file )
 }
 
 void riffwave_saver::write( const char* name, const vector& x, int sps )
+{
+  referer<stream> file = stream::create(name, fmWRITE, fmBINARY);
+
+  int riff_size = WAVEFORMID_SIZE + FMTCHUNK_SIZE + DATACHUNK_SIZE(x.len(), 1/*channels*/);
+  write_chunkhdr(file, RIFFCHUNK_ID, ALIGN2EVEN(riff_size));              // RIFF-chunk
+  file->write(WAVEFORM_ID, WAVEFORMID_SIZE);                              // WAVE-form
+  write_chunkhdr(file, FMTCHUNK_ID, FMTCHUNK_DATASIZE);                   // fmt_chunk
+  write_fmt(file, sps, 1/*channels*/);
+  write_chunkhdr(file, DATACHUNK_ID, DATA_SIZE(x.len(), 1/*channels*/));  // data_chunk
+  write_data(file, x);
+  if( ISODD(riff_size) ) write_align(file);                               // alignment
+}
+
+void riffwave_saver::write( const char* name, const int_vector& x, int sps )
 {
   referer<stream> file = stream::create(name, fmWRITE, fmBINARY);
 

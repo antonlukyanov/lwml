@@ -9,6 +9,7 @@
 
 #include "defs.h"
 #include "vector.h"
+#include "ivector.h"
 #include "stream.h"
 #include "t_membuf.h"
 
@@ -63,11 +64,14 @@ private:
 class riffwave_saver : public scope {
 public:
   static void write( const char*, const vector&, int sps );
+  static void write( const char* name, const int_vector& x, int sps );
+    // запись данных без масштабирования
 
 private:
   static void write_chunkhdr( referer<stream> file, const char *id, uint32 sz );
   static void write_fmt( referer<stream> file, int sps, int channels );
   static void write_data( referer<stream> file, const vector& );
+  static void write_data( referer<stream> file, const int_vector& v );
   static void write_align( referer<stream> file );
 };
 
