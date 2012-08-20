@@ -24,28 +24,6 @@ const int PCMFORMAT_ID      = 1;   // идентификатор PCM-формата
 const int FMTCHUNK_DATASIZE = 16;  // размер данных чанка fmt
 const int FMTCHUNK_SIZE = CHUNKHDR_SIZE + FMTCHUNK_DATASIZE; // (заголовок + данные)
 
-// out parameters
-
-const int OUT_CHANNELS       = 1;  // число каналов при выводе
-const int OUT_BYTESPERSAMPLE = 2;  // байт на отсчет при выводе
-const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * 8;
-const int OUT_ALIGNMENT = OUT_CHANNELS * OUT_BYTESPERSAMPLE; // число байтов на отсчет (во всех каналах)
-
-inline int OUT_BYTESPERSEC( int sps )
-{
-  return OUT_CHANNELS * sps * OUT_BYTESPERSAMPLE;
-}
-
-inline int DATA_SIZE( int size )
-{
-  return OUT_CHANNELS * size * OUT_BYTESPERSAMPLE;
-}
-
-inline int DATACHUNK_SIZE( int size )
-{
-  return CHUNKHDR_SIZE + DATA_SIZE(size);
-}
-
 // common
 
 inline int ALIGN2EVEN( int size )
@@ -266,6 +244,28 @@ int riffwave_reader::operator()( int j, channel ch ) const
   if( ch == RIGHT ) sample += (_bitspersample == 8) ? 1 : 2;
   int16 res = (_bitspersample == 8) ? _data[sample] : (_data[sample+1] << 8) | _data[sample];
   return res;
+}
+
+// out parameters
+
+const int OUT_CHANNELS       = 1;  // число каналов при выводе
+const int OUT_BYTESPERSAMPLE = 2;  // байт на отсчет при выводе
+const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * 8;
+const int OUT_ALIGNMENT = OUT_CHANNELS * OUT_BYTESPERSAMPLE; // число байтов на отсчет (во всех каналах)
+
+inline int OUT_BYTESPERSEC( int sps )
+{
+  return OUT_CHANNELS * sps * OUT_BYTESPERSAMPLE;
+}
+
+inline int DATA_SIZE( int size )
+{
+  return OUT_CHANNELS * size * OUT_BYTESPERSAMPLE;
+}
+
+inline int DATACHUNK_SIZE( int size )
+{
+  return CHUNKHDR_SIZE + DATA_SIZE(size);
 }
 
 // riff wave saver
