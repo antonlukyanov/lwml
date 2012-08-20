@@ -307,10 +307,7 @@ void riffwave_saver::write_data( referer<stream> file, const vector& v )
 
   for( int j = 0; j < v.len(); j++ ){
     uint16 buf = scale::interval(v[j], min, max, PCM16_MIN, PCM16_MAX);
-    uchar lo = buf & 0x00FF;
-    uchar hi = (buf >> 8) & 0x00FF;
-    file->write(&lo, sizeof(lo));
-    file->write(&hi, sizeof(hi));
+    file->write(&buf, sizeof(buf));
   }
 }
 
