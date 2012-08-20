@@ -66,7 +66,7 @@ public:
 
 private:
   static void write_chunkhdr( referer<stream> file, const char *id, uint32 sz );
-  static void write_fmt( referer<stream> file, int sps );
+  static void write_fmt( referer<stream> file, int sps, int channels );
   static void write_data( referer<stream> file, const vector& );
   static void write_align( referer<stream> file );
 };

@@ -248,24 +248,27 @@ int riffwave_reader::operator()( int j, channel ch ) const
 
 // out parameters
 
-const int OUT_CHANNELS       = 1;  // число каналов при выводе
 const int OUT_BYTESPERSAMPLE = 2;  // байт на отсчет при выводе
 const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * 8;
-const int OUT_ALIGNMENT = OUT_CHANNELS * OUT_BYTESPERSAMPLE; // число байтов на отсчет (во всех каналах)
 
-inline int OUT_BYTESPERSEC( int sps )
+const int OUT_ALIGNMENT( int channels ) // число байтов на отсчет (во всех каналах)
 {
-  return OUT_CHANNELS * sps * OUT_BYTESPERSAMPLE;
+  return channels * OUT_BYTESPERSAMPLE;
 }
 
-inline int DATA_SIZE( int size )
+inline int OUT_BYTESPERSEC( int sps, int channels )
 {
-  return OUT_CHANNELS * size * OUT_BYTESPERSAMPLE;
+  return channels * sps * OUT_BYTESPERSAMPLE;
 }
 
-inline int DATACHUNK_SIZE( int size )
+inline int DATA_SIZE( int size, int channels )
 {
-  return CHUNKHDR_SIZE + DATA_SIZE(size);
+  return channels * size * OUT_BYTESPERSAMPLE;
+}
+
+inline int DATACHUNK_SIZE( int size, int channels )
+{
+  return CHUNKHDR_SIZE + DATA_SIZE(size, channels);
 }
 
 // riff wave saver
@@ -276,17 +279,17 @@ void riffwave_saver::write_chunkhdr( referer<stream> file, const char *id, uint3
   file->write(&sz, sizeof(uint32));
 }
 
-void riffwave_saver::write_fmt( referer<stream> file, int sps )
+void riffwave_saver::write_fmt( referer<stream> file, int sps, int channels )
 {
-  uint16 formattag = PCMFORMAT_ID;           // категори формата
-  uint16 channels = OUT_CHANNELS;            // число каналов
-  uint32 samplespersec = sps;                // частота дискретизации
-  uint16 bitspersample = OUT_BITSPERSAMPLE;  // разрдность дискретизации
-  uint32 bytespersec = OUT_BYTESPERSEC(sps); // число байт в секунду
-  uint16 alignment = OUT_ALIGNMENT;          // выравнивание данных
+  uint16 formattag = PCMFORMAT_ID;                      // категори формата
+  uint16 channels_buf = channels;                       // число каналов
+  uint32 samplespersec = sps;                           // частота дискретизации
+  uint16 bitspersample = OUT_BITSPERSAMPLE;             // разрдность дискретизации
+  uint32 bytespersec = OUT_BYTESPERSEC(sps, channels);  // число байт в секунду
+  uint16 alignment = OUT_ALIGNMENT(channels);           // выравнивание данных
 
   file->write(&formattag, sizeof(formattag));
-  file->write(&channels, sizeof(channels));
+  file->write(&channels_buf, sizeof(channels_buf));
   file->write(&samplespersec, sizeof(samplespersec));
   file->write(&bytespersec, sizeof(bytespersec));
   file->write(&alignment, sizeof(alignment));
@@ -321,19 +324,14 @@ void riffwave_saver::put( const char* name, const vector& x, int sps )
 {
   referer<stream> file = stream::create(name, fmWRITE, fmBINARY);
 
-  int riff_size = WAVEFORMID_SIZE + FMTCHUNK_SIZE + DATACHUNK_SIZE(x.len());
-  // RIFF-chunk
-  write_chunkhdr(file, RIFFCHUNK_ID, ALIGN2EVEN(riff_size));
-  // WAVE-form
-  file->write(WAVEFORM_ID, WAVEFORMID_SIZE);
-  // fmt_chunk
-  write_chunkhdr(file, FMTCHUNK_ID, FMTCHUNK_DATASIZE);
-  write_fmt(file, sps);
-  // data_chunk
-  write_chunkhdr(file, DATACHUNK_ID, DATA_SIZE(x.len()));
+  int riff_size = WAVEFORMID_SIZE + FMTCHUNK_SIZE + DATACHUNK_SIZE(x.len(), 1/*channels*/);
+  write_chunkhdr(file, RIFFCHUNK_ID, ALIGN2EVEN(riff_size));              // RIFF-chunk
+  file->write(WAVEFORM_ID, WAVEFORMID_SIZE);                              // WAVE-form
+  write_chunkhdr(file, FMTCHUNK_ID, FMTCHUNK_DATASIZE);                   // fmt_chunk
+  write_fmt(file, sps, 1/*channels*/);
+  write_chunkhdr(file, DATACHUNK_ID, DATA_SIZE(x.len(), 1/*channels*/));  // data_chunk
   write_data(file, x);
-  // alignment
-  if( ISODD(riff_size) ) write_align(file);
+  if( ISODD(riff_size) ) write_align(file);                               // alignment
 }
 
 // данные хрантся в старших bitspersample битах
