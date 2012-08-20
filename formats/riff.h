@@ -62,7 +62,7 @@ private:
 
 class riffwave_saver : public scope {
 public:
-  static void put( const char*, const vector&, int sps );
+  static void write( const char*, const vector&, int sps );
 
 private:
   static void write_chunkhdr( referer<stream> file, const char *id, uint32 sz );

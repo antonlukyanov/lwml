@@ -324,7 +324,7 @@ void riffwave_saver::write_align( referer<stream> file )
   file->write(&buf, sizeof(uchar));
 }
 
-void riffwave_saver::put( const char* name, const vector& x, int sps )
+void riffwave_saver::write( const char* name, const vector& x, int sps )
 {
   referer<stream> file = stream::create(name, fmWRITE, fmBINARY);
 
