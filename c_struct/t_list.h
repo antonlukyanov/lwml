@@ -162,7 +162,6 @@ private:
 
   void resize( int new_size ){
     T* old_data = _data;
-    int old_size = _size;
 
     _data = raw_alloc<T>(_size = new_size);
     for( int j = 0; j < _len; j++ )
