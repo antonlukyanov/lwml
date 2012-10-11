@@ -168,7 +168,7 @@ private:
     for( int j = 0; j < _len; j++ )
       new(_data + j) T(old_data[j]);
 
-    destroy(old_data, old_size);
+    destroy(old_data, _len);
     raw_free<T>(old_data);
   }
 
