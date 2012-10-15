@@ -139,6 +139,7 @@ void event::wait()
     fail_syscall("win32::WaitForSingleObject()");
 }
 
+/*
 // swimer
 
 swimer::swimer()
@@ -173,6 +174,7 @@ void swimer::read_done()
     _no_readers.set();
   _no_writer.unlock();
 }
+*/
 
 // intex
 
