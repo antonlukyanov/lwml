@@ -113,8 +113,8 @@ event::event( state st )
 {
   _hnd = CreateEvent(
     0,                          // security attributes
-    TRUE,                       // manual-reset flag
-    (st == ON) ? TRUE : FALSE,  // initial state flag
+    FALSE,                      // manual-reset flag
+    FALSE,                      // initial state flag
     0                           // event-object name
   );
   if( _hnd == NULL )
@@ -131,18 +131,6 @@ void event::set()
 {
   if( SetEvent(_hnd) == 0 )
     fail_syscall("win32::SetEvent()");
-}
-
-void event::reset()
-{
-  if( ResetEvent(_hnd) == 0 )
-    fail_syscall("win32::ResetEvent()");
-}
-
-void event::pulse()
-{
-  if( PulseEvent(_hnd) == 0 )
-    fail_syscall("win32::PulseEvent()");
 }
 
 void event::wait()
