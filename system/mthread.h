@@ -3,8 +3,8 @@
 // их синхронизации системно-независимым образом
 // lwml, (c) ltwood
 
-#ifndef _MTASK_
-#define _MTASK_
+#ifndef _MTHREAD_
+#define _MTHREAD_
 
 #include "defs.h"
 #include "refcount.h"
@@ -143,4 +143,4 @@ private:
 
 }; // namespace lwml
 
-#endif // _MTASK_
+#endif // _MTHREAD_
