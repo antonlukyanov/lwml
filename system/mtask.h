@@ -13,6 +13,32 @@
 
 namespace lwml {
 
+/*
+// Класс swimer() реализует защиту данных в модели
+// "один писатель, много читателей".
+// Писатели перед изменением данных вызывают метод write_wait(),
+// который ожидает возможности записи.
+// После изменения данных писатели вызывают метод write_done().
+// Читатели в аналогичной ситуации для чтения используют методы
+// read_wait() и read_done().
+
+class swimer : public value {
+public:
+  swimer();
+
+  void write_wait();
+  void write_done();
+
+  void read_wait();
+  void read_done();
+
+private:
+  locker _no_writer;
+  event _no_readers;
+  int _readers_counter;
+};
+*/
+
 }; // namespace lwml
 
 #endif // _MTASK_

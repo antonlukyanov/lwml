@@ -13,7 +13,7 @@
 
 namespace lwml {
 
-// Критическая секция
+// locker под win32 реализуется как lightweight mutex (aka critical section).
 // Позволяет пользователям захватывать ресурс монопольно.
 
 class locker : public value {
@@ -59,32 +59,6 @@ public:
 private:
   void* _hnd;
 };
-
-/*
-// Класс swimer() реализует защиту данных в модели
-// "один писатель, много читателей".
-// Писатели перед изменением данных вызывают метод write_wait(),
-// который ожидает возможности записи.
-// После изменения данных писатели вызывают метод write_done().
-// Читатели в аналогичной ситуации для чтения используют методы
-// read_wait() и read_done().
-
-class swimer : public value {
-public:
-  swimer();
-
-  void write_wait();
-  void write_done();
-
-  void read_wait();
-  void read_done();
-
-private:
-  locker _no_writer;
-  event _no_readers;
-  int _readers_counter;
-};
-*/
 
 // Класс intex реализует безопасное взаимодействие потоков через
 // разделяемую ими целочисленную переменную.
