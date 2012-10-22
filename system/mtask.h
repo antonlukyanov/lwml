@@ -13,6 +13,22 @@
 
 namespace lwml {
 
+// RAII-обертка для класса locker
+
+class stack_locker : public value {
+public:
+  stack_locker( locker* loc ) : _loc(loc) {
+    _loc->lock();
+  }
+
+  ~stack_locker(){
+    _loc->unlock();
+  }
+
+private:
+  locker* _loc;
+};
+
 /*
 // Класс swimer() реализует защиту данных в модели
 // "один писатель, много читателей".
