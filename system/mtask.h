@@ -29,8 +29,7 @@ private:
   locker* _loc;
 };
 
-/*
-// Класс swimer() реализует защиту данных в модели
+// Класс swmr_locker реализует защиту данных в модели
 // "один писатель, много читателей".
 // Писатели перед изменением данных вызывают метод write_wait(),
 // который ожидает возможности записи.
@@ -38,9 +37,9 @@ private:
 // Читатели в аналогичной ситуации для чтения используют методы
 // read_wait() и read_done().
 
-class swimer : public value {
+class swmr_locker : public value {
 public:
-  swimer();
+  swmr_locker();
 
   void write_wait();
   void write_done();
@@ -50,10 +49,9 @@ public:
 
 private:
   locker _no_writer;
-  event _no_readers;
+  state _no_readers;
   int _readers_counter;
 };
-*/
 
 }; // namespace lwml
 

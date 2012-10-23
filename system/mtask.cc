@@ -4,41 +4,40 @@
 
 namespace lwml {
 
-/*
-// swimer
+// swmr_locker
 
-swimer::swimer()
-  : _no_readers(event::ON), _readers_counter(0)
+swmr_locker::swmr_locker()
+  : _readers_counter(0)
 {
+  _no_readers.set(true);
 }
 
-void swimer::write_wait()
+void swmr_locker::write_wait()
 {
   _no_writer.lock();
   _no_readers.wait();
 }
 
-void swimer::write_done()
+void swmr_locker::write_done()
 {
   _no_writer.unlock();
 }
 
-void swimer::read_wait()
+void swmr_locker::read_wait()
 {
   _no_writer.lock();
   _readers_counter++;
   if( _readers_counter == 1 )
-    _no_readers.reset();
+    _no_readers.set(false);
   _no_writer.unlock();
 }
 
-void swimer::read_done()
+void swmr_locker::read_done()
 {
   _no_writer.lock();
   if( --_readers_counter == 0 )
-    _no_readers.set();
+    _no_readers.set(true);
   _no_writer.unlock();
 }
-*/
 
 }; // namespace lwml
