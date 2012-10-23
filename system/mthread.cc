@@ -109,7 +109,7 @@ void locker::unlock()
 
 // event
 
-event::event( state st )
+event::event()
 {
   _hnd = CreateEvent(
     0,                          // security attributes
@@ -134,6 +134,43 @@ void event::set()
 }
 
 void event::wait()
+{
+  if( WaitForSingleObject(_hnd, INFINITE) != WAIT_OBJECT_0 )
+    fail_syscall("win32::WaitForSingleObject()");
+}
+
+// state
+
+state::state()
+{
+  _hnd = CreateEvent(
+    0,                          // security attributes
+    TRUE,                       // manual-reset flag
+    FALSE,                      // initial state flag
+    0                           // event-object name
+  );
+  if( _hnd == NULL )
+    fail_syscall("win32::CreateEvent()");
+}
+
+state::~state()
+{
+  if( CloseHandle(_hnd) == 0 )
+    fail_syscall("win32::CloseHandle()");
+}
+
+void state::set( bool val )
+{
+  if( val ){
+    if( SetEvent(_hnd) == 0 )
+      fail_syscall("win32::SetEvent()");
+  } else {
+    if( ResetEvent(_hnd) == 0 )
+      fail_syscall("win32::ResetEvent()");
+  }
+}
+
+void state::wait()
 {
   if( WaitForSingleObject(_hnd, INFINITE) != WAIT_OBJECT_0 )
     fail_syscall("win32::WaitForSingleObject()");
