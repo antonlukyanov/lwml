@@ -9,47 +9,55 @@ namespace lwml {
 
 // constants
 
-const int FILEHEADERSIZE         =  14;
-const int IMAGEHEADERSIZE        =  40;
-const int HEADERSIZE             =  FILEHEADERSIZE + IMAGEHEADERSIZE;
-const int MAGIC                  =  0x4D42; // magic word = "BM"
-const int PLANES                 =  1;
-const int COMPRESSION            =  0;
+// file header offsets
+const int MAGIC_OFFSET            = 0x00;
+const int IMAGEOFFSET_OFFSET      = 0x0a;
 
-const int MAGIC_OFFSET           =  0;
-const int IMAGEHEADERSIZE_OFFSET =  14;
-const int PLANES_OFFSET          =  26;
-const int COMPRESSION_OFFSET     =  30;
-const int IMAGEOFFSET_OFFSET     =  10;
-const int WIDTH_OFFSET           =  18;
-const int HEIGHT_OFFSET          =  22;
-const int BITSPERPIXEL_OFFSET    =  28;
-const int IMAGESIZE_OFFSET       =  34;
-const int PALETTE_OFFSET         =  54;
+// image header offsets
+const int IMAGEHEADERSIZE_OFFSET  = 0x0e;
+const int WIDTH_OFFSET            = 0x12;
+const int HEIGHT_OFFSET           = 0x16;
+const int PLANES_OFFSET           = 0x1a;
+const int BITSPERPIXEL_OFFSET     = 0x1c;
+const int COMPRESSION_OFFSET      = 0x1e;
+const int IMAGESIZE_OFFSET        = 0x22;
 
-const int TRUECOLOROFFSET        =  HEADERSIZE;
-const int TRUECOLORBITSPERPIXEL  =  24;
+// std values
+const int FILEHEADERSIZE          = 14;
+const int MAGIC                   = 0x4D42; // magic word = "BM"
+const int PLANES                  = 1;
+const int PAL_ELEM_SIZE           = 4;
 
-const int PALELEMSIZE            =  4;
+// supported values
+const int NO_COMPRESSION          =  0;
+
+// image header sizes for different bitmap versions
+const int IHSZ_BITMAPCOREHEADER   = 12;
+const int IHSZ_BITMAPINFOHEADER   = 40;
+const int IHSZ_BITMAPCOREHEADER2  = 64;
+const int IHSZ_BITMAPV2INFOHEADER = 52;
+const int IHSZ_BITMAPV3INFOHEADER = 56;
+const int IHSZ_BITMAPV4HEADER     = 108;
+const int IHSZ_BITMAPV5HEADER     = 124;
 
 // bmp_pal
 
-void bmp_pal::read( referer<stream> file, int size )
+void bmp_pal::read( referer<stream> file, int size, int offset )
 {
   if( size == 0 )
     _len = 0;
   else{
     _len = size;
-    file->seek(PALETTE_OFFSET);
-    file->read(_pal, size * PALELEMSIZE);
+    file->seek(offset);
+    file->read(_pal, size * PAL_ELEM_SIZE);
   }
 }
 
-void bmp_pal::write( referer<stream> file )
+void bmp_pal::write( referer<stream> file, int offset )
 {
   if( _len != 0 ){
-    file->seek(PALETTE_OFFSET);
-    file->write(_pal, _len * PALELEMSIZE);
+    file->seek(offset);
+    file->write(_pal, _len * PAL_ELEM_SIZE);
   }
 }
 
@@ -68,14 +76,14 @@ bmp_pal::bmp_pal( int size )
   }
 }
 
-bmp_pal::bmp_pal( const char* fname, int sz )
+bmp_pal::bmp_pal( const char* fname, int sz, int offset )
 {
   if( sz < 0 )
     runtime("negative palette size (%d)", sz);
   if( sz > MAXPALSIZE )
     runtime("too long bitmap palette (%d)", sz);
   referer<stream> file = stream::create(fname, fmREAD, fmBINARY);
-  read(file, sz);
+  read(file, sz, offset);
 }
 
 bmp_rgb bmp_pal::get( int idx ) const
@@ -132,17 +140,16 @@ int bmp_header::read32( referer<stream> file, int ofs )
 
 void bmp_header::write( referer<stream> file )
 {
-  int imageoffset = _palsize * PALELEMSIZE + HEADERSIZE;
   write16(file, MAGIC);                          // magic
   write32(file, 0);                              // file size
   write32(file, 0);                              // reserved
-  write32(file, imageoffset);                    // image offset
-  write32(file, IMAGEHEADERSIZE);                // image header size
+  write32(file, _imageoffset);                   // image offset
+  write32(file, _imageheadersize);               // image header size
   write32(file, _width);                         // width
   write32(file, _height);                        // height
   write16(file, PLANES);                         // planes
   write16(file, _bitsperpixel);                  // bits per pixel
-  write32(file, COMPRESSION);                    // compression
+  write32(file, NO_COMPRESSION);                 // compression
   write32(file, 0);                              // image size
   write32(file, 0);                              // xbitspermeter
   write32(file, 0);                              // ybitspermeter
@@ -155,17 +162,25 @@ void bmp_header::read( referer<stream> file )
   if( read16(file, MAGIC_OFFSET) != MAGIC )
     throw ex_bmp("wrong magic word");
 
-  if( read32(file, IMAGEHEADERSIZE_OFFSET) != IMAGEHEADERSIZE )
+  _imageheadersize = read32(file, IMAGEHEADERSIZE_OFFSET);
+  if(
+    _imageheadersize != IHSZ_BITMAPCOREHEADER && _imageheadersize != IHSZ_BITMAPINFOHEADER &&
+    _imageheadersize != IHSZ_BITMAPCOREHEADER2 && _imageheadersize != IHSZ_BITMAPV2INFOHEADER &&
+    _imageheadersize != IHSZ_BITMAPV3INFOHEADER && _imageheadersize != IHSZ_BITMAPV4HEADER &&
+    _imageheadersize != IHSZ_BITMAPV5HEADER
+  )
     throw ex_bmp("unknown bitmap type");
+  if( _imageheadersize < IHSZ_BITMAPINFOHEADER )
+    throw ex_bmp("unsupported bitmap type");
 
   if( read16(file, PLANES_OFFSET) != PLANES )
     throw ex_bmp("wrong planes number");
 
-  if( read32(file, COMPRESSION_OFFSET) != COMPRESSION )
+  if( read32(file, COMPRESSION_OFFSET) != NO_COMPRESSION )
     throw ex_bmp("can't read compressed bitmap");
 
-  int imageoffset = read32(file, IMAGEOFFSET_OFFSET);
-  _palsize = (imageoffset - HEADERSIZE) / PALELEMSIZE;
+  _imageoffset = read32(file, IMAGEOFFSET_OFFSET);
+  _palsize = (_imageoffset - (FILEHEADERSIZE + _imageheadersize)) / PAL_ELEM_SIZE;
   _width = read32(file, WIDTH_OFFSET);
   _height = read32(file, HEIGHT_OFFSET);
   _bitsperpixel = read16(file, BITSPERPIXEL_OFFSET);
@@ -218,11 +233,18 @@ bmp_header::bmp_header( const char* fname )
 
 bmp_header::bmp_header( int height, int width, int palsize )
 {
+  _imageheadersize = IHSZ_BITMAPINFOHEADER;
+  _imageoffset = FILEHEADERSIZE + _imageheadersize + palsize * PAL_ELEM_SIZE;
   _palsize = palsize;
   _width = width;
   _height = height;
   _bitsperpixel = palsize2bpp(_palsize);
   _bpl = width2bpl(_width);
+}
+
+int bmp_header::paloffset() const
+{
+  return FILEHEADERSIZE + _imageheadersize;
 }
 
 // bitmap
@@ -239,17 +261,17 @@ void bitmap::write_byte( referer<stream> file, uchar x )
   file->write(&x, sizeof(x));
 }
 
-void bitmap::read( referer<stream> file )
+void bitmap::read( referer<stream> file, int offset )
 {
-  file->seek(HEADERSIZE + _hdr.palsize() * PALELEMSIZE);
+  file->seek(offset);
   int byte_num = _hdr.bytesperline() * _hdr.height();
   for( int j = 0; j < byte_num; j++ )
     _image[j] = read_byte(file);
 }
 
-void bitmap::write( referer<stream> file )
+void bitmap::write( referer<stream> file, int offset )
 {
-  file->seek(HEADERSIZE + _hdr.palsize() * PALELEMSIZE);
+  file->seek(offset);
   int byte_num = _hdr.bytesperline() * _hdr.height();
   for( int j = 0; j < byte_num; j++ )
     write_byte(file, _image[j]);
@@ -257,11 +279,11 @@ void bitmap::write( referer<stream> file )
 
 bitmap::bitmap( const char* fname )
   : _hdr(fname),
-    _pal(fname, _hdr.palsize()),
+    _pal(fname, _hdr.palsize(), _hdr.paloffset()),
     _image(_hdr.bytesperline() * _hdr.height())
 {
   referer<stream> file = stream::create(fname, fmREAD, fmBINARY);
-  read(file);
+  read(file, _hdr.image_offset());
 }
 
 bitmap::bitmap( int height, int width, const bmp_pal& pal )
@@ -275,8 +297,8 @@ void bitmap::save( const char* name )
 {
   referer<stream> file = stream::create(name, fmWRITE, fmBINARY);
   _hdr.save(file);
-  _pal.save(file);
-  write(file);
+  _pal.save(file, _hdr.paloffset());
+  write(file, _hdr.image_offset());
 }
 
 uchar bitmap::getcolidx( int lidx, int x ) const

@@ -90,7 +90,7 @@ public:
   // Прочитать палитру из файла формата BMP
   // fname - имя файла
   // sz - размер читаемой палитры
-  bmp_pal( const char* fname, int sz );
+  bmp_pal( const char* fname, int sz, int offset );
 
   // Получение размера палитры
   // Возвращает размер палитры в записях
@@ -104,7 +104,7 @@ public:
 
   // Запись палитры в файл BMP
   // file - двоичный файл, в который производится запись
-  void save( referer<stream> file ) { write(file); }
+  void save( referer<stream> file, int offset ) { write(file, offset); }
 
 private:
   int _len;
@@ -113,8 +113,8 @@ private:
   // чтение палитры заданной длины из файла по заданному смещению
   // полностью заново конструирует палитру
   // используется только методами класса bitmap
-  void read( referer<stream> file, int size );
-  void write( referer<stream> file );
+  void read( referer<stream> file, int size, int offset );
+  void write( referer<stream> file, int offset );
 };
 
 // Класс реализует чтение и запись заголовка bmp-файла
@@ -134,8 +134,14 @@ public:
   // Сохранить заголовок в двоичный файл
   void save( referer<stream> file ) { write(file); }
 
+  // Получить сдвиг блока пикселов изображения в файле.
+  int image_offset() const { return _imageoffset; }
+
   // Получить размер палитры в записях
   int palsize() const { return _palsize; }
+
+  // Получить смещение палитры в файле
+  int paloffset() const;
 
   // Получить ширину изображения в пикселах
   int width()   const { return _width; }
@@ -150,6 +156,8 @@ public:
   int bytesperline() const { return _bpl; }
 
 private:
+  int _imageheadersize;
+  int _imageoffset;
   int _palsize;
   int _width, _height;
   int _bitsperpixel;
@@ -230,8 +238,8 @@ private:
   uchar read_byte( referer<stream> );
   void write_byte( referer<stream>, uchar );
 
-  void read( referer<stream> );
-  void write( referer<stream> );
+  void read( referer<stream>, int offset );
+  void write( referer<stream>, int offset );
 
   uchar getcolidx( int lidx, int x ) const;
   void  setcolidx( int lidx, int x, int cidx );
