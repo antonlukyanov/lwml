@@ -43,11 +43,14 @@ function init_rules( mode )
   if mode.prof then cc('-pg') end
 
   ld('-mthreads')
+  ld('-static')
+    -- одновременная сборка модулей с опцией -static и без нее приводит к падению
+    -- поэтому опция -static теперь всегда включена, 
+    -- а опция 'static = true' в llk-файлах считается устаревшей.
   ld('-L${std_lib}')
   if mode.prof then ld('-pg') end
   if mode.gui then ld('-mwindows') end
   if mode.dll then ld('-shared -Wl,--out-implib,${dst_bn}.a') end
-  if mode.static then ld('-static') end
 
   libs('-llua51')
   if mode.libs then
