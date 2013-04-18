@@ -53,6 +53,11 @@ public:
     return _data[i][j];
   }
 
+  // Индексирование без проверки индексов.
+  // Для применения в надежных алгоритмах.
+        int& at( int i, int j )       { return _data[i][j]; }
+  const int& at( int i, int j ) const { return _data[i][j]; }
+
   // Сохранение матрицы в текстовом файле.
   void save( referer<stream> file ) const;
 

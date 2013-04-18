@@ -59,6 +59,11 @@ public:
     return _data[j];
   }
 
+  // Индексирование без проверки индекса.
+  // Для применения в надежных алгоритмах.
+        int& at( int j )       { return _data[j]; }
+  const int& at( int j ) const { return _data[j]; }
+
   // Сохранение вектора в текстовом файле.
   void save( referer<stream> file ) const;
 
