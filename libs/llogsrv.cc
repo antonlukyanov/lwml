@@ -9,6 +9,8 @@
 namespace lwml {
 
 namespace {
+  log_func_t log_func = 0;
+
   typedef int (*getver_t)();
   typedef void (*outmsg_t)( const char* asp, const char* msg );
   typedef int (*isdump_t)();
@@ -29,6 +31,14 @@ namespace {
 
   locker _lock; // блокировщик для использования в init() на случай многопоточности
 };
+
+void llogsrv::setup_log_func( log_func_t fn )
+{
+  _lock.lock();
+  _is_first_call = true; // перводим логгер в начальное состояние
+  log_func = fn;
+  _lock.unlock();
+}
 
 #define MIN_VER 3
 
@@ -74,19 +84,37 @@ bool llogsrv::init()
   return _is_active;
 }
 
+bool llogsrv::is_active()
+{
+  if( log_func )
+    return true;
+
+  return init();
+}
+
 void llogsrv::out_log( const char* asp, const char* msg )
 {
-  if( init() && _is_log ) 
-    _log(asp, msg);
+  if( log_func )
+    log_func(asp, msg);
+  else{
+    if( init() && _is_log )
+      _log(asp, msg);
+  }
 }
 
 bool llogsrv::is_jit()
 {
+  if( log_func )
+    return false;
+
   return init() && _is_jit;
 }
 
 bool llogsrv::is_dump()
 {
+  if( log_func )
+    return false;
+
   if( !init() || !_is_dump )
     return false;
   return _isdump();
@@ -94,6 +122,9 @@ bool llogsrv::is_dump()
 
 uint llogsrv::get_id()
 {
+  if( log_func )
+    return 0xffffffff;
+
   if( !init() || !_is_dump )
     return 0xffffffff;
   return _getid();
@@ -101,15 +132,21 @@ uint llogsrv::get_id()
 
 uint llogsrv::get_ct()
 {
+  if( log_func )
+    return 0xffffffff;
+
   if( !init() || !_is_dump )
     return 0xffffffff;
   return _getct();
 }
 
-void llogsrv::set_mode( uint mask )
+bool llogsrv::set_mode( uint mask )
 {
-  if( !_is_active )
-    return;
+  if( log_func )
+    return false;
+  if( !init() )
+    return false;
+
   _lock.lock();
   try {
     if( mask & LOG_ON )
@@ -129,6 +166,7 @@ void llogsrv::set_mode( uint mask )
     throw;
   }
   _lock.unlock();
+  return true;
 }
 
 }; // namespace lwml
