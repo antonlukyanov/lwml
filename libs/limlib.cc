@@ -39,7 +39,7 @@ bool limlib::init()
 
       if( !_is_active ){
         void* dll = dl_load("limlib");
-    
+
         if( dll ){
           _ver = LOAD_PROC(dll, "limlib_ver", ver_t);
           _errmsg = LOAD_PROC(dll, "limlib_errmsg", errmsg_t);
@@ -56,10 +56,12 @@ bool limlib::init()
     throw;
   }
 
-  const int limlib_min_ver = 4;
-  int ver = _ver();
-  if( ver < limlib_min_ver )
-    runtime("<limlib> version is too old, ver. %d.xx or later required", limlib_min_ver);
+  if( _is_active ){
+    const int limlib_min_ver = 4;
+    int ver = _ver();
+    if( ver < limlib_min_ver )
+      runtime("<limlib> version is too old, ver. %d.xx or later required", limlib_min_ver);
+  }
 
   return _is_active;
 }
