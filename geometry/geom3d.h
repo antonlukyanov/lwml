@@ -58,12 +58,16 @@ public:
   // поворот конца вектора как точки на угол angle около точки cnt
   // в плоскости, перпендикул€рной указанной в названии функции оси
   real_point3d& rot_x( real al, const real_point3d& c3 = real_point3d(0.0, 0.0, 0.0) );
+  real_point3d& rot_x( const sincos& sc, const real_point3d& c3 = real_point3d(0.0, 0.0, 0.0) );
   real_point3d& rot_y( real al, const real_point3d& c3 = real_point3d(0.0, 0.0, 0.0) );
+  real_point3d& rot_y( const sincos& sc, const real_point3d& c3 = real_point3d(0.0, 0.0, 0.0) );
   real_point3d& rot_z( real al, const real_point3d& c3 = real_point3d(0.0, 0.0, 0.0) );
+  real_point3d& rot_z( const sincos& sc, const real_point3d& c3 = real_point3d(0.0, 0.0, 0.0) );
 
   // проектирование вектора на плоскость
   // theta = angle(Pxy(v),Ox); phi = angle(v,Oz)
   real_point project( real theta, real phi );
+  real_point project( const sincos& sc_theta, const sincos& sc_phi );
 
   // проста€ векторна€ арифметика
   real_point3d& operator+=( const real_point3d& );
@@ -77,10 +81,14 @@ public:
 
   // theta = angle(Pxy(v),Ox), phi = angle(v,Oz)
   static real_point3d polar( real theta, real phi, real rho );
+  static real_point3d polar( const sincos& sc_theta, const sincos& sc_phi, real rho );
 
   static real_point3d rot_x( const real_point3d& v, real al, const real_point3d c3 = real_point3d(0.0, 0.0, 0.0) );
+  static real_point3d rot_x( const real_point3d& v, const sincos& sc, const real_point3d c3 = real_point3d(0.0, 0.0, 0.0) );
   static real_point3d rot_y( const real_point3d& v, real al, const real_point3d c3 = real_point3d(0.0, 0.0, 0.0) );
+  static real_point3d rot_y( const real_point3d& v, const sincos& sc, const real_point3d c3 = real_point3d(0.0, 0.0, 0.0) );
   static real_point3d rot_z( const real_point3d& v, real al, const real_point3d c3 = real_point3d(0.0, 0.0, 0.0) );
+  static real_point3d rot_z( const real_point3d& v, const sincos& sc, const real_point3d c3 = real_point3d(0.0, 0.0, 0.0) );
 
   static real inner_mul( const real_point3d& a, const real_point3d& b );
 
@@ -111,10 +119,28 @@ inline real_point3d& real_point3d::rot_x( real al, const real_point3d& c3 ){
   return *this;
 }
 
+inline real_point3d& real_point3d::rot_x( const sincos& sc, const real_point3d& c3 ){
+  real_point yz(_y, _z);
+  real_point c2(c3.y(), c3.z());
+  yz.rot(sc, c2);
+  _y = yz.x();
+  _z = yz.y();
+  return *this;
+}
+
 inline real_point3d& real_point3d::rot_y( real al, const real_point3d& c3 ){
   real_point xz(_x, _z);
   real_point c2(c3.x(), c3.z());
   xz.rot(-al, c2);
+  _x = xz.x();
+  _z = xz.y();
+  return *this;
+}
+
+inline real_point3d& real_point3d::rot_y( const sincos& sc, const real_point3d& c3 ){
+  real_point xz(_x, _z);
+  real_point c2(c3.x(), c3.z());
+  xz.rot(sincos(-sc.sin(), sc.cos()), c2);
   _x = xz.x();
   _z = xz.y();
   return *this;
@@ -129,10 +155,26 @@ inline real_point3d& real_point3d::rot_z( real al, const real_point3d& c3 ){
   return *this;
 }
 
+inline real_point3d& real_point3d::rot_z( const sincos& sc, const real_point3d& c3 ){
+  real_point xy(_x, _y);
+  real_point c2(c3.x(), c3.y());
+  xy.rot(sc, c2);
+  _x = xy.x();
+  _y = xy.y();
+  return *this;
+}
+
 inline real_point real_point3d::project( real theta, real phi ){
   real_point3d res(*this);
   res.rot_z(M_PI/2.0 - theta);
   res.rot_x(-(M_PI - phi));
+  return real_point(-res.x(), res.y());
+}
+
+inline real_point real_point3d::project( const sincos& sc_theta, const sincos& sc_phi ){
+  real_point3d res(*this);
+  res.rot_z(sincos(sc_theta.cos(), sc_theta.sin())); // M_PI/2.0 - theta
+  res.rot_x(sincos(-sc_phi.sin(), -sc_phi.cos())); // -(M_PI - phi)
   return real_point(-res.x(), res.y());
 }
 
@@ -169,14 +211,22 @@ inline real real_point3d::dist( const real_point3d& v1, const real_point3d& v2 )
 }
 
 inline real_point3d real_point3d::polar( real theta, real phi, real rho ){
-  return real_point3d( rho * sin(phi) * cos(theta),
-                 rho * sin(phi) * sin(theta),
-                 rho * cos(phi) );
+  return real_point3d(rho * sin(phi) * cos(theta), rho * sin(phi) * sin(theta), rho * cos(phi));
+}
+
+inline real_point3d real_point3d::polar( const sincos& sc_theta, const sincos& sc_phi, real rho ){
+  return real_point3d(rho * sc_phi.sin() * sc_theta.cos(), rho * sc_phi.sin() * sc_theta.sin(), rho * sc_phi.cos());
 }
 
 inline real_point3d real_point3d::rot_x( const real_point3d& v, real al, const real_point3d c3 ){
   real_point3d res(v);
   res.rot_x(al, c3);
+  return res;
+}
+
+inline real_point3d real_point3d::rot_x( const real_point3d& v, const sincos& sc, const real_point3d c3 ){
+  real_point3d res(v);
+  res.rot_x(sc, c3);
   return res;
 }
 
@@ -186,9 +236,21 @@ inline real_point3d real_point3d::rot_y( const real_point3d& v, real al, const r
   return res;
 }
 
+inline real_point3d real_point3d::rot_y( const real_point3d& v, const sincos& sc, const real_point3d c3 ){
+  real_point3d res(v);
+  res.rot_y(sc, c3);
+  return res;
+}
+
 inline real_point3d real_point3d::rot_z( const real_point3d& v, real al, const real_point3d c3 ){
   real_point3d res(v);
   res.rot_z(al, c3);
+  return res;
+}
+
+inline real_point3d real_point3d::rot_z( const real_point3d& v, const sincos& sc, const real_point3d c3 ){
+  real_point3d res(v);
+  res.rot_z(sc, c3);
   return res;
 }
 
