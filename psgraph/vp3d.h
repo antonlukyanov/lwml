@@ -34,7 +34,7 @@ public:
   scene3d( fpoint3d ax, fpoint3d bx, fpoint3d vb )
     : _ax(ax), _bx(bx), _vb(vb) {}
 
-  // оператор преобразования предметных координат 
+  // оператор преобразования предметных координат
   // в координаты сцены
   fpoint3d operator()( fpoint3d ) const;
 
@@ -75,9 +75,11 @@ inline fpoint3d scene3d::operator()( fpoint3d pnt ) const {
 class viewpoint3d : public value {
 public:
   viewpoint3d( real right, real up ){
-    _theta = M_PI_2 * (-1.0 + right);
-    _phi = M_PI_2 * (1.0 - up);
-    _pv = fpoint3d::polar(_theta, _phi, 1.0);
+    real theta = M_PI_2 * (-1.0 + right);
+    real phi = M_PI_2 * (1.0 - up);
+    _theta_sc.reset(theta);
+    _phi_sc.reset(phi);
+    _pv = fpoint3d::polar(_theta_sc, _phi_sc, 1.0);
   }
 
   // оператор проектирования на экран
@@ -90,12 +92,12 @@ public:
   fpoint3d prj_vect() const { return _pv; }
 
 private:
-  real _theta, _phi;
+  sincos _theta_sc, _phi_sc;
   fpoint3d _pv;
 };
 
 inline fpoint viewpoint3d::operator()( fpoint3d pnt ) const {
-  return pnt.project(_theta, _phi);
+  return pnt.project(_theta_sc, _phi_sc);
 }
 
 inline real viewpoint3d::depth( fpoint3d pnt ) const {
