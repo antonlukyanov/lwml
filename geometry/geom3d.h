@@ -94,6 +94,10 @@ public:
 
   static real_point3d vector_mul( const real_point3d& a, const real_point3d& b );
 
+  static real_point3d conv_hull( const real_point3d& a, const real_point3d& b, real al );
+
+  static real_point3d sub( const real_point3d& a, const real_point3d& b ); // a - b
+
 private:
   real _x, _y, _z;
 };
@@ -262,6 +266,15 @@ inline real_point3d real_point3d::vector_mul( const real_point3d& a, const real_
   return real_point3d( a.y() * b.z() - a.z() * b.y(),
                        a.z() * b.x() - a.x() * b.z(),
                        a.x() * b.y() - a.y() * b.x() );
+}
+
+inline real_point3d real_point3d::conv_hull( const real_point3d& a, const real_point3d& b, real al ){
+  real_point3d d(b.x() - a.x(), b.y() - a.y(), b.z() - a.z());
+  return real_point3d(a.x() + al * d.x(), a.y() + al * d.y(), a.z() + al * d.z());
+}
+
+inline real_point3d real_point3d::sub( const real_point3d& a, const real_point3d& b ){
+  return real_point3d(a.x() - b.x(), a.y() - b.y(), a.z() - b.z());
 }
 
 }; // namespace lwml

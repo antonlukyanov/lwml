@@ -90,6 +90,10 @@ public:
 
   static real inner_mul( const real_point& v1, const real_point& v2 );
 
+  static real_point conv_hull( const real_point& a, const real_point& b, real al );
+
+  static real_point sub( const real_point& a, const real_point& b ); // a - b
+
 private:
   real _x, _y;
 };
@@ -324,6 +328,15 @@ inline real_point real_point::rot( const real_point& pnt, const sincos& sc, cons
 
 inline real real_point::inner_mul( const real_point& v1, const real_point& v2 ){
   return v1.x() * v2.x() + v1.y() * v2.y();
+}
+
+inline real_point real_point::conv_hull( const real_point& a, const real_point& b, real al ){
+  real_point d(b.x() - a.x(), b.y() - a.y());
+  return real_point(a.x() + al * d.x(), a.y() + al * d.y());
+}
+
+inline real_point real_point::sub( const real_point& a, const real_point& b ){
+  return real_point(a.x() - b.x(), a.y() - b.y());
 }
 
 // real_segment
