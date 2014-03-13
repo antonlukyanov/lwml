@@ -11,6 +11,23 @@
 
 namespace lwml {
 
+// Bandle for values of trigonometric functions of fixed angle.
+
+class sincos {
+public:
+  sincos( real al = 0.0 ) : _sin(::sin(al)), _cos(::cos(al)) {}
+  sincos( real s, real c ) : _sin(s), _cos(c) {}
+
+  void reset( real al ) { _sin = ::sin(al); _cos = ::cos(al); }
+  void reset( real s, real c ) { _sin = s; _cos = c; }
+
+  real sin() const { return _sin; }
+  real cos() const { return _cos; }
+
+private:
+  real _sin, _cos;
+};
+
 // Класс реализует двумерный вектор с вещественными координатами
 // При конструировании указываются значения координат
 // При конструировании по умолчанию получается нулевой вектор
@@ -46,6 +63,7 @@ public:
 
   // поворот конца вектора как точки на угол angle около точки cnt
   real_point& rot( real angle, const real_point& cnt = real_point(0.0, 0.0) );
+  real_point& rot( const sincos& sc, const real_point& cnt = real_point(0.0, 0.0) );
 
   // простая векторная арифметика
   real_point& operator+=( const real_point& );
@@ -59,13 +77,22 @@ public:
   static real dist( const real_point& v1, const real_point& v2 );
 
   static real_point polar( real r, real phi );
+  static real_point polar( real r, const sincos& sc );
 
   static real_point rot(
     const real_point& pnt, real angle,
     const real_point& cnt = real_point(0.0, 0.0)
   );
+  static real_point rot(
+    const real_point& pnt, const sincos& sc,
+    const real_point& cnt = real_point(0.0, 0.0)
+  );
 
   static real inner_mul( const real_point& v1, const real_point& v2 );
+
+  static real_point conv_hull( const real_point& a, const real_point& b, real al );
+
+  static real_point sub( const real_point& a, const real_point& b ); // a - b
 
 private:
   real _x, _y;
@@ -236,6 +263,13 @@ inline real_point& real_point::rot( real angle, const real_point& cnt ){
   return *this;
 }
 
+inline real_point& real_point::rot( const sincos& sc, const real_point& cnt ){
+  real_point dp(_x - cnt.x(), _y - cnt.y());
+  _x = cnt.x() + dp.x() * sc.cos() - dp.y() * sc.sin();
+  _y = cnt.y() + dp.x() * sc.sin() + dp.y() * sc.cos();
+  return *this;
+}
+
 inline real_point& real_point::operator+=( const real_point& v ){
   _x += v.x();  _y += v.y();
   return *this;
@@ -276,14 +310,33 @@ inline real_point real_point::polar( real r, real phi ){
   return real_point(r * cos(phi), r * sin(phi));
 }
 
+inline real_point real_point::polar( real r, const sincos& sc ){
+  return real_point(r * sc.cos(), r * sc.sin());
+}
+
 inline real_point real_point::rot( const real_point& pnt, real angle, const real_point& cnt ){
   real_point res(pnt);
   res.rot(angle, cnt);
   return res;
 }
 
+inline real_point real_point::rot( const real_point& pnt, const sincos& sc, const real_point& cnt ){
+  real_point res(pnt);
+  res.rot(sc, cnt);
+  return res;
+}
+
 inline real real_point::inner_mul( const real_point& v1, const real_point& v2 ){
   return v1.x() * v2.x() + v1.y() * v2.y();
+}
+
+inline real_point real_point::conv_hull( const real_point& a, const real_point& b, real al ){
+  real_point d(b.x() - a.x(), b.y() - a.y());
+  return real_point(a.x() + al * d.x(), a.y() + al * d.y());
+}
+
+inline real_point real_point::sub( const real_point& a, const real_point& b ){
+  return real_point(a.x() - b.x(), a.y() - b.y());
 }
 
 // real_segment
