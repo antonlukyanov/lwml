@@ -1,5 +1,6 @@
 #include "luaconfig.h"
 
+#include "filename.h"
 #include "debug.h"
 
 /*#lake:stop*/
@@ -102,6 +103,10 @@ luaconf::luaconf()
 luaconf::luaconf( const char* fname )
 {
   open_vm();
+
+  filename fn(fname);
+  exec("__FILEINFO={ fullname='%s', shortname='%s', path='%s' }", fn.pne().ascstr(), fn.ne().ascstr(), fn.path().ascstr());
+
   run_file(fname);
 }
 
