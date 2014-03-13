@@ -115,10 +115,26 @@ public:
 private:
   strng _path, _name, _extn;
 
-  void norm_path_x( char* );      // нормализация пути (замена '\\' на '/')
+  void norm_path_x( char* );    // нормализация пути (замена '\\' на '/')
   void parse( const char* );    // разбор полного имени
 
   static strng denorm( const char* );
+};
+
+class directory : public value {
+public:
+  directory( const char* fname ){
+    _path = filename(fname).path();
+  }
+
+  strng mk_fname( const char* fname ){
+    cstrng res(_path);
+    res.concat(fname);
+    return res;
+  }
+
+private:
+  cstrng _path;
 };
 
 }; // namespace lwml
