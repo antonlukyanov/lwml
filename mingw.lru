@@ -53,6 +53,7 @@ function init_rules( mode )
   if mode.dll then ld('-shared -Wl,--out-implib,${dst_bn}.a') end
 
   libs('-llua51')
+  libs('-lpthread') 
   if mode.libs then
     for ln in mode.libs:gmatch('%S+') do
       libs('-l' .. ln)
