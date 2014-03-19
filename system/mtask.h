@@ -50,7 +50,7 @@ public:
 private:
   locker _no_writer;
   state _no_readers;
-  int _readers_counter;
+  int32 _readers_counter;
 };
 
 }; // namespace lwml
