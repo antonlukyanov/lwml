@@ -51,7 +51,7 @@ bool llogsrv::init()
 
       if( getenv("LWML_ZZZ") != 0 ){
         try{
-          void* dll = dl_load("llogsrv");
+          void* dll = dl_load_nozzz("llogsrv");
           if( dll ){
             _ver = LOAD_PROC(dll, "llogsrv_ver", getver_t);
             _log = LOAD_PROC(dll, "llogsrv_log", outmsg_t);

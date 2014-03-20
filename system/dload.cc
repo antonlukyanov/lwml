@@ -16,6 +16,11 @@ void* dl_load( const char* dl_name )
   return res;
 }
 
+void* dl_load_nozzz( const char* dl_name )
+{
+  return LoadLibrary(dl_name);
+}
+
 dproc dl_proc( void* dll, const char* fn )
 {
   if( !dll )
