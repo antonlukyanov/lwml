@@ -38,11 +38,11 @@ void tb_thread_func::stop() {
 // thread_bundle
 
 thread_bundle::thread_bundle( int th_num )
-  : _th_num(th_num), _tfunc(th_num), _thr(th_num)
+  : _th_num(th_num), _tfunc(th_num), _thread(th_num)
 {
   for( int j = 0; j < _th_num; j++ ){
     _tfunc[j] = tb_thread_func::create();
-    _thr[j].reset(new(lwml_alloc) thread(_tfunc[j]));
+    _thread[j].reset(new(lwml_alloc) thread(_tfunc[j]));
   }
 }
 

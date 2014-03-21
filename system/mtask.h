@@ -79,7 +79,7 @@ private:
   int _th_num;
 
   t_array< referer<tb_thread_func> > _tfunc;
-  t_array< refowner<thread> > _thr;
+  t_array< refowner<thread> > _thread;
 };
 
 }; // namespace lwml
