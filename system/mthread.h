@@ -8,8 +8,6 @@
 #include "defs.h"
 #include "refcount.h"
 
-#include <pthread.h>
-
 /*#lake:stop*/
 
 namespace lwml {
@@ -18,31 +16,21 @@ namespace lwml {
 
 class locker : public value {
 public:
-  locker() {
-    pthread_mutex_init(&_mutex, NULL);
-  }
-  ~locker() {
-    pthread_mutex_destroy(&_mutex);
-  }
+  locker();
+  ~locker();
 
   // Захватить ресурс
-  void lock() {
-    printf("lock\n"); fflush(stdout);
-    pthread_mutex_lock(&_mutex);
-  }
+  void lock();
 
   // Попытаться захватить ресурс
   // Возвращает флаг удачи.
-  bool test() { return pthread_mutex_trylock(&_mutex) == 0; }
+  bool test();
 
   // Освободить ресурс
-  void unlock() {
-    printf("unlock\n"); fflush(stdout);
-    pthread_mutex_unlock(&_mutex);
-  }
+  void unlock();
 
 private:
-  pthread_mutex_t _mutex;
+  void* _mutex;
 };
 
 // Класс rw_locker реализует защиту данных в модели
@@ -55,17 +43,17 @@ private:
 
 class rwlocker : public value {
 public:
-  rwlocker() { pthread_rwlock_init(&_rwlock, NULL); }
-  ~rwlocker() { pthread_rwlock_destroy(&_rwlock); }
+  rwlocker();
+  ~rwlocker();
 
-  void write_wait() { pthread_rwlock_wrlock(&_rwlock); }
-  void write_done() { pthread_rwlock_unlock(&_rwlock); }
+  void write_wait();
+  void write_done();
 
-  void read_wait() { pthread_rwlock_rdlock(&_rwlock); }
-  void read_done() { pthread_rwlock_unlock(&_rwlock); }
+  void read_wait();
+  void read_done();
 
 private:
-  pthread_rwlock_t _rwlock;
+  void* _rwlock;
 };
 
 // Класс event реализует событие поверх condition variable.
@@ -74,63 +62,37 @@ private:
 
 class event : public value {
 public:
-  event(){
-    _event = false;
-    pthread_mutex_init(&_mutex, NULL);
-    pthread_cond_init(&_cond, NULL);
-  }
+  event();
+  ~event();
 
-  ~event(){
-    pthread_cond_destroy(&_cond);
-    pthread_mutex_destroy(&_mutex);
-  }
-
-  void signal() {
-    pthread_mutex_lock(&_mutex);
-    _event = true;
-    pthread_mutex_unlock(&_mutex);
-    pthread_cond_signal(&_cond);
-  }
-
-  void wait(){
-    pthread_mutex_lock(&_mutex);
-    while( !_event )
-      pthread_cond_wait(&_cond, &_mutex);
-    _event = false;
-    pthread_mutex_unlock(&_mutex);
-  }
+  void signal();
+  void wait();
 
 private:
   bool _event;
-  pthread_mutex_t _mutex;
-  pthread_cond_t _cond;
+  void* _mutex;
+  void* _cond;
 };
 
 // Обертка для независимо выполняемого потока.
 // Клиентский код предоставляет реализацию интерфейса i_thread_function,
 // содержащего метод func(), код которого выполняется создаваемым потоком.
 
-class i_thread_function : public refcount {
+class i_thread_function : public interface, public refcount {
 public:
   virtual void func() = 0;
 };
 
 class thread : public value {
 public:
-  thread( referer<i_thread_function> thr_func ) : _thr_func(thr_func) {
-    pthread_create(&_thread, NULL, code, this);
-  }
+  thread( referer<i_thread_function> thr_func );
+  ~thread();
 
-  ~thread() { wait(); }
-
-  void wait() {
-    void* exit_status;
-    pthread_join(_thread, &exit_status);
-  }
+  void wait();
 
 private:
   referer<i_thread_function> _thr_func;
-  pthread_t _thread;
+  void* _thread_ptr;
 
   static void* code( void* arg );
 };
