@@ -38,8 +38,10 @@ private:
 
 void console_progress_renderer::pch( int ch, int num ) const
 {
-  for( int j = 0; j < num; j++ )
+  for( int j = 0; j < num; j++ ){
     fprintf(stderr, "%c", ch);
+    fflush(stderr);
+  }
 }
 
 console_progress_renderer::console_progress_renderer()
@@ -57,6 +59,7 @@ void console_progress_renderer::start( const char* nm, int sz )
   _vlaststate = 0;
 
   fprintf(stderr, "%s: ", nm);
+  fflush(stderr);
 
   if( _size >= 0 ){
     pch('.', CONSOLE_PROGRESS_LEN);       // выводим точечки
@@ -77,8 +80,12 @@ void console_progress_renderer::finish()
     pch(' ', CONSOLE_PROGRESS_LEN);               // стираем отметки
     pch(0x08, CONSOLE_PROGRESS_LEN);              // снова назад
     fprintf(stderr, "Ok\n");                      // выводим 'Ok'
-  }else
+    fflush(stderr);
+  }
+  else {
     fprintf(stderr, "done\n");
+    fflush(stderr);
+  }
 }
 
 bool console_progress_renderer::up( int st )
@@ -95,8 +102,11 @@ bool console_progress_renderer::up( int st )
       pch('o', delta);
       _vlaststate = vst;
     }
-  }else
+  }
+  else {
     fprintf(stderr, "%d:", st);
+    fflush(stderr);
+  }
 
   return false;
 }
@@ -170,12 +180,14 @@ void console::print_msg_error( const char* title, const char* msg )
     fflush(stderr);
     fprintf(stderr, "\n");
     fprintf(stderr, "%s: %s\n", title, msg);
+    fflush(stderr);
   }
 #else
   fflush(stdout);
   fflush(stderr);
   fprintf(stderr, "\n");
   fprintf(stderr, "%s: %s\n", title, msg);
+  fflush(stderr);
 #endif
 }
 
@@ -190,6 +202,7 @@ void console::print_msg_usage( const char* title, const char* msg )
     fprintf(stderr, "\n");
     fprintf(stderr, "%s\n", title);
     fprintf(stderr, "%s\n", msg);
+    fflush(stderr);
   }
 #else
   fflush(stdout);
@@ -197,6 +210,7 @@ void console::print_msg_usage( const char* title, const char* msg )
   fprintf(stderr, "\n");
   fprintf(stderr, "%s\n", title);
   fprintf(stderr, "%s\n", msg);
+  fflush(stderr);
 #endif
 }
 
