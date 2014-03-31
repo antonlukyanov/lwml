@@ -60,6 +60,11 @@ private:
   cstrng _asp;
 };
 
+// Отладочный вывод в поток системного лога.
+
+void zzz_sys_v( const char* msg, va_list va );
+void zzz_sys( const char *fmt, ... ) PRINTF(1,2);
+
 }; // namespace lwml
 
 #endif // _DEBUG_

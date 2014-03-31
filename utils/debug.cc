@@ -83,4 +83,21 @@ void zstream::out( const strng& s )
   }
 }
 
+// system log service
+
+void zzz_sys_v( const char* msg, va_list va )
+{
+  strbuf<1024> buf;
+  buf.vprintf(msg, va);
+  syssrv::debug_message(buf.get());
+}
+
+void zzz_sys( const char *fmt, ... )
+{
+  va_list va;
+  va_start(va, fmt);
+  zzz_sys_v(fmt, va);
+  va_end(va);
+}
+
 }; // namespace lwml
