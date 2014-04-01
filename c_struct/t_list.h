@@ -83,6 +83,10 @@ public:
     return _data[j];
   }
 
+  // Операторы индексирования без проверок индексов.
+  T& at( int j ) { return _data[j]; }
+  const T& at( int j ) const { return _data[j]; }
+
   // Добавить el в конец списка.
   // Возвращает позицию вставленного элемента.
   int put( const T& el ) {
