@@ -35,6 +35,10 @@ function init_rules( mode )
   if mode.fastmath then pref('fastmath') end
   if mode.prof then pref('prof') end
 
+  if mode.cpp11 then
+    cc('-std=c++11')
+  end
+
   cc('-Wall -mthreads')
   cc('-I${std_inc}')
   cc((mode.debug and '-O0') or '-O2')
