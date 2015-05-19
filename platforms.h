@@ -4,6 +4,18 @@
 #ifndef _PLATFORMS_
 #define _PLATFORMS_
 
+#define OS_WIN   0
+#define OS_OSX   0
+#define OS_LINUX 0
+
+#ifdef __MINGW32__ || __MINGW64__
+  #define OS_WIN 1
+#elif __APPLE__
+  #define OS_OSX 1
+#elif __linux__
+  #define OS_LINUX 1
+#endif
+
 #ifdef __GNUC__
 
   #define LWML_EXPORT extern "C"     __attribute__((dllexport))

@@ -31,6 +31,9 @@ public:
 
   // ¬ывод сообщени€ в системный поток диагностики.
   static void debug_message( const char* );
+
+private:
+  static void exit( const char* msg );
 };
 
 }; // namespace lwml
