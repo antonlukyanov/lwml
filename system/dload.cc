@@ -3,7 +3,7 @@
 #include "debug.h"
 #include "cstrng.h"
 
-#ifdef _WIN32
+#if OS_WIN
   #include <windows.h>
 #else
   #include <dlfcn.h>
@@ -17,13 +17,26 @@ void* dl_load( const char* dl_name )
 {
   void* res;
 
-#ifdef _WIN32
+#if OS_WIN
   res = LoadLibrary(dl_name);
 #else
   res = dlopen(dl_name, RTLD_LAZY);
 #endif
 
   zzz_ex("lwml:dload", "loading <%s> %s", dl_name, res ? "ok" : "fail");
+  return res;
+}
+
+void* dl_load_nozzz( const char* dl_name )
+{
+  void* res;
+
+#if OS_WIN
+  res = LoadLibrary(dl_name);
+#else
+  res = dlopen(dl_name, RTLD_LAZY);
+#endif
+
   return res;
 }
 
