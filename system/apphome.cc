@@ -23,6 +23,14 @@ namespace lwml {
 namespace {
   const int APP_PATH_BUFLEN = 1024;
 
+  void norm_path( char* buf )
+  {
+    for( char* pch = buf; *pch; pch++ ){
+      if( *pch == '\\' )
+        *pch = '/';
+    }
+  }
+
   void remove_last_part(const char* s)
   {
     char* psl = strrchr(s, '/');

@@ -4,7 +4,13 @@
 #include "alphabet.h"
 #include "lwmlconf.h"
 
-#include <io.h>
+#if OS_WIN
+  #include <io.h>
+#else
+  #include <cstdio>
+  #include <unistd.h>
+#endif
+
 #include <sys/stat.h>
 
 #ifdef __BORLANDC__

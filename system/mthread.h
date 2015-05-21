@@ -7,6 +7,7 @@
 
 #include "defs.h"
 #include "refcount.h"
+#include <pthread.h>
 
 /*#lake:stop*/
 
@@ -30,7 +31,7 @@ public:
   void unlock();
 
 private:
-  void* _mutex;
+  pthread_mutex_t _mutex;
 };
 
 // Класс rw_locker реализует защиту данных в модели
@@ -53,7 +54,7 @@ public:
   void read_done();
 
 private:
-  void* _rwlock;
+  pthread_rwlock_t _rwlock;
 };
 
 // Класс event реализует событие поверх condition variable.
@@ -70,8 +71,8 @@ public:
 
 private:
   bool _event;
-  void* _mutex;
-  void* _cond;
+  pthread_mutex_t _mutex;
+  pthread_cond_t _cond;
 };
 
 // Обертка для независимо выполняемого потока.
@@ -92,7 +93,7 @@ public:
 
 private:
   referer<i_thread_function> _thr_func;
-  void* _thread_ptr;
+  pthread_t _thread;
 
   static void* code( void* arg );
 };

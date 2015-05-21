@@ -47,7 +47,7 @@ dproc dl_proc( void* dll, const char* fn )
 
   dproc res;
 
-#ifdef _WIN32
+#if OS_WIN
   HINSTANCE hinst = reinterpret_cast<HINSTANCE>(dll);
   res = reinterpret_cast<dproc>(GetProcAddress(hinst, fn));
 #else

@@ -87,8 +87,8 @@ public:
 
   // Регистрация библиотек и классов.
 
-  void reg_library( const char* lib_name, const luaL_reg* lib_exptbl );
-  void reg_class( const char* class_name, const luaL_reg* class_ftbl, const luaL_reg* class_mtbl );
+  void reg_library( const char* lib_name, const luaL_Reg* lib_exptbl );
+  void reg_class( const char* class_name, const luaL_Reg* class_ftbl, const luaL_Reg* class_mtbl );
 
   // Создание и получение объекта класса.
 

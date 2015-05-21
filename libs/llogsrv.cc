@@ -66,12 +66,12 @@ bool llogsrv::init()
             _is_jit = (strstr(zzz, ":jit") != 0);
 
             if( _ver() < MIN_VER ){
-              syssrv::message("Debug environment problems", "Deprecated version of llogsrv.dll");
+              syssrv::message("Debug environment problems", "Deprecated version of llogsrv");
               _is_active = false;
             }
           }
         }catch( ex_dll& ){
-          syssrv::message("Debug environment problems", "Invalid llogsrv.dll, can't load");
+          syssrv::message("Debug environment problems", "Invalid llogsrv, can't load");
           _is_active = false;
         }
       }

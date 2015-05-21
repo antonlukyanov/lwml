@@ -25,6 +25,7 @@ int syssrv::ask( const char *title, const char *msg )
 #else
   exit("Can't ask user in current configuration");
 #endif
+  return 0;
 }
 
 uint32 syssrv::get_pid()
@@ -34,6 +35,7 @@ uint32 syssrv::get_pid()
 #else
   exit("Can't get PID in current configuration");
 #endif
+  return 0;
 }
 
 uint32 syssrv::get_tid()
@@ -43,6 +45,7 @@ uint32 syssrv::get_tid()
 #else
   exit("Can't get TID in current configuration");
 #endif
+  return 0;
 }
 
 void syssrv::call_jit()

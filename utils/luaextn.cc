@@ -55,7 +55,7 @@ const char* luaextn::get_str( int num ) const
 int luaextn::get_len( int num ) const
 {
   luaL_checktype(_L, num, LUA_TTABLE);
-  return lua_objlen(_L, num);
+  return lua_len(_L, num);
 }
 
 real luaextn::get_idx( int num, int idx ) const
@@ -148,7 +148,7 @@ void luaextn::handlex( const ex_base& ex ) const
 
 // Регистрация библиотек и классов.
 
-void luaextn::reg_library( const char* lib_name, const luaL_reg* lib_exptbl )
+void luaextn::reg_library( const char* lib_name, const luaL_Reg* lib_exptbl )
 {
   // Создает пустую таблицу t, присваивает ее глобальной переменной lib_name
   // и регистрирует в ней все функции из списка lib_exptbl.
@@ -156,7 +156,7 @@ void luaextn::reg_library( const char* lib_name, const luaL_reg* lib_exptbl )
   ++_out_count;
 }
 
-void luaextn::reg_class( const char* class_name, const luaL_reg* class_ftbl, const luaL_reg* class_mtbl )
+void luaextn::reg_class( const char* class_name, const luaL_Reg* class_ftbl, const luaL_Reg* class_mtbl )
 {
   luaL_newmetatable(_L, class_name);
 
