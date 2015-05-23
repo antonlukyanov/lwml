@@ -70,6 +70,7 @@ function init_rules( params )
     elseif os_type == 'osx' then
       ld('-dynamiclib -flat_namespace')
     elseif os_type == 'linux' then
+      cc('-fpic')
       ld('-shared')
     end
   end
