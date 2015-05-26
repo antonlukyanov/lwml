@@ -6,7 +6,6 @@
 #include "llogsrv.h"
 
 #if OS_WIN
-  #include <sys/syscall.h>
   #include <sys/types.h>
 #endif
 
@@ -46,11 +45,11 @@ namespace {
       // Локальный буфер потоко-безопасней.
       char buf[APP_PATH_BUFLEN];
 
-#ifdef WINDOWS
+#if OS_WIN
       int res = GetModuleFileName(0, buf, APP_PATH_BUFLEN);
       if( res == 0 || res == APP_PATH_BUFLEN )
         fail_syscall("win32::GetModuleFileName()");
-#elif __APPLE__
+#elif OS_OSX
       uint32_t size = APP_PATH_BUFLEN;
       if( _NSGetExecutablePath(buf, &size) != 0 ){
         fail_syscall("osx::_NSGetExecutablePath()");
@@ -68,7 +67,7 @@ namespace {
 
       norm_path(buf);
 
-#ifdef __APPLE__
+#if OS_OSX
       static char out[APP_PATH_BUFLEN];
       realpath(buf, out);
       strcpy(buf, out);

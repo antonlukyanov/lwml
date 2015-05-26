@@ -164,7 +164,7 @@ T* luaextn::get_object( const char* class_name, int num )
 // Начало создания библиотеки функций.
 // Создает таблицу экспорта с именем [lib_name]_exptbl.
 #define LUA_BEGIN_LIBRARY( lib_name )                            \
-  static const luaL_reg lib_name##_exptbl[] = {                 //
+  static const luaL_Reg lib_name##_exptbl[] = {                 //
 
 // Завершение создания библиотеки функций.
 #define LUA_END_LIBRARY                                         \
@@ -206,14 +206,14 @@ T* luaextn::get_object( const char* class_name, int num )
 
 // Начало создания класса
 #define LUA_BEGIN_CLASS(cl_name)                                \
-  static const luaL_reg cl_name##_ftbl[] = {                    \
+  static const luaL_Reg cl_name##_ftbl[] = {                    \
     {"new", cl_name##_init},                                    //
 
 // Переход к определению методов класса
 #define LUA_META(cl_name)                                       \
     {NULL, NULL}                                                \
   };                                                            \
-  static const luaL_reg cl_name##_mtbl[] = {                    \
+  static const luaL_Reg cl_name##_mtbl[] = {                    \
     {"__tostring", cl_name##_info},                             \
     {"__gc", cl_name##_done},                                   //
 
@@ -221,7 +221,7 @@ T* luaextn::get_object( const char* class_name, int num )
 #define LUA_META_IDX(cl_name)                                   \
     {NULL, NULL}                                                \
   };                                                            \
-  static const luaL_reg cl_name##_mtbl[] = {                    \
+  static const luaL_Reg cl_name##_mtbl[] = {                    \
     {"__len", cl_name##_meta_len},                              \
     {"__index", cl_name##_meta_getidx},                         \
     {"__newindex", cl_name##_meta_setidx},                      \
