@@ -7,10 +7,11 @@
 
 #if OS_WIN
   #include <sys/types.h>
+  #include <windows.h>
 #endif
 
-#if OS_WIN
-  #include <windows.h>
+#if OS_LINUX
+  #include <unistd.h>
 #elif OS_OSX
   #include <mach-o/dyld.h>
 #endif
