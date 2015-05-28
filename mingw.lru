@@ -42,7 +42,11 @@ function init_rules( params )
 
   if params.debug then
     pref('debug')
-    cc('-gstabs+')
+    if os_type == 'windows' then
+      cc('-gstabs+')
+    else
+      cc('-g')
+    end
   end
   
   if params.fastmath then
