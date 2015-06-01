@@ -94,13 +94,7 @@ function init_rules( params )
   
   ld('-L${std_lib}')
   
-  if os_type == 'windows' then
-    libs('-llua52')
-  elseif os_type == 'osx' then
-    libs('-llua.5.2')
-  elseif os_type == 'linux' then
-    libs('-llua5.2')
-  end
+  libs('-llua52')
   
   if params.libs then
     for ln in params.libs:gmatch('%S+') do
