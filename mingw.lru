@@ -96,6 +96,10 @@ function init_rules( params )
   
   libs('-llua52')
   
+  if os_type == 'linux' then
+    libs('-ldl')
+  end
+  
   if params.libs then
     for ln in params.libs:gmatch('%S+') do
       libs('-l' .. ln)

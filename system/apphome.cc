@@ -31,7 +31,7 @@ namespace {
     }
   }
 
-  void remove_last_part(const char* s)
+  void remove_last_part(char* s)
   {
     char* psl = strrchr(s, '/');
     if( psl != 0 )
