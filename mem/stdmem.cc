@@ -68,12 +68,8 @@ char* mem::vform( const char* fmt, va_list va )
 {
   int size = FORM_STRLEN;
   char *buf = raw_alloc<char>(size);
-  while( 1 ){
-#if OS_OSX
-	va_list va_fmt;
-	va_copy(va_fmt, va);
-#endif
 
+  while( 1 ){
     int nchars;
 
 #if defined(_MSC_VER)
