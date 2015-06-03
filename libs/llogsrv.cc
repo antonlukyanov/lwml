@@ -49,7 +49,8 @@ bool llogsrv::init()
     if( _is_first_call ){
       _is_first_call = false;
 
-      if( getenv("LWML_ZZZ") != 0 ){
+      const char* zzz = getenv("LWML_ZZZ");
+      if( zzz != 0 ){
         try{
           void* dll = dl_load_nozzz("llogsrv");
           if( dll ){
@@ -60,7 +61,6 @@ bool llogsrv::init()
             _getct = LOAD_PROC(dll, "llogsrv_getct", getct_t);
             _is_active = true;
 
-            const char* zzz = getenv("LWML_ZZZ");
             _is_log = (strstr(zzz, ":log") != 0);
             _is_dump = (strstr(zzz, ":dump") != 0);
             _is_jit = (strstr(zzz, ":jit") != 0);
