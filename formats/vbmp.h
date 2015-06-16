@@ -46,6 +46,7 @@ public:
 
   void resize( int ly, int lx );
 
+  void read( const char* fn );
   void save( const char* fn ) const;
 
   int len() const { return _img.len(); }

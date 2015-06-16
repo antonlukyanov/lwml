@@ -26,6 +26,14 @@ void int_matrix::dealloc()
   mem::free(_repr);
 }
 
+int_matrix::int_matrix()
+{
+  _str = 0;
+  _data = NULL;
+  _col = 0;
+  _repr = NULL;
+}
+
 int_matrix::int_matrix( int m, int n )
 {
   alloc(m, n);
@@ -86,6 +94,18 @@ int_matrix::int_matrix( const int_matrix& src )
 int_matrix::~int_matrix()
 {
   dealloc();
+}
+
+void int_matrix::resize( int m, int n )
+{
+  dealloc();
+  alloc(m, n);
+}
+
+void int_matrix::resize( int m, int n, int val )
+{
+  resize(m, n);
+  set_val(val);
 }
 
 int_matrix& int_matrix::operator=( const int_matrix& src )

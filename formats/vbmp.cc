@@ -35,6 +35,20 @@ vbmp::vbmp( int ly, int lx )
 
 vbmp::vbmp( const char* fn )
 {
+  read(fn);
+}
+
+void vbmp::resize( int ly, int lx )
+{
+  _lx = lx;
+  _ly = ly;
+  _img.resize(lx * ly);
+}
+
+const int BMP_COLORDEPTH = 256;
+
+void vbmp::read( const char* fn )
+{
   if( limlib::is_active() && limlib::getsize(fn, _lx, _ly) ){
     _img.resize(_lx * _ly);
     if( !limlib::load(fn, _img.access_raw_data()) )
@@ -53,15 +67,6 @@ vbmp::vbmp( const char* fn )
     }
   }
 }
-
-void vbmp::resize( int ly, int lx )
-{
-  _lx = lx;
-  _ly = ly;
-  _img.resize(lx * ly);
-}
-
-const int BMP_COLORDEPTH = 256;
 
 void vbmp::save( const char* name ) const
 {

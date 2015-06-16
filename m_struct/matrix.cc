@@ -27,6 +27,14 @@ void real_matrix::dealloc()
   mem::free(_repr);
 }
 
+real_matrix::real_matrix()
+{
+  _str = 0;
+  _data = NULL;
+  _col = 0;
+  _repr = NULL;
+}
+
 real_matrix::real_matrix( int m, int n )
 {
   alloc(m, n);
@@ -87,6 +95,18 @@ real_matrix::real_matrix( const real_matrix& src )
 real_matrix::~real_matrix()
 {
   dealloc();
+}
+
+void real_matrix::resize( int m, int n )
+{
+  dealloc();
+  alloc(m, n);
+}
+
+void real_matrix::resize( int m, int n, real val )
+{
+  resize(m, n);
+  set_val(val);
 }
 
 real_matrix& real_matrix::operator=( const real_matrix& src )
