@@ -24,6 +24,7 @@
 #include <cstring>
 #include <ctime>
 #include <cerrno>
+#include <cstdint>
 
 // Стандартные заголовки ANSI-C++.
 
