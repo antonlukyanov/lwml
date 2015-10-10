@@ -75,13 +75,9 @@ char* mem::vform( const char* fmt, va_list va )
 #if defined(_MSC_VER)
   nchars = _vsnprintf(buf, size, fmt, va);
 #else
-  #if OS_OSX
-    va_list va_fmt;
-    va_copy(va_fmt, va);
-    nchars = vsnprintf(buf, size, fmt, va_fmt);
-  #else
-    nchars = vsnprintf(buf, size, fmt, va);
-  #endif
+  va_list va_fmt;
+  va_copy(va_fmt, va);
+  nchars = vsnprintf(buf, size, fmt, va_fmt);
 #endif
 
     if( nchars >= 0 && nchars < size )
