@@ -12,7 +12,7 @@
 #include "vbmp.h"
 
 #include "adaboost.h"
-#include "msg_reciever.h"
+#include "msg_receiver.h"
 #include "keypoints.h"
 
 /*#build_stop*/
