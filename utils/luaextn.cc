@@ -55,8 +55,7 @@ const char* luaextn::get_str( int num ) const
 int luaextn::get_len( int num ) const
 {
   luaL_checktype(_L, num, LUA_TTABLE);
-  lua_len(_L, num);
-  return lua_tounsigned(_L, -1);
+  return luaL_len(_L, num);
 }
 
 real luaextn::get_idx( int num, int idx ) const
