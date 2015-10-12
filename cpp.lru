@@ -82,7 +82,7 @@ function init_rules( params )
   end
 
   cc('-Wall -pthread')
-  cc('-iquote ${std_inc}')
+  cc('-I ${std_inc}')
   cc((params.debug and '-O0') or '-O2')
   ld('-pthread')
   
