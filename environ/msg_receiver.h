@@ -2,13 +2,9 @@
 #define _MSG_RECIEVER_
 
 #include "defs.h"
-#include "mdefs.h"
-
-#include "t_array.h"
-#include "matrix.h"
-#include "imatrix.h"
-#include "igeom.h"
-#include "bmp.h"
+#include "refcount.h"
+#include "stream.h"
+#include "cstrng.h"
 
 namespace lwml {
 
@@ -41,10 +37,12 @@ class file_msg_receiver : public i_msg_receiver {
 public:
   enum msg_mode { TO_ALL = 0, TO_FILE = 1, TO_SCREEN = 2 };
 
-  file_msg_receiver( const char* fn, bool do_scr_out = true )
-    : _do_scr_out(do_scr_out)
-  {
-    _file = stream::create(fn, fmWRITE, fmTEXT);
+  file_msg_receiver( const char* fn, bool do_scr_out = true ){
+    init(fn, do_scr_out);
+  }
+
+  file_msg_receiver( const strng& fn, bool do_scr_out = true ){
+    init(fn.ascstr(), do_scr_out);
   }
 
   virtual void put_msg( const char* msg, int mode = TO_ALL ) const {
@@ -56,7 +54,16 @@ public:
       _file->printf("%s", msg);
   }
 
+  void put_msg( const strng& msg, int mode = TO_ALL ) const {
+    put_msg(msg.ascstr(), mode);
+  }
+
 private:
+  void init( const char* fn, bool do_scr_out ){
+    _do_scr_out = do_scr_out;
+    _file = stream::create(fn, fmWRITE, fmTEXT);
+  }
+
   bool _do_scr_out;
   referer<stream> _file;
 };
