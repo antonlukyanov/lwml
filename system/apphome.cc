@@ -5,7 +5,16 @@
 #include "filename.h"
 #include "llogsrv.h"
 
-#include <windows.h>
+#if OS_WIN
+  #include <sys/types.h>
+  #include <windows.h>
+#endif
+
+#if OS_LINUX
+  #include <unistd.h>
+#elif OS_OSX
+  #include <mach-o/dyld.h>
+#endif
 
 /*#lake:stop*/
 
@@ -14,25 +23,59 @@ namespace lwml {
 namespace {
   const int APP_PATH_BUFLEN = 1024;
 
+  void norm_path( char* buf )
+  {
+    for( char* pch = buf; *pch; pch++ ){
+      if( *pch == '\\' )
+        *pch = '/';
+    }
+  }
+
+  void remove_last_part(char* s)
+  {
+    char* psl = strrchr(s, '/');
+    if( psl != 0 )
+      *psl = 0;
+  }
+
   cstrng get_app_path() //!! TODO: вычислять строку один раз в начале?
   {
     if( getenv("LWML_APP_HOME") ){
       return filename::norm_path(getenv("LWML_APP_HOME"));
     } else {
-      char buf[APP_PATH_BUFLEN]; // локальный буфер потоко-безопасней
+      // Локальный буфер потоко-безопасней.
+      char buf[APP_PATH_BUFLEN];
 
+#if OS_WIN
       int res = GetModuleFileName(0, buf, APP_PATH_BUFLEN);
       if( res == 0 || res == APP_PATH_BUFLEN )
         fail_syscall("win32::GetModuleFileName()");
-
-      for( char* pch = buf; *pch; pch++ ){
-        if( *pch == '\\' )
-          *pch = '/';
+#elif OS_OSX
+      uint32_t size = APP_PATH_BUFLEN;
+      if( _NSGetExecutablePath(buf, &size) != 0 ){
+        fail_syscall("osx::_NSGetExecutablePath()");
       }
-      char * psl = strrchr(buf, '/');
-      if( psl == 0 )
-        return cstrng();
-      *psl = 0;
+#else
+      const char* link_name = "/proc/self/exe";
+      const int ret = static_cast<int>(readlink(link_name, buf, APP_PATH_BUFLEN - 1));
+
+      if( ret == -1 ){
+        fail_syscall("linux::readlink()");
+      }
+
+      buf[ret] = 0;
+#endif
+
+      norm_path(buf);
+
+#if OS_OSX
+      static char out[APP_PATH_BUFLEN];
+      realpath(buf, out);
+      strcpy(buf, out);
+#endif
+
+      // Убираем имя исполнимого файла.
+      remove_last_part(buf);
 
       return cstrng(buf);
     }

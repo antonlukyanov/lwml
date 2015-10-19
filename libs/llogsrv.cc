@@ -2,7 +2,7 @@
 
 #include "syssrv.h"
 #include "dload.h"
-#include "mtask.h"
+#include "mthread.h"
 
 /*#lake:stop*/
 
@@ -49,9 +49,10 @@ bool llogsrv::init()
     if( _is_first_call ){
       _is_first_call = false;
 
-      if( getenv("LWML_ZZZ") != 0 ){
+      const char* zzz = getenv("LWML_ZZZ");
+      if( zzz != 0 ){
         try{
-          void* dll = dl_load("llogsrv");
+          void* dll = dl_load_nozzz("llogsrv");
           if( dll ){
             _ver = LOAD_PROC(dll, "llogsrv_ver", getver_t);
             _log = LOAD_PROC(dll, "llogsrv_log", outmsg_t);
@@ -60,18 +61,17 @@ bool llogsrv::init()
             _getct = LOAD_PROC(dll, "llogsrv_getct", getct_t);
             _is_active = true;
 
-            const char* zzz = getenv("LWML_ZZZ");
             _is_log = (strstr(zzz, ":log") != 0);
             _is_dump = (strstr(zzz, ":dump") != 0);
             _is_jit = (strstr(zzz, ":jit") != 0);
 
             if( _ver() < MIN_VER ){
-              syssrv::message("Debug environment problems", "Deprecated version of llogsrv.dll");
+              syssrv::message("Debug environment problems", "Deprecated version of llogsrv");
               _is_active = false;
             }
           }
         }catch( ex_dll& ){
-          syssrv::message("Debug environment problems", "Invalid llogsrv.dll, can't load");
+          syssrv::message("Debug environment problems", "Invalid llogsrv, can't load");
           _is_active = false;
         }
       }

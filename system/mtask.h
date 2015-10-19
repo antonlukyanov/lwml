@@ -5,7 +5,10 @@
 #define _MTASK_
 
 #include "defs.h"
-#include "mdefs.h"
+#include "stdmem.h"
+#include "refcount.h"
+#include "refowner.h"
+#include "t_array.h"
 
 #include "mthread.h"
 
@@ -29,28 +32,54 @@ private:
   locker* _loc;
 };
 
-//  ласс swmr_locker реализует защиту данных в модели
-// "один писатель, много читателей".
-// ѕисатели перед изменением данных вызывают метод write_wait(),
-// который ожидает возможности записи.
-// ѕосле изменени€ данных писатели вызывают метод write_done().
-// „итатели в аналогичной ситуации дл€ чтени€ используют методы
-// read_wait() и read_done().
+// —в€зка потоков дл€ распараллеливани€ набора однородных задач.
+//
+// ѕредполагаетс€, что есть N одинаковых задач, которые можно
+// выполн€ть независимо и M потоков, в которых можно их выполн€ть.
+// ¬ каждом потоке выполн€етс€ примерно N/M задач, причем
+// задачи представлены реализацией интерфейса i_tbtask, котора€
+// содержит все данные, необходимые дл€ решени€ задачи.
+// —обственно решение j-й задачи происходит при выполнении метода func(),
+// которому в качестве аргумента передаетс€ номер решаемой задачи.
 
-class swmr_locker : public value {
+class i_tbtask : public interface, public refcount {
 public:
-  swmr_locker();
+  virtual void func( int idx ) = 0;
+};
 
-  void write_wait();
-  void write_done();
+class tb_thread_func : public i_thread_function {
+  tb_thread_func() : _do_stop(false) {}
 
-  void read_wait();
-  void read_done();
+public:
+  static referer<tb_thread_func> create(){
+    return referer<tb_thread_func>(new(lwml_alloc) tb_thread_func());
+  }
+
+  virtual void func();
+
+  void start( referer<i_tbtask> task, int first, int num );
+  void wait();
+  void stop();
 
 private:
-  locker _no_writer;
-  state _no_readers;
-  int32 _readers_counter;
+  referer<i_tbtask> _task;
+  int _first, _num;
+  bool _do_stop;
+  event _wakeup, _is_ready;
+};
+
+class thread_bundle {
+public:
+  thread_bundle( int th_num );
+  ~thread_bundle();
+
+  void calc( referer<i_tbtask> task, int num );
+
+private:
+  int _th_num;
+
+  t_array< referer<tb_thread_func> > _tfunc;
+  t_array< refowner<thread> > _thread;
 };
 
 }; // namespace lwml

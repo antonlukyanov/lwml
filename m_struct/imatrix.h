@@ -20,6 +20,9 @@ DEF_EX_TYPE_MSG(ex_integrity, ex_imatrix, "error reading int_matrix");
 
 class int_matrix : public value {
 public:
+  // Конструирование пустой матрицы.
+  int_matrix();
+
   // Конструирование по размерам.
   int_matrix( int, int );
 
@@ -37,6 +40,9 @@ public:
   int_matrix( const int_matrix& );
 
   virtual ~int_matrix();
+
+  void resize( int m, int n );
+  void resize( int m, int n, int val );
 
   int_matrix& operator=( const int_matrix& src );
 
@@ -99,7 +105,7 @@ private:
   int **_data;
   int *_repr;
 
-  void alloc( int, int );
+  void alloc( int m, int n );
   void dealloc();
 
   void read_data( referer<stream> file, const char* fname );

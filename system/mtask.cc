@@ -1,42 +1,72 @@
 #include "mtask.h"
 
-#include <windows.h>
-
 /*#build_stop*/
 
 namespace lwml {
 
-// swmr_locker
+// tb_thread_func
 
-swmr_locker::swmr_locker()
-  : _readers_counter(0)
-{
-  _no_readers.set(true);
+void tb_thread_func::func(){
+  while( true ){
+    _wakeup.wait();
+    if( _do_stop ){
+      _is_ready.signal();
+      return;
+    }
+    for( int j = 0; j < _num; j++ )
+      _task->func(_first + j);
+    _is_ready.signal();
+  }
 }
 
-void swmr_locker::write_wait()
-{
-  _no_writer.lock();
-  _no_readers.wait();
+void tb_thread_func::start( referer<i_tbtask> task, int first, int num ) {
+  _task = task;
+  _first = first;
+  _num = num;
+  _wakeup.signal();
 }
 
-void swmr_locker::write_done()
-{
-  _no_writer.unlock();
+void tb_thread_func::wait() {
+  _is_ready.wait();
 }
 
-void swmr_locker::read_wait()
-{
-  _no_writer.lock();
-  if( InterlockedIncrement(&_readers_counter) == 1 )
-    _no_readers.set(false);
-  _no_writer.unlock();
+void tb_thread_func::stop() {
+  _do_stop = true;
+  _wakeup.signal();
 }
 
-void swmr_locker::read_done()
+// thread_bundle
+
+thread_bundle::thread_bundle( int th_num )
+  : _th_num(th_num), _tfunc(th_num), _thread(th_num)
 {
-  if( InterlockedDecrement(&_readers_counter) == 0 )
-    _no_readers.set(true);
+  for( int j = 0; j < _th_num; j++ ){
+    _tfunc[j] = tb_thread_func::create();
+    _thread[j].reset(new(lwml_alloc) thread(_tfunc[j]));
+  }
+}
+
+thread_bundle::~thread_bundle()
+{
+  for( int j = 0; j < _th_num; j++ )
+    _tfunc[j]->stop();
+  for( int j = 0; j < _th_num; j++ )
+    _tfunc[j]->wait();
+}
+
+void thread_bundle::calc( referer<i_tbtask> task, int tnum )
+{
+  int p = tnum / _th_num;
+  int q = tnum % _th_num;
+
+  for( int j = 0; j < _th_num; j++ ){
+    int num = p + ((j < q) ? 1 : 0);
+    int first = (j < q) ? j * (p+1) : q * (p+1) + p * (j - q);
+    _tfunc[j]->start(task, first, num);
+  }
+
+  for( int j = 0; j < _th_num; j++ )
+    _tfunc[j]->wait();
 }
 
 }; // namespace lwml

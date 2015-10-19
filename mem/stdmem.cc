@@ -68,13 +68,16 @@ char* mem::vform( const char* fmt, va_list va )
 {
   int size = FORM_STRLEN;
   char *buf = raw_alloc<char>(size);
+
   while( 1 ){
     int nchars;
 
-#if defined(_MSC_VER)  
+#if defined(_MSC_VER)
   nchars = _vsnprintf(buf, size, fmt, va);
 #else
-  nchars = vsnprintf(buf, size, fmt, va);
+  va_list va_fmt;
+  va_copy(va_fmt, va);
+  nchars = vsnprintf(buf, size, fmt, va_fmt);
 #endif
 
     if( nchars >= 0 && nchars < size )

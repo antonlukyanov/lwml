@@ -2,195 +2,121 @@
 #include "basex.h"
 #include "stdmem.h"
 
+#include <pthread.h>
+
 namespace lwml {
 
-#include <process.h> // _beginthreadex
-#include <windows.h>
-
 /*#lake:stop*/
-
-// thread
-
-unsigned __stdcall thread::code( void* ptr )
-{
-  reinterpret_cast<thread*>(ptr)->_thr_func->func();
-  return 0;
-}
-
-thread::thread( referer<i_thread_function> thr_func )
-{
-  _thr_func = thr_func;
-  // Создает поток вызовом CreateThread(),
-  // вызывает _threadstart для инициализации по-поточных данных libc,
-  // вызывает функцию потока.
-  // По завершению функции потока _сама_ вызывает _endthreadex
-  // для освобождения по-поточных данных libc,
-  // но _не_ закрывает описатель потока.
-  unsigned ret = _beginthreadex(
-    0,                // security_attrib
-    0,                // stack_size
-    code,             // start_address
-    this,             // arglist
-    CREATE_SUSPENDED, // create_flags
-    &_th_id           // thread_id
-  );
-  if( ret == 0 )
-    fail_syscall("libc::_beginthreadex()");
-  _hnd = reinterpret_cast<void*>(ret);
-  _not_yet_started = true;
-}
-
-thread::~thread()
-{
-  // закрыть описатель потока
-  if( CloseHandle(_hnd) == 0 )
-    fail_syscall("win32::CloseHandle()");
-}
-
-void thread::start()
-{
-  if( ResumeThread(_hnd) == 0xFFFFFFFF )
-    fail_syscall("win32::ResumeThread()");
-  _not_yet_started = false;
-}
-
-void thread::kill()
-{
-  if( TerminateThread(_hnd, 0) == 0 )
-    fail_syscall("win32::TerminateThread()");
-}
-
-bool thread::is_active()
-{
-  if( _not_yet_started )
-    return false;
-  else{
-    DWORD exitcode;
-    if( GetExitCodeThread(_hnd, &exitcode) == 0 )
-      fail_syscall("win32::GetExitCodeThread()");
-    return exitcode == STILL_ACTIVE;
-  }
-}
-
-void thread::wait()
-{
-  if( WaitForSingleObject(_hnd, INFINITE) != WAIT_OBJECT_0 )
-    fail_syscall("win32::WaitForSingleObject()");
-}
 
 // locker
 
 locker::locker()
 {
-  _hnd = new(lwml_alloc) CRITICAL_SECTION;
-  InitializeCriticalSection(static_cast<LPCRITICAL_SECTION>(_hnd));
+  pthread_mutex_init(&_mutex, NULL);
 }
 
 locker::~locker()
 {
-  DeleteCriticalSection(static_cast<LPCRITICAL_SECTION>(_hnd));
-  delete static_cast<LPCRITICAL_SECTION>(_hnd);
+  pthread_mutex_destroy(&_mutex);
 }
 
 void locker::lock()
 {
-  EnterCriticalSection(static_cast<LPCRITICAL_SECTION>(_hnd));
+  pthread_mutex_lock(&_mutex);
 }
 
 bool locker::test()
 {
-  return TryEnterCriticalSection(static_cast<LPCRITICAL_SECTION>(_hnd));
+  return pthread_mutex_trylock(&_mutex) == 0;
 }
 
 void locker::unlock()
 {
-  LeaveCriticalSection(static_cast<LPCRITICAL_SECTION>(_hnd));
+  pthread_mutex_unlock(&_mutex);
+}
+
+// rwlocker
+
+rwlocker::rwlocker()
+{
+  pthread_rwlock_init(&_rwlock, NULL);
+}
+
+rwlocker::~rwlocker()
+{
+  pthread_rwlock_destroy(&_rwlock);
+}
+
+void rwlocker::write_wait()
+{
+  pthread_rwlock_wrlock(&_rwlock);
+}
+
+void rwlocker::write_done()
+{
+  pthread_rwlock_unlock(&_rwlock);
+}
+
+void rwlocker::read_wait()
+{
+  pthread_rwlock_rdlock(&_rwlock);
+}
+
+void rwlocker::read_done()
+{
+  pthread_rwlock_unlock(&_rwlock);
 }
 
 // event
 
-event::event()
-{
-  _hnd = CreateEvent(
-    0,                          // security attributes
-    FALSE,                      // manual-reset flag
-    FALSE,                      // initial state flag
-    0                           // event-object name
-  );
-  if( _hnd == NULL )
-    fail_syscall("win32::CreateEvent()");
+event::event(){
+  _event = false;
+  pthread_mutex_init(&_mutex, NULL);
+  pthread_cond_init(&_cond, NULL);
 }
 
-event::~event()
-{
-  if( CloseHandle(_hnd) == 0 )
-    fail_syscall("win32::CloseHandle()");
+event::~event(){
+  pthread_cond_destroy(&_cond);
+  pthread_mutex_destroy(&_mutex);
 }
 
-void event::set()
-{
-  if( SetEvent(_hnd) == 0 )
-    fail_syscall("win32::SetEvent()");
+void event::signal() {
+  pthread_mutex_lock(&_mutex);
+  _event = true;
+  pthread_mutex_unlock(&_mutex);
+  pthread_cond_signal(&_cond);
 }
 
-void event::wait()
-{
-  if( WaitForSingleObject(_hnd, INFINITE) != WAIT_OBJECT_0 )
-    fail_syscall("win32::WaitForSingleObject()");
+void event::wait(){
+  pthread_mutex_lock(&_mutex);
+  while( !_event )
+    pthread_cond_wait(&_cond, &_mutex);
+  _event = false;
+  pthread_mutex_unlock(&_mutex);
 }
 
-// state
+// thread
 
-state::state()
+void* thread::code( void* arg )
 {
-  _hnd = CreateEvent(
-    0,                          // security attributes
-    TRUE,                       // manual-reset flag
-    FALSE,                      // initial state flag
-    0                           // event-object name
-  );
-  if( _hnd == NULL )
-    fail_syscall("win32::CreateEvent()");
+  reinterpret_cast<thread*>(arg)->_thr_func->func();
+  return NULL;
 }
 
-state::~state()
+thread::thread( referer<i_thread_function> thr_func ) : _thr_func(thr_func)
 {
-  if( CloseHandle(_hnd) == 0 )
-    fail_syscall("win32::CloseHandle()");
+  pthread_create(&_thread, NULL, code, this);
 }
 
-void state::set( bool val )
+thread::~thread()
 {
-  if( val ){
-    if( SetEvent(_hnd) == 0 )
-      fail_syscall("win32::SetEvent()");
-  } else {
-    if( ResetEvent(_hnd) == 0 )
-      fail_syscall("win32::ResetEvent()");
-  }
+  wait();
 }
 
-void state::wait()
+void thread::wait()
 {
-  if( WaitForSingleObject(_hnd, INFINITE) != WAIT_OBJECT_0 )
-    fail_syscall("win32::WaitForSingleObject()");
-}
-
-// intex
-
-int32 intex::inc()
-{
-  return InterlockedIncrement(&_data);
-}
-
-int32 intex::dec()
-{
-  return InterlockedDecrement(&_data);
-}
-
-int32 intex::set( int32 val )
-{
-  return InterlockedExchange(&_data, val);
+  void* exit_status;
+  pthread_join(_thread, &exit_status);
 }
 
 }; // namespace lwml

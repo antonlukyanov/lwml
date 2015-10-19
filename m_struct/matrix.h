@@ -26,6 +26,9 @@ typedef class real_matrix matrix;
 
 class real_matrix : public value {
 public:
+  // Конструирование пустой матрицы.
+  real_matrix();
+
   // Конструирование по размерам.
   real_matrix( int, int );
 
@@ -43,6 +46,9 @@ public:
   real_matrix( const real_matrix& );
 
   virtual ~real_matrix();
+
+  void resize( int m, int n );
+  void resize( int m, int n, real val );
 
   real_matrix& operator=( const real_matrix& src );
 
