@@ -1,5 +1,5 @@
-#ifndef _SVMBOOST_
-#define _SVMBOOST_
+#ifndef _SVMCLASSIFIER_
+#define _SVMCLASSIFIER_
 
 #include "adaboost.h"
 #include "mboost.h"
@@ -233,4 +233,4 @@ private:
 };
 } // endo
 
-#endif // _SVMBOOST_
+#endif // _SVMCLASSIFIER_

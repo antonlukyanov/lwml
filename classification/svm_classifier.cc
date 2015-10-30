@@ -1,4 +1,4 @@
-#include "svm_boost.h"
+#include "svm_classifier.h"
 
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
