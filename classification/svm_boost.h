@@ -9,7 +9,7 @@
 
 namespace lwml {
 
-class svm_boost: public i_boost {
+class svm_boost: public i_classifier {
 private:
   struct scaling_params;
 public:

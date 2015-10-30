@@ -14,7 +14,7 @@ namespace lwml {
 /**
  * Интерфейс для классификаторов семейства AdaBoost.
  */
-class i_boost : public interface {
+class i_classifier : public interface {
 public:
   /**@return Размерность векторов */
   virtual int dim() const = 0;
@@ -86,7 +86,7 @@ public:
 /**
  * @short Discrete AdaBoost
  */
-class adaboost : public i_boost {
+class adaboost : public i_classifier {
 public:
   /**
    * Создание классификатора по набору параметров.

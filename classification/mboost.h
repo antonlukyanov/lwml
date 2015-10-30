@@ -23,7 +23,7 @@ namespace lwml {
 // Multiclass AdaBoost
 //
 
-class mult_adaboost : public i_boost {
+class mult_adaboost : public i_classifier {
 public:
   enum mboost_type { ONE_VS_ALL = 0, ONE_VS_ONE = 1, RAND_HALF = 2 };
 
