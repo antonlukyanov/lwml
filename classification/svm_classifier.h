@@ -1,5 +1,5 @@
-#ifndef _SVMBOOST_
-#define _SVMBOOST_
+#ifndef _SVMCLASSIFIER_
+#define _SVMCLASSIFIER_
 
 #include "adaboost.h"
 #include "mboost.h"
@@ -9,7 +9,7 @@
 
 namespace lwml {
 
-class svm_boost: public i_boost {
+class svm: public i_classifier {
 private:
   struct scaling_params;
 public:
@@ -19,7 +19,7 @@ public:
    * @param train_immediately - if true - run training immediately without \
    * configuration, else start trainig only after start_train() function called.
    */
-  svm_boost(const keypoint_list_lvset& kpl, bool train_immediately = true);
+  svm(const keypoint_list_lvset& kpl, bool train_immediately = true);
   /**
    * Load model in libsvm's format (Загрузить модель из текстовых файлов в формате чтения libsvm)
    * (http://www.csie.ntu.edu.tw/~cjlin/libsvm/)
@@ -27,10 +27,10 @@ public:
    * file_name_prefix+"_model.txt" - name of file which contains model data.
    * file_name_prefix+"_range.txt" - name of file which contains scaling params (out of svm-scale command).
    */
-  svm_boost(const char* file_name_prefix = "");
+  svm(const char* file_name_prefix = "");
   // Load model from luaconf (Загрузить модель из файла конфигурации в формате luaconf)
-  svm_boost(referer<luaconf> cnf, const char* root);
-  ~svm_boost();
+  svm(referer<luaconf> cnf, const char* root);
+  ~svm();
 
   /**
    * Start train svm on current parameters.
@@ -233,4 +233,4 @@ private:
 };
 } // endo
 
-#endif // _SVMBOOST_
+#endif // _SVMCLASSIFIER_

@@ -12,81 +12,9 @@
 namespace lwml {
 
 /**
- * Интерфейс для классификаторов семейства AdaBoost.
- */
-class i_boost : public interface {
-public:
-  /**@return Размерность векторов */
-  virtual int dim() const = 0;
-  /** @return Количество классов */
-  virtual int class_num() const = 0;
-  /** @return Количество шагов классификации */
-  virtual int step_num() const = 0;
-
-  /**
-   * Выполнение классификации заданного вектора.
-   * @param Вектор для классификации
-   * @param num
-   * @return Результат классификации
-   */
-  virtual int classify( const vector&, int num = 0 ) const = 0;
-
-  /**
-   * Оценивает качество признаков на заданной тестовой выборке.
-   * @todo describe parameters
-   *
-   * @param q Классифицированный вектор
-   * @param num
-   * @param m_idx
-   */
-  virtual void get_feature_quality( vector& q, int num = 0, int m_idx = -1 ) const = 0;
-
-  /**
-   * Получить степень уверенности классификации.
-   * @param x Классифицированный вектор
-   * @param num Количество шагов классификатора
-   * @return Степень уверенности
-   */
-  virtual real get_confidence( const vector& x, int num = 0 ) const = 0;
-
-  /**
-   * Получить степень уверенности классификации к определенному классу.
-   * @param x Классифицированный вектор
-   * @param num Количество шагов классификатора
-   * @param class_idx - номер класса, для которого определяется степень уверенности
-   * @return Степень уверенности
-   */
-  virtual real get_confidence_for_one_class( const vector& x, int num = 0, int class_idx = 0 ) const = 0;
-
-  /**
-   * Cохранение результатов классификации.
-   * @param cnf
-   * @param root
-   */
-  virtual void save_result( referer<luaconf> cnf, const char* root ) const = 0;
-
-  /**
-   * Cохранение результатов классификации в файл file_name
-   * @param file_name Имя файла
-   */
-  virtual void save_result_file(const char *file_name) const = 0;
-
-  /**
-   * Calculate the errors vertor for keypoint list
-   * @param kpl for this keypoint list we calculate errors
-   * @param errors vector of errors for each step of classifier
-   */
-  virtual void calc_errors( const keypoint_list_lvset& kpl, vector& errors ) const = 0;
-
-  // трудность классификации, для точек из обучающего набора
-  //~virtual real get_complexity( int cl, int idx ) const = 0;
-
-};
-
-/**
  * @short Discrete AdaBoost
  */
-class adaboost : public i_boost {
+class adaboost : public i_classifier {
 public:
   /**
    * Создание классификатора по набору параметров.

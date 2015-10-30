@@ -1,10 +1,10 @@
-#include "svm_boost.h"
+#include "svm_classifier.h"
 
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
 namespace lwml {
 
-svm_boost::svm_boost( const keypoint_list_lvset& kpl, bool train_immediately )
+svm::svm( const keypoint_list_lvset& kpl, bool train_immediately )
 {
   _need_learn = true;
 
@@ -51,7 +51,7 @@ svm_boost::svm_boost( const keypoint_list_lvset& kpl, bool train_immediately )
     start_train();
 }
 
-void svm_boost::start_train()
+void svm::start_train()
 {
   if( _need_learn ){
     _model = svm_train(_svm_problem, _params); // Train svm. Model contains a trained classifier.
@@ -60,7 +60,7 @@ void svm_boost::start_train()
     fail_assert("Second call of start_train");
   }
 }
-svm_boost::svm_boost( const char* file_name_prefix )
+svm::svm( const char* file_name_prefix )
 {
   // Generate model without teaching
   _need_learn = false;
@@ -84,7 +84,7 @@ svm_boost::svm_boost( const char* file_name_prefix )
   restore_scaling_params(strng::form("%s_range.txt", file_name_prefix).ascstr());
 }
 
-svm_boost::svm_boost( referer<luaconf> cnf, const char* root )
+svm::svm( referer<luaconf> cnf, const char* root )
 {
   // Generate model without teaching
   _need_learn = false;
@@ -190,7 +190,7 @@ svm_boost::svm_boost( referer<luaconf> cnf, const char* root )
   }
 }
 
-void svm_boost::init_scaling_params()
+void svm::init_scaling_params()
 {
   // Все значения масштабируются от -1 до 1
   _lower = -1;
@@ -211,20 +211,20 @@ void svm_boost::init_scaling_params()
     }
   }
 }
-void svm_boost::scale_vector( vector& vec ) const
+void svm::scale_vector( vector& vec ) const
 {
   for( int i = 0; i < _dim; i++ ){
     vec[i] = scale_feature(vec[i], i);
   }
 }
 
-real svm_boost::scale_feature( real feature_value, int ind ) const
+real svm::scale_feature( real feature_value, int ind ) const
 {
   return feature_value = -1
       + (1 - (-1)) * (feature_value - _scaling_params[ind].min_value)
       / (_scaling_params[ind].max_value - _scaling_params[ind].min_value);
 }
-void svm_boost::scale_svm_problem()
+void svm::scale_svm_problem()
 {
   for( int i = 0; i < _svm_problem->l; i++ ){
     for( int j = 0; j < _dim; j++ ){
@@ -232,26 +232,26 @@ void svm_boost::scale_svm_problem()
     }
   }
 }
-void svm_boost::free_scaling_params()
+void svm::free_scaling_params()
 {
   delete[] _scaling_params;
 }
 
-int svm_boost::dim() const
+int svm::dim() const
 {
   return _dim;
 }
-int svm_boost::class_num() const
+int svm::class_num() const
 {
   return _model->nr_class;
 }
-int svm_boost::step_num() const
+int svm::step_num() const
 {
   // TODO
   return 0;
 }
 
-int svm_boost::classify( const vector& vec, int num ) const
+int svm::classify( const vector& vec, int num ) const
 {
   zzz("SVM boosting classifier, vec_len = %d, _dim = %d", vec.len(), _dim);
   vector scaled_vec(vec);
@@ -270,11 +270,11 @@ int svm_boost::classify( const vector& vec, int num ) const
   zzz("Point in %d class", res_class);
   return res_class;
 }
-void svm_boost::get_feature_quality( vector& q, int num, int m_idx ) const
+void svm::get_feature_quality( vector& q, int num, int m_idx ) const
 {
 }
 
-real svm_boost::get_confidence( const vector& vec, int num ) const
+real svm::get_confidence( const vector& vec, int num ) const
 {
   int nr_class = _model->nr_class;
   if( svm_check_probability_model(_model) ){
@@ -315,7 +315,7 @@ real svm_boost::get_confidence( const vector& vec, int num ) const
   }
 }
 
-real svm_boost::get_confidence_for_one_class( const vector& vec, int num, int class_idx) const
+real svm::get_confidence_for_one_class( const vector& vec, int num, int class_idx) const
 {
   int nr_class = _model->nr_class;
   if( svm_check_probability_model(_model) ){
@@ -349,7 +349,7 @@ real svm_boost::get_confidence_for_one_class( const vector& vec, int num, int cl
   }
 }
 
-void svm_boost::save_result( referer<luaconf> res, const char* root ) const
+void svm::save_result( referer<luaconf> res, const char* root ) const
 {
   // основная таблица с параметрами обученного классификатора
   res->exec("%s.svm = {}", root);
@@ -452,13 +452,13 @@ void svm_boost::save_result( referer<luaconf> res, const char* root ) const
   }
 }
 
-void svm_boost::save_result_file( const char *file_name_prefix ) const
+void svm::save_result_file( const char *file_name_prefix ) const
 {
   svm_save_model(strng::form("%s_model.txt", file_name_prefix).ascstr(), _model);
   save_scaling_params(strng::form("%s_range.txt", file_name_prefix).ascstr());
 }
 
-void svm_boost::restore_scaling_params( const char* fname )
+void svm::restore_scaling_params( const char* fname )
 {
   _scaling_params = new scaling_params[_dim];
   FILE* fp_restore = fopen(fname, "rt");
@@ -483,7 +483,7 @@ void svm_boost::restore_scaling_params( const char* fname )
   fclose(fp_restore);
 }
 
-svm_boost::~svm_boost()
+svm::~svm()
 {
   if( _params != NULL ){
     svm_destroy_param(_params);
@@ -502,7 +502,7 @@ svm_boost::~svm_boost()
   delete[] _scaling_params;
 }
 
-svm_parameter* svm_boost::get_default_params( int num_features )
+svm_parameter* svm::get_default_params( int num_features )
 {
   svm_parameter *param = new svm_parameter;
   // default values
@@ -529,7 +529,7 @@ svm_parameter* svm_boost::get_default_params( int num_features )
   return param;
 }
 
-void svm_boost::save_scaling_params( const char* fname ) const
+void svm::save_scaling_params( const char* fname ) const
 {
   FILE* fp_save = fopen(fname, "wt");
   fprintf(fp_save, "x\n");
@@ -540,7 +540,7 @@ void svm_boost::save_scaling_params( const char* fname ) const
   fclose(fp_save);
 }
 
-void svm_boost::set_svm_type_c_svc( double C, int nr_weight, int *weight_label, double* weight )
+void svm::set_svm_type_c_svc( double C, int nr_weight, int *weight_label, double* weight )
 {
   _params->kernel_type = C_SVC;
   _params->C = C;
@@ -549,38 +549,38 @@ void svm_boost::set_svm_type_c_svc( double C, int nr_weight, int *weight_label, 
   _params->weight = weight;
 }
 
-void svm_boost::set_svm_type_nu_svc( double nu )
+void svm::set_svm_type_nu_svc( double nu )
 {
   _params->kernel_type = NU_SVC;
   _params->nu = nu;
 }
 
-void svm_boost::set_svm_type_one_class( double nu )
+void svm::set_svm_type_one_class( double nu )
 {
   _params->kernel_type = ONE_CLASS;
   _params->nu = nu;
 }
 
-void svm_boost::set_svm_type_epsilon_svr( double C, double p )
+void svm::set_svm_type_epsilon_svr( double C, double p )
 {
   _params->kernel_type = EPSILON_SVR;
   _params->C = C;
   _params->p = p;
 }
 
-void svm_boost::set_svm_type_nu_svr( double C, double nu )
+void svm::set_svm_type_nu_svr( double C, double nu )
 {
   _params->kernel_type = EPSILON_SVR;
   _params->C = C;
   _params->nu = nu;
 }
 
-void svm_boost::set_kernel_linear()
+void svm::set_kernel_linear()
 {
   _params->kernel_type = LINEAR;
 }
 
-void svm_boost::set_kernel_poly( int degree, double gamma, double coef0 )
+void svm::set_kernel_poly( int degree, double gamma, double coef0 )
 {
   _params->kernel_type = POLY;
   _params->degree = degree;
@@ -588,35 +588,35 @@ void svm_boost::set_kernel_poly( int degree, double gamma, double coef0 )
   _params->coef0 = coef0;
 }
 
-void svm_boost::set_kernel_rbf( double gamma )
+void svm::set_kernel_rbf( double gamma )
 {
   _params->kernel_type = RBF;
   _params->gamma = gamma;
 }
 
-void svm_boost::set_kernel_sigmoid( double gamma, double coef0 )
+void svm::set_kernel_sigmoid( double gamma, double coef0 )
 {
   _params->kernel_type = SIGMOID;
   _params->gamma = gamma;
   _params->coef0 = coef0;
 }
 
-void svm_boost::set_eps( double eps )
+void svm::set_eps( double eps )
 {
   _params->eps = eps;
 }
 
-void svm_boost::set_cache_size( double cache_size )
+void svm::set_cache_size( double cache_size )
 {
   _params->cache_size = cache_size;
 }
 
-void svm_boost::set_shrinking( int shrinking )
+void svm::set_shrinking( int shrinking )
 {
   _params->shrinking = shrinking;
 }
 
-void svm_boost::set_probability( int probabiliry )
+void svm::set_probability( int probabiliry )
 {
   _params->probability = probabiliry;
 }
