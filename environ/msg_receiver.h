@@ -16,12 +16,14 @@ namespace lwml {
 class i_msg_receiver : public interface {
 public:
   virtual void put_msg( const char* msg, int mode = 0 ) const = 0;
+  virtual void put_msg( const strng& msg, int mode = 0 ) const = 0;
 };
 
 // Пустой приемник текстовых сообщений.
 class empty_msg_receiver : public i_msg_receiver {
 public:
   virtual void put_msg( const char* msg, int mode ) const {}
+  virtual void put_msg( const strng& msg, int mode ) const {}
 };
 
 // Приемник текстовых сообщений с выводом на экран.
@@ -29,6 +31,9 @@ class screen_msg_receiver : public i_msg_receiver {
 public:
   virtual void put_msg( const char* msg, int mode = 0 ) const {
     printf("%s", msg);
+  }
+  virtual void put_msg( const strng& msg, int mode = 0 ) const {
+    put_msg(msg.ascstr());
   }
 };
 
