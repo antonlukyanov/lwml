@@ -102,6 +102,7 @@ private:
   real recalc_weights( const i_vector_set& vs1, const i_vector_set& vs2, const i_simple_classifier* cl, real error );
   void mk_classifier( const i_simple_classifier_maker& sc_fact, const i_vector_set& vs1, const i_vector_set& vs2, int num, tick_mode tick );
 
+  // @Todo: переменная cl не используется.
   void calc_feature_quality( int_vector& vnums, const vector& x, int cl );
   void calc_feature_quality( const i_vector_set& vs1, const i_vector_set& vs2 );
 

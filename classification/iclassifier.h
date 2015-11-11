@@ -244,8 +244,8 @@ public:
   virtual void serialize( referer<luaconf> cnf, const char* root ) const;
 
 private:
-  int _dim; /**<Размерность векторов*/
-  int _cidx; /**< Номер координаты*/
+  int _dim; /**< Размерность векторов */
+  int _cidx; /**< Номер координаты */
   real _thr;
   bool _is_invers;
 
