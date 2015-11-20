@@ -3,6 +3,7 @@
 #include "syssrv.h"
 #include "dload.h"
 #include "mthread.h"
+#include "platforms.h"
 
 /*#lake:stop*/
 
@@ -52,7 +53,11 @@ bool llogsrv::init()
       const char* zzz = getenv("LWML_ZZZ");
       if( zzz != 0 ){
         try{
+#if OS_WIN
           void* dll = dl_load_nozzz("llogsrv");
+#else
+          void* dll = dl_load_nozzz("llogsrv.so");
+#endif
           if( dll ){
             _ver = LOAD_PROC(dll, "llogsrv_ver", getver_t);
             _log = LOAD_PROC(dll, "llogsrv_log", outmsg_t);
