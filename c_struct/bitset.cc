@@ -70,6 +70,16 @@ bool bitset::test( int bit ) const
   return (_data[bit/8] & (1 << (bit%8))) != 0;
 }
 
+int bitset::get_max(){
+  int i = _size - 1;
+  while( i >= 0 ){
+    if( test(i) )
+      break;
+    i--;
+  }
+  return i;
+}
+
 bool bitset::is_meet( const bitset& ls ) const
 {
   #if _CHECK_IDX_
@@ -98,6 +108,15 @@ bitset& bitset::meet( const bitset& ls )
   #endif
   for( int j = 0; j < _data.len(); j++ )
     _data[j] &= ls._data[j];
+  return *this;
+}
+
+bitset& bitset::symm_dif( const bitset& ls ){
+  #if _CHECK_IDX_
+    test_size(ls._size, _size);
+  #endif
+  for( int j = 0; j < _data.len(); j++ )
+    _data[j] ^= ls._data[j];
   return *this;
 }
 
