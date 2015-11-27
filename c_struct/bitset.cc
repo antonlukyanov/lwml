@@ -80,6 +80,16 @@ int bitset::get_max(){
   return i;
 }
 
+int bitset::get_min(){
+  int i = 0;
+  while( i < _size ){
+    if( test(i) )
+      break;
+    i++;
+  }
+  return (i < _size) ? i : -1;
+}
+
 bool bitset::is_meet( const bitset& ls ) const
 {
   #if _CHECK_IDX_
