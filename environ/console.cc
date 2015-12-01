@@ -138,7 +138,8 @@ void console::handlex( const ex_base& ex )
 namespace {
   bool _isopt( const char* s )
   {
-    return strlen(s) >= 2 && s[0] == '-' && isalpha(s[1]);
+    return (strlen(s) >= 2 && s[0] == '-' && isalpha(s[1])) ||
+           (strlen(s) >= 3 && s[0] == '-' && s[1] == '-' && isalpha(s[2]));
   }
 
   // Запись этих переменных делает только init(), которая должна вызываться
@@ -266,11 +267,22 @@ strng console::argv( int k )
 }
 
 namespace {
-  // возвращает -1, если опция не найдена
+  // Возвращает -1, если опция не найдена.
   int get_opt_pos( char ch )
   {
     for( int j = 1; j < _sys_argc; j++ ){
-      if( _isopt(_sys_argv[j]) && _sys_argv[j][1] == ch )
+      const char* arg = _sys_argv[j];
+      if( _isopt(arg) && arg[1] == ch )
+        return j;
+    }
+    return -1;
+  }
+
+  int get_opt_pos( const char* opt_name )
+  {
+    for( int j = 1; j < _sys_argc; j++ ){
+      const char* arg = _sys_argv[j];
+      if( _isopt(arg) && (strstr(arg + 1, opt_name) || strstr(arg + 2, opt_name)) )
         return j;
     }
     return -1;
@@ -291,6 +303,32 @@ strng console::get_opt( char ch )
     throw ex_console("can't find cmdl option <%c>", ch);
   char *res = _sys_argv[k] + 2;  // skip '-<ch>'
   if( *res == ':' || *res == '=' ) res++;
+  return strng(res);
+}
+
+bool console::is_opt( const char* opt_name )
+{
+  test_active();
+  return get_opt_pos(opt_name) != -1;
+}
+
+strng console::get_opt( const char* opt_name )
+{
+  test_active();
+  int k = get_opt_pos(opt_name);
+  if( k == -1 )
+    throw ex_console("can't find cmdl option <%s>", opt_name);
+
+  // Skip one or two symbols '-', name of option and symbols '=' or ':'.
+  char *res = _sys_argv[k] + 1;
+
+  if( *res == '-' )
+    res++;
+  res += strlen(opt_name);
+
+  if( *res == ':' || *res == '=' )
+    res++;
+
   return strng(res);
 }
 
