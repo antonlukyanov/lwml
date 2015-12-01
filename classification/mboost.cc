@@ -24,12 +24,24 @@ int mult_adaboost::calc_adabost_num( int class_num, mboost_type m_type ) const
 }
 
 mult_adaboost::mult_adaboost(
-  const keypoint_list_lvset& kpl, int class_num, const i_simple_classifier_maker& sc_fact, int step_num,
-  mboost_type m_type, int adaboost_num, const i_msg_receiver& msg, tick_mode tick
+  mboost_type m_type,
+  int steps_num,
+  const i_simple_classifier_maker& sc_fact,
+
+  const keypoint_list_lvset& kpl,
+  int classes_num,
+
+  const i_msg_receiver& log,
+  tick_mode tick
 )
-: _dim(kpl.dim()), _max_step_num(0), _class_num(class_num), _adaboost_num(calc_adabost_num(class_num, m_type)),
-  _coding_matrix(_class_num, _adaboost_num), _m_ab(_adaboost_num),
-  _probabilities_of_classes(class_num, matrix(_adaboost_num, step_num, 0.0)), _cl_probability(class_num, 0.0)
+: _dim(kpl.dim()),
+  _max_step_num(0),
+  _class_num(classes_num),
+  _adaboost_num(calc_adabost_num(classes_num, m_type)),
+  _coding_matrix(_class_num, _adaboost_num),
+  _m_ab(_adaboost_num),
+  _probabilities_of_classes(classes_num, matrix(_adaboost_num, steps_num, 0.0)),
+  _cl_probability(classes_num, 0.0)
 {
   if( m_type == ONE_VS_ALL )
     gen_one_vs_all(_coding_matrix);
@@ -40,13 +52,18 @@ mult_adaboost::mult_adaboost(
 
   if( zzz_dump() )
     vbmp::save(zzz_dump_name("coding_matrix.bmp").ascstr(), _coding_matrix);
+
   for( int i = 0; i < _adaboost_num; i++ ){
-    msg.put_msg(strng::form("step=%d/%d\n", i+1, _adaboost_num).ascstr());
+    log.put_msg(strng::form("step=%d/%d\n", i+1, _adaboost_num).ascstr());
     int_vector v_cl(_class_num);
     _coding_matrix.get_col(v_cl, i);
     mkeypoint_vset vsets1(&kpl, v_cl, -1);
+    vector w1;
+    vsets1.get_weights(w1);
     mkeypoint_vset vsets2(&kpl, v_cl, 1);
-    _m_ab[i] = new adaboost(sc_fact, vsets1, vsets2, step_num, tick);
+    vector w2;
+    vsets2.get_weights(w2);
+    _m_ab[i] = new adaboost(sc_fact, vsets1, w1, vsets2, w2, steps_num, tick);
     if( _m_ab[i]->step_num() > _max_step_num )
       _max_step_num = _m_ab[i]->step_num();
   }

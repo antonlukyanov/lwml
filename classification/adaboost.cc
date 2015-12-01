@@ -42,7 +42,11 @@ adaboost::adaboost( referer<luaconf> cnf, const char* root )
 
 // размерности векторов в наборах полагаются одинаковыми
 // длины векторов весов согласованы с длинами наборов векторов
-real adaboost::calc_error( const i_vector_set& vs1, const vector& w1, const i_vector_set& vs2, const vector& w2, const i_simple_classifier* cl ) const
+real adaboost::calc_error(
+  const i_vector_set& vs1, const vector& w1,
+  const i_vector_set& vs2, const vector& w2,
+  const i_simple_classifier* cl
+) const
 {
   real res = 0.0;
   vector x(vs1.dim());
@@ -57,7 +61,10 @@ real adaboost::calc_error( const i_vector_set& vs1, const vector& w1, const i_ve
   return res;
 }
 
-real adaboost::recalc_weights( const i_vector_set& vs1, const i_vector_set& vs2, const i_simple_classifier* cl, real error )
+real adaboost::recalc_weights(
+  const i_vector_set& vs1, const i_vector_set& vs2,
+  const i_simple_classifier* cl, real error
+)
 {
   test_size(vs1.dim(), vs2.dim());
 
@@ -87,11 +94,23 @@ real adaboost::recalc_weights( const i_vector_set& vs1, const i_vector_set& vs2,
 }
 
 // размерности векторов в наборах полагаются одинаковыми
-void adaboost::mk_classifier( const i_simple_classifier_maker& sc_fact, const i_vector_set& vs1, const i_vector_set& vs2, int num, tick_mode tick )
+void adaboost::mk_classifier(
+  const i_simple_classifier_maker& sc_fact,
+  const i_vector_set& vs1, const i_vector_set& vs2,
+  int num, tick_mode tick
+)
 {
   int m = vs1.len() + vs2.len();
-  _w1.set_val(1.0 / m);
-  _w2.set_val(1.0 / m);
+
+  if( !_w1.len() ){
+    _w1.resize(vs1.len());
+    _w1.set_val(1.0 / m);
+  }
+
+  if( !_w2.len() ){
+    _w2.resize(vs2.len());
+    _w2.set_val(1.0 / m);
+  }
 
   if( tick == tmON )
     progress::start("adaboost", num);

@@ -27,12 +27,36 @@ class mult_adaboost : public i_classifier {
 public:
   enum mboost_type { ONE_VS_ALL = 0, ONE_VS_ONE = 1, RAND_HALF = 2 };
 
-  // class_num - количество классов
-  // adaboost_num - количество итераций (запусков adaboost-а)
-  // step_num - количество шагов каждого adaboost
+  /**
+   * Создание классификатора по набору параметров и его обучение.
+   *
+   * @param m_type
+   *   Тип mult_adaboost: ONE_VS_ALL, ONE_VS_ONE или RAND_HALF.
+   * @param steps_num
+   *   Число шагов каждого классификатора adaboost на этапе обучения.
+   * @param sc_fact
+   *   Фабрика простых классификаторов.
+   * @param kpl
+   *   Список объектов.
+   * @param weights
+   *   Список весов объектов.
+   * @param classes_num
+   *   Число классов.
+   * @param msg
+   *   Логгер.
+   * @param tick
+   */
   mult_adaboost(
-    const keypoint_list_lvset& kpl, int class_num, const i_simple_classifier_maker& sc_fact, int step_num,
-    mboost_type m_type, int adaboost_num, const i_msg_receiver& msg, tick_mode tick = tmOFF
+    // Параметры mult_adaboost.
+    mboost_type m_type,
+    int steps_num,
+    const i_simple_classifier_maker& sc_fact,
+    // Обучающая выборка.
+    const keypoint_list_lvset& kpl,
+    int classes_num,
+    // Логгер и прогресс-индикатор.
+    const i_msg_receiver& log,
+    tick_mode tick = tmOFF
   );
 
   mult_adaboost( referer<luaconf> cnf, const char* root );

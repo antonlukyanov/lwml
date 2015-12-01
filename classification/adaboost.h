@@ -18,26 +18,47 @@ class adaboost : public i_classifier {
 public:
   /**
    * Создание классификатора по набору параметров.
-   * @param sc_fact Конструктор простого классификатора
-   * @param vs1 Набор векторов первого класса
-   * @param vs2 Набор векторов второго класса
+   *
+   * @param sc_fact
+   *   Фабрика простых классификаторов.
+   * @param vs1
+   *   Набор векторов первого класса.
+   * @param w1
+   *   Набор весов для объектов первого класса. Можно передавать пустой вектор.
+   * @param vs2
+   *   Набор векторов второго класса.
+   * @param w2
+   *   Набор весов для объектов второго класса. Можно передавать пустой вектор.
    * @param num
-   * @param tick Параметр прогресс индикации
+   *   Число шагов обучения.
+   * @param tick
+   *   Параметр прогресс индикации.
    */
-  adaboost( const i_simple_classifier_maker& sc_fact, const i_vector_set& vs1, const i_vector_set& vs2, int num, tick_mode tick = tmOFF )
-: _step_num(0), _w1(vs1.len()), _w2(vs2.len()), _alpha(num), _n_r1(num, 0), _n_w1(num, 0), _n_r2(num, 0), _n_w2(num, 0),
-  _p1(num, 0.5), _p2(num, 0.5), _cl(num), _qualities(num, vector(vs1.dim(), 0.0)
-  )
-{
+  adaboost(
+    const i_simple_classifier_maker& sc_fact,
+    const i_vector_set& vs1, const vector& w1,
+    const i_vector_set& vs2, const vector& w2,
+    int num, tick_mode tick = tmOFF
+  ) : _step_num(0), _w1(w1), _w2(w2), _alpha(num), _n_r1(num, 0), _n_w1(num, 0),
+      _n_r2(num, 0), _n_w2(num, 0), _p1(num, 0.5), _p2(num, 0.5), _cl(num),
+      _qualities(num, vector(vs1.dim(), 0.0))
+  {
     test_size(vs1.dim(), vs2.dim());
+    if( _w1.len() )
+      test_size(_w1.len(), vs1.len());
+    if( _w2.len() )
+      test_size(_w2.len(), vs2.len());
     _dim = vs1.dim();
     mk_classifier(sc_fact, vs1, vs2, num, tick);
     calc_feature_quality(vs1, vs2);
     calc_confidences(vs1, vs2);
-}
+  }
+
   /**
-   * Создание классификатора по внешнему lua-файлу.
-   * @param cnf Файл конфигурации
+   * Восстановление обученного классификатора по внешнему lua-файлу.
+   *
+   * @param cnf
+   *   Файл конфигурации.
    * @param root
    */
   adaboost( referer<luaconf> cnf, const char* root );
@@ -98,15 +119,31 @@ private:
   /**Вектор качества распознавания*/
   t_array<vector> _qualities;
 
-  real calc_error( const i_vector_set& vs1, const vector& w1, const i_vector_set& vs2, const vector& w2, const i_simple_classifier* cl ) const;
-  real recalc_weights( const i_vector_set& vs1, const i_vector_set& vs2, const i_simple_classifier* cl, real error );
-  void mk_classifier( const i_simple_classifier_maker& sc_fact, const i_vector_set& vs1, const i_vector_set& vs2, int num, tick_mode tick );
+  real calc_error(
+    const i_vector_set& vs1, const vector& w1,
+    const i_vector_set& vs2, const vector& w2,
+    const i_simple_classifier* cl
+  ) const;
+
+  real recalc_weights(
+    const i_vector_set& vs1,
+    const i_vector_set& vs2,
+    const i_simple_classifier* cl,
+    real error
+  );
+
+  void mk_classifier(
+    const i_simple_classifier_maker& sc_fact,
+    const i_vector_set& vs1, const i_vector_set& vs2,
+    int num, tick_mode tick
+  );
 
   // @Todo: переменная cl не используется.
   void calc_feature_quality( int_vector& vnums, const vector& x, int cl );
   void calc_feature_quality( const i_vector_set& vs1, const i_vector_set& vs2 );
 
-  // вычисляется вероятность того, что точка, которая была классифицирована как класс 0/1, действительно принадлежит ему
+  // вычисляется вероятность того, что точка, которая была классифицирована как класс 0/1,
+  // действительно принадлежит ему
   void calc_confidences( const i_vector_set& vs1, const i_vector_set& vs2 );
   // для фиксированного вектора-признаков для всех шагов классификатора
   // вычисляется куда попал этот вектор-признаков и к соответствующему счетчику прибавляется 1
