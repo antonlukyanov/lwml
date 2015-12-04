@@ -22,18 +22,16 @@ namespace lwml {
 
 class keypoint_list : public value {
 public:
-  void put( const int_point& p, const vector& d, int id = -1, int cl = -1, real weight = 1.0 ){
+  void put( const int_point& p, const vector& d, int id = -1, int cl = -1 ){
     _pt_list.put(p);
     _dsc_list.put(d);
     _id_list.put(id);
     _class_list.put(cl);
-    _weights_list.put(weight);
   }
 
   void put( const int_point& p, int id = -1, int cl = -1 ){
     _pt_list.put(p);
     _dsc_list.put(vector());
-    _weights_list.put(1.0);
     _id_list.put(id);
     _class_list.put(cl);
   }
@@ -43,14 +41,12 @@ public:
   const vector& get_descr( int idx ) const { return _dsc_list[idx]; }
   int get_id( int idx ) const { return _id_list[idx]; }
   int get_class( int idx ) const { return _class_list[idx]; }
-  real get_weight( int idx ) const { return _weights_list[idx]; }
 
   void del( int j ){
     _pt_list.del(j);
     _dsc_list.del(j);
     _id_list.del(j);
     _class_list.del(j);
-    _weights_list.del(j);
   }
 
   void add_descr( int j, const vector d ){
@@ -65,7 +61,6 @@ private:
   t_list<int_point> _pt_list;         // список ключевых точек
   t_list<vector> _dsc_list;           // список дескрипторов
   t_list<int> _id_list, _class_list;  // списки id и классов точек
-  t_list<real> _weights_list;         // список весов
 };
 
 // Интерфейс объекта, хранящего нагруженный набор векторов.
@@ -88,7 +83,6 @@ public:
   virtual int dim() const = 0;
   virtual real get( int j, int d ) const = 0;
   virtual void get( vector&, int j ) const = 0;
-  virtual real get_weight( int idx ) const = 0;
 
   virtual int ldim() const = 0;
   virtual int loading( int j ) const = 0;
@@ -116,7 +110,6 @@ public:
   virtual int dim() const { return _dim; }
   virtual real get( int j, int d ) const { return _kpl->get_descr(j)[d]; }
   virtual void get( vector& dst, int j ) const { dst = _kpl->get_descr(j); }
-  virtual real get_weight( int idx ) const { return _kpl->get_weight(idx); }
 
   virtual int ldim() const {
     fail_assert("method keypoint_list_lvset::ldim() not implemented");
@@ -184,13 +177,6 @@ public:
         _index.put(j);
       }
     }
-
-    _weights.resize(_index.len());
-    for( int j = 0; j < _index.len(); j++ ){
-      _weights[j] = kpl->get_weight(_index[j]);
-    }
-
-    _weights /= _weights.inner_sum();
   }
 
   virtual int len() const { return _index.len(); }
@@ -204,15 +190,9 @@ public:
     _kpl->get(dst, idx);
   }
 
-  void get_weights( vector& weights ) const {
-    weights.resize(_weights.len());
-    weights = _weights;
-  }
-
 private:
   const i_loaded_vector_set* _kpl;
   t_list<int> _index;
-  vector _weights;
 };
 
 // proportion точек из src_kpl помещает в test_kpl, остальные помещает в training_kpl

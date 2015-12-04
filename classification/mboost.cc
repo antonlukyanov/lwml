@@ -58,12 +58,8 @@ mult_adaboost::mult_adaboost(
     int_vector v_cl(_class_num);
     _coding_matrix.get_col(v_cl, i);
     mkeypoint_vset vsets1(&kpl, v_cl, -1);
-    vector w1;
-    vsets1.get_weights(w1);
     mkeypoint_vset vsets2(&kpl, v_cl, 1);
-    vector w2;
-    vsets2.get_weights(w2);
-    _m_ab[i] = new adaboost(sc_fact, vsets1, w1, vsets2, w2, steps_num, tick);
+    _m_ab[i] = new adaboost(sc_fact, vsets1, vsets2, steps_num, tick);
     if( _m_ab[i]->step_num() > _max_step_num )
       _max_step_num = _m_ab[i]->step_num();
   }

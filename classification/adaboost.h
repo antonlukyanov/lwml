@@ -23,12 +23,8 @@ public:
    *   Фабрика простых классификаторов.
    * @param vs1
    *   Набор векторов первого класса.
-   * @param w1
-   *   Набор весов для объектов первого класса. Можно передавать пустой вектор.
    * @param vs2
    *   Набор векторов второго класса.
-   * @param w2
-   *   Набор весов для объектов второго класса. Можно передавать пустой вектор.
    * @param num
    *   Число шагов обучения.
    * @param tick
@@ -36,18 +32,13 @@ public:
    */
   adaboost(
     const i_simple_classifier_maker& sc_fact,
-    const i_vector_set& vs1, const vector& w1,
-    const i_vector_set& vs2, const vector& w2,
+    const i_vector_set& vs1, const i_vector_set& vs2,
     int num, tick_mode tick = tmOFF
-  ) : _step_num(0), _w1(w1), _w2(w2), _alpha(num), _n_r1(num, 0), _n_w1(num, 0),
+  ) : _step_num(0), _w1(vs1.len()), _w2(vs2.len()), _alpha(num), _n_r1(num, 0), _n_w1(num, 0),
       _n_r2(num, 0), _n_w2(num, 0), _p1(num, 0.5), _p2(num, 0.5), _cl(num),
       _qualities(num, vector(vs1.dim(), 0.0))
   {
     test_size(vs1.dim(), vs2.dim());
-    if( _w1.len() )
-      test_size(_w1.len(), vs1.len());
-    if( _w2.len() )
-      test_size(_w2.len(), vs2.len());
     _dim = vs1.dim();
     mk_classifier(sc_fact, vs1, vs2, num, tick);
     calc_feature_quality(vs1, vs2);
