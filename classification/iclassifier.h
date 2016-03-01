@@ -30,18 +30,17 @@ public:
   /**
    * Выполнение классификации заданного вектора.
    * @param Вектор для классификации
-   * @param num
+   * @param num Количество шагов классификатора (нужно AdaBoost)
    * @return Результат классификации
    */
   virtual int classify( const vector&, int num = 0 ) const = 0;
 
   /**
-   * Оценивает качество признаков на заданной тестовой выборке.
-   * @todo describe parameters
+   * Оценивает качество признаков на тестовой выборке.
    *
-   * @param q Классифицированный вектор
-   * @param num
-   * @param m_idx
+   * @param q Вектор с качеством признаков
+   * @param num Количество шагов классификатора (нужно AdaBoost)
+   * @param m_idx Номер классификатора (нужно для многоклассовой классификации)
    */
   virtual void get_feature_quality( vector& q, int num = 0, int m_idx = -1 ) const = 0;
 
@@ -56,7 +55,7 @@ public:
   /**
    * Получить степень уверенности классификации к определенному классу.
    * @param x Классифицированный вектор
-   * @param num Количество шагов классификатора
+   * @param num Количество шагов классификатора (нужно AdaBoost)
    * @param class_idx - номер класса, для которого определяется степень уверенности
    * @return Степень уверенности
    */
@@ -64,8 +63,8 @@ public:
 
   /**
    * Cохранение результатов классификации.
-   * @param cnf
-   * @param root
+   * @param cnf Указатель на luaconf, куда созранять результаты
+   * @param root Имя таблицы, в которую будут сохнанены результаты
    */
   virtual void save_result( referer<luaconf> cnf, const char* root ) const = 0;
 
@@ -76,9 +75,9 @@ public:
   virtual void save_result_file(const char *file_name) const = 0;
 
   /**
-   * Calculate the errors vertor for keypoint list
-   * @param kpl for this keypoint list we calculate errors
-   * @param errors vector of errors for each step of classifier
+   * Посчиталь ошибки для списка точек
+   * @param kpl Список точек (keypoint) для которых будем считать ошибки
+   * @param errors Вектор посчитннных ошибок
    */
   virtual void calc_errors( const keypoint_list_lvset& kpl, vector& errors ) const = 0;
 
@@ -140,12 +139,12 @@ public:
    */
   virtual i_simple_classifier* create( const i_vector_set& vs1, const vector& w1, const i_vector_set& vs2, const vector& w2 ) const = 0;
 
-  /**  @todo описать параметры
+  /**
    *
    * Создание классификатора по внешнему файлу.
-   * @param dim
+   * @param dim Размерность вектора признаков
    * @param cnf Файл конфигурации
-   * @param root
+   * @param root Имя таблицы, где лежат данные классификатора
    * @return
    */
   virtual i_simple_classifier* create( int dim, referer<luaconf> cnf, const char* root ) const = 0;
@@ -170,9 +169,9 @@ public:
 
   /**
    * Создание классификатора по внешнему lua-файлу.
-   * @param dim размерность векторов
+   * @param dim Размерность векторов
    * @param cnf Файл конфигурации
-   * @param root
+   * @param root Имя таблицы, где лежат данные классификатора
    */
   project_classifier( int dim, referer<luaconf> cnf, const char* root );
 
@@ -226,9 +225,9 @@ public:
 
   /**
    * Создание классификатора по внешнему lua-файлу.
-   * @param dim
+   * @param dim Размерность векторов
    * @param cnf Файл конфигурации
-   * @param root
+   * @param root Имя таблицы, где лежат данные классификатора
    */
   coord_classifier( int dim, referer<luaconf> cnf, const char* root );
 

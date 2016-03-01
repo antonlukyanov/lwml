@@ -70,11 +70,19 @@ public:
 
   /**
    * Трудность классификации, для точек из обучающего набора
-   * @param cl
-   * @param idx
+   * @param cl Номер класса
+   * @param idx Индекс точки в обучающем наборе
    * @return
    */
   virtual real get_complexity( int cl, int idx ) const;
+
+  /**
+   * Получить качетво признаков при классификации
+   * @param q Посчитанный вектор качества признаков
+   * @param num  Количество шагов классификатора
+   * @param m_idx Номер классификатора (нужно для многоклассовой классификации)
+   * @return
+   */
   virtual void get_feature_quality( vector& q, int num = 0, int m_idx = -1 ) const;
   virtual real get_confidence( const vector& x, int num = 0 ) const;
   virtual real get_confidence_for_one_class( const vector& x, int num = 0, int class_idx = 0 ) const;
@@ -129,8 +137,7 @@ private:
     int num, tick_mode tick
   );
 
-  // @Todo: переменная cl не используется.
-  void calc_feature_quality( int_vector& vnums, const vector& x, int cl );
+  void calc_feature_quality( int_vector& vnums, const vector& x );
   void calc_feature_quality( const i_vector_set& vs1, const i_vector_set& vs2 );
 
   // вычисляется вероятность того, что точка, которая была классифицирована как класс 0/1,

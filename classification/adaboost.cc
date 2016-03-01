@@ -186,11 +186,11 @@ void adaboost::calc_feature_quality( const i_vector_set& vs1, const i_vector_set
   vector x(_dim);
   for( int j = 0; j < vs1.len(); j++ ){
     vs1.get(x, j);
-    calc_feature_quality(vnums, x, 0);
+    calc_feature_quality(vnums, x);
   }
   for( int j = 0; j < vs2.len(); j++ ){
     vs2.get(x, j);
-    calc_feature_quality(vnums, x, 1);
+    calc_feature_quality(vnums, x);
   }
 
   // мы посчитали качество и количество точек для каждого шага
@@ -207,7 +207,7 @@ void adaboost::calc_feature_quality( const i_vector_set& vs1, const i_vector_set
 }
 
 // Считает качества признаков для
-void adaboost::calc_feature_quality( int_vector& vnums, const vector& x, int cl )
+void adaboost::calc_feature_quality( int_vector& vnums, const vector& x )
 {
   if( _step_num == 0 )
     return;
