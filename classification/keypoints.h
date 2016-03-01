@@ -41,6 +41,7 @@ public:
   const vector& get_descr( int idx ) const { return _dsc_list[idx]; }
   int get_id( int idx ) const { return _id_list[idx]; }
   int get_class( int idx ) const { return _class_list[idx]; }
+  void set_class( int idx, int value ) { _class_list[idx] = value; }
 
   void del( int j ){
     _pt_list.del(j);
