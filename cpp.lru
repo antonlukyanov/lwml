@@ -72,7 +72,6 @@ function init_rules( params )
   if params.dll then
     if os_type == 'windows' then
       ld('-shared')
-      ld('-Wl,--out-implib,${dst_bn}.a')
     elseif os_type == 'osx' then
       ld('-dynamiclib -flat_namespace')
     elseif os_type == 'linux' then
@@ -140,6 +139,13 @@ function init_rules( params )
       par.std_lib = '$(LWDG_HOME)/lib'
     end
     return subst('g++ ${ld_opt} -o${dst_fn} ${obj_lst} ${libs_opt}', par)
+  end
+  
+  mk_a = function( dst_fn, obj_lst )
+    local par = {
+      dst_fn = dst_fn, obj_lst = obj_lst,
+    }
+    return subst('ar rcs ${dst_fn} ${obj_lst}', par)
   end
   
   mk_rc = function( dst_fn, src_fn, is_export )
@@ -275,7 +281,12 @@ addpar{
       obj_lst = obj_lst .. obj .. ' '
     end
     obj_lst = obj_lst:sub(1, -2)
-    return mk_ld(dst_fn, obj_lst), 'LD ' .. dst_fn
+    
+    if split(dst_fn).ext == '.a' then
+      return mk_a(dst_fn, obj_lst), 'AR ' .. dst_fn
+    else
+      return mk_ld(dst_fn, obj_lst), 'LD ' .. dst_fn
+    end
   end,
 
   export_link = function( dst_fn, obj_list )
