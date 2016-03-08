@@ -56,7 +56,8 @@ public:
     int classes_num,
     // Логгер и прогресс-индикатор.
     const i_msg_receiver& log,
-    tick_mode tick = tmOFF
+    tick_mode tick = tmOFF,
+    bool is_test = true
   );
 
   mult_adaboost( referer<luaconf> cnf, const char* root );
@@ -86,6 +87,7 @@ public:
   void dump_probabilities( int num );
 
 private:
+  bool _is_test;
   int _dim;
   int _max_step_num;
   int _class_num, _adaboost_num;

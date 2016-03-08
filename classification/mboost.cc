@@ -27,20 +27,20 @@ mult_adaboost::mult_adaboost(
   mboost_type m_type,
   int steps_num,
   const i_simple_classifier_maker& sc_fact,
-
   const keypoint_list_lvset& kpl,
   int classes_num,
-
   const i_msg_receiver& log,
-  tick_mode tick
+  tick_mode tick,
+  bool is_test
 )
-: _dim(kpl.dim()),
+: _is_test(is_test),
+  _dim(kpl.dim()),
   _max_step_num(0),
   _class_num(classes_num),
   _adaboost_num(calc_adabost_num(classes_num, m_type)),
   _coding_matrix(_class_num, _adaboost_num),
   _m_ab(_adaboost_num),
-  _probabilities_of_classes(classes_num, matrix(_adaboost_num, steps_num, 0.0)),
+  _probabilities_of_classes(classes_num, matrix(_adaboost_num, is_test ? 1 : steps_num, 0.0)),
   _cl_probability(classes_num, 0.0)
 {
   if( m_type == ONE_VS_ALL )
@@ -69,10 +69,11 @@ mult_adaboost::mult_adaboost(
 }
 
 mult_adaboost::mult_adaboost( referer<luaconf> cnf, const char* root )
-: _max_step_num(cnf->get_int("%s.max_step_num", root)), _class_num(cnf->get_int("%s.class_num", root)),
+: _is_test(cnf->get_bool("%s.is_test", root)),
+  _max_step_num(cnf->get_int("%s.max_step_num", root)), _class_num(cnf->get_int("%s.class_num", root)),
   _adaboost_num(cnf->get_int("%s.adaboost_num", root)),
   _coding_matrix(_class_num, _adaboost_num), _m_ab(_adaboost_num),
-  _probabilities_of_classes(_class_num, matrix(_adaboost_num, _max_step_num, 0.0)), _cl_probability(_class_num, 0.0)
+  _probabilities_of_classes(_class_num, matrix(_adaboost_num, _is_test ? 1 : _max_step_num, 0.0)), _cl_probability(_class_num, 0.0)
 {
   _dim = cnf->get_int("%s.dim", root);
   for( int i = 0; i < _class_num; i++ ){
@@ -90,16 +91,16 @@ mult_adaboost::mult_adaboost( referer<luaconf> cnf, const char* root )
     _cl_probability[cl_idx] = cnf->get_real("%s.confidence_inform.class_probability[%d]", root, cl_idx+1);
     strng str = cstrng::form("%s.confidence_inform.answer_probability[%d]", root, cl_idx+1);
     for( int ab_idx = 0; ab_idx < _m_ab.len(); ab_idx++ ){
-      for( int step = 0; step < _max_step_num; step++ ){
+      int len = _probabilities_of_classes[cl_idx].col();
+      for( int step = 0; step < len; step++ )
         _probabilities_of_classes[cl_idx](ab_idx, step) = cnf->get_real("%s[%d][%d]", str.ascstr(), ab_idx+1, step);
-      }
     }
   }
 
   for( int cl_idx = 0; cl_idx < _class_num; cl_idx++ ){
     zzz("cl_idx=%d class_probabiliti=%f", cl_idx, _cl_probability[cl_idx]);
     for( int ab_idx = 0; ab_idx < _m_ab.len(); ab_idx++ ){
-      zzz("cl_idx=%d ab_idx=%d num=%f", cl_idx, ab_idx, _probabilities_of_classes[cl_idx](ab_idx, _max_step_num-1));
+      zzz("cl_idx=%d ab_idx=%d num=%f", cl_idx, ab_idx, _probabilities_of_classes[cl_idx](ab_idx, _probabilities_of_classes[cl_idx].col()-1));
     }
   }
 }
@@ -160,6 +161,11 @@ real mult_adaboost::get_confidence_for_one_class(const vector& x, int num, int c
 void mult_adaboost::save_result( referer<luaconf> res, const char* root ) const
 {
   // основная таблица с параметрами обученного классификатора root
+  if( _is_test )
+    res->exec("%s.is_test = true", root);
+  else
+    res->exec("%s.is_test = false", root);
+
   // количество классов
   res->exec("%s.class_num = %d", root, _class_num);
   // количество итераций (столбцов в матрице)
@@ -193,8 +199,12 @@ void mult_adaboost::save_result( referer<luaconf> res, const char* root ) const
     res->exec("%s = {}", str.ascstr());
     for( int ab_idx = 0; ab_idx < _m_ab.len(); ab_idx++ ){
       res->exec("%s[%d] = {}", str.ascstr(), ab_idx+1);
-      for( int step = 0; step < _max_step_num; step++ ){
-        res->exec("%s[%d][%d] = %f", str.ascstr(), ab_idx+1, step, _probabilities_of_classes[cl_idx](ab_idx, step));
+      if( _is_test )
+        res->exec("%s[%d][%d] = %f", str.ascstr(), ab_idx+1, 0, _probabilities_of_classes[cl_idx](ab_idx, 0));
+      else{
+        for( int step = 0; step < _max_step_num; step++ ){
+          res->exec("%s[%d][%d] = %f", str.ascstr(), ab_idx+1, step, _probabilities_of_classes[cl_idx](ab_idx, step));
+        }
       }
     }
   }
@@ -244,7 +254,6 @@ void mult_adaboost::calc_errors( const keypoint_list_lvset& kpl, vector& errors 
         errors[k] = ab_errors[k];
     }
   }
-
 }
 
 void mult_adaboost::calc_confidence( const keypoint_list_lvset& kpl )
@@ -260,21 +269,24 @@ void mult_adaboost::calc_confidence( const keypoint_list_lvset& kpl )
     kpl.get(x, j);
     // бежим по всем adaboost-ам, считаем на скольких точках каждыий из нах сказал 0
     for( int ab_idx = 0; ab_idx < _m_ab.len(); ab_idx++ ){
-      vector cl_value(_max_step_num, 0.0);
+      vector cl_value(_probabilities_of_classes[cl_idx].col(), 0.0);
       _m_ab[ab_idx]->classify(x, cl_value);
+
       for( int step = 0; step < cl_value.len(); step++ ){
         if( cl_value[step] < 0 )
           _probabilities_of_classes[cl_idx](ab_idx, step)++;
       }
     }
   }
+
   // вычисление вероятности
   for( int cl_idx = 0; cl_idx < _cl_probability.len(); cl_idx++ ){
     for( int ab_idx = 0; ab_idx < _m_ab.len(); ab_idx++ ){
-      for( int step = 0; step < _max_step_num; step++ ){
+      int len = _probabilities_of_classes[cl_idx].col();
+      for( int step = 0; step < len; step++ ){
         _probabilities_of_classes[cl_idx](ab_idx, step) /= _cl_probability[cl_idx];
       }
-      zzz("cl_idx=%d ab_idx=%d num=%f", cl_idx, ab_idx, _probabilities_of_classes[cl_idx](ab_idx, _max_step_num-1));
+      zzz("cl_idx=%d ab_idx=%d num=%f", cl_idx, ab_idx, _probabilities_of_classes[cl_idx](ab_idx, len-1));
     }
     _cl_probability[cl_idx] /= kpl.len();
     zzz("cl_idx=%d cl_probability=%f", cl_idx, _cl_probability[cl_idx]);
@@ -308,6 +320,11 @@ int mult_adaboost::calc_best_class( const vector x, int num, real* confidence ) 
 
 real mult_adaboost::calc_conditional_prob( int num, const int_vector& ab_answer, vector& conditional_prob ) const
 {
+  if( _is_test && num != step_num() )
+    zzz("mult_adaboost::calc_conditional_prob incorrect STEP NUM %d", num);
+  if( _is_test )
+    num = 1;
+
   test_size(ab_answer.len(), _adaboost_num);
   test_size(conditional_prob.len(), _class_num);
   real sum_err = 0.0;
@@ -332,6 +349,8 @@ void mult_adaboost::dump_probabilities( int num )
 
   if( num == 0 || num > step_num() )
     num = step_num();
+  if( _is_test )
+    num = 1;
   if( num < 1 )
     runtime("adaboost::classify: incorrect number of classifiers");
 
@@ -356,7 +375,6 @@ void mult_adaboost::dump_probabilities( int num )
     }
     res->printf("\n");
   }
-
 }
 
 void mult_adaboost::save_result_file( const char *file_name) const
