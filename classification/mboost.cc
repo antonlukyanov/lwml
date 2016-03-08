@@ -59,7 +59,7 @@ mult_adaboost::mult_adaboost(
     _coding_matrix.get_col(v_cl, i);
     mkeypoint_vset vsets1(&kpl, v_cl, -1);
     mkeypoint_vset vsets2(&kpl, v_cl, 1);
-    _m_ab[i] = new adaboost(sc_fact, vsets1, vsets2, steps_num, tick);
+    _m_ab[i] = new adaboost(sc_fact, vsets1, vsets2, steps_num, tick, _is_test);
     if( _m_ab[i]->step_num() > _max_step_num )
       _max_step_num = _m_ab[i]->step_num();
   }

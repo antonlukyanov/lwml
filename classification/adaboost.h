@@ -33,10 +33,11 @@ public:
   adaboost(
     const i_simple_classifier_maker& sc_fact,
     const i_vector_set& vs1, const i_vector_set& vs2,
-    int num, tick_mode tick = tmOFF
-  ) : _step_num(0), _w1(vs1.len()), _w2(vs2.len()), _alpha(num), _n_r1(num, 0), _n_w1(num, 0),
-      _n_r2(num, 0), _n_w2(num, 0), _p1(num, 0.5), _p2(num, 0.5), _cl(num),
-      _qualities(num, vector(vs1.dim(), 0.0))
+    int num, tick_mode tick = tmOFF, bool is_test = false
+  ) : _is_test(is_test), _step_num(0), _w1(vs1.len()), _w2(vs2.len()), _alpha(num),
+      _n_r1(num, 0), _n_w1(num, 0),
+      _n_r2(num, 0), _n_w2(num, 0), _p1( _is_test ? 1: num, 0.5), _p2( _is_test ? 1: num, 0.5),
+      _cl(num), _qualities(num, vector(vs1.dim(), 0.0))
   {
     test_size(vs1.dim(), vs2.dim());
     _dim = vs1.dim();
@@ -85,6 +86,8 @@ public:
   virtual void calc_errors( const keypoint_list_lvset& kpl, vector& errors ) const {};
 
 private:
+  /** Версия для тестирования или нет*/
+  bool _is_test;
   /**Размерность векторов*/
   int _dim;
   /**Количество шагов*/
@@ -105,7 +108,10 @@ private:
   int_vector _n_r2;
   /**Количество точек, неправильно попавших во 2-ой класс*/
   int_vector _n_w2;
+  /** Условные вероятности того, что точка, которую мы
+  классифицировали в j-й класс действительно относится к нему*/
   vector _p1, _p2;
+  /** Массив простых классификаторов*/
   t_array< refowner<i_simple_classifier> > _cl;
   /**Вектор качества распознавания*/
   t_array<vector> _qualities;

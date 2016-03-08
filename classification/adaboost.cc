@@ -11,8 +11,11 @@ namespace lwml {
 // AdaBoost Ctors ans Ctor utilities
 
 adaboost::adaboost( referer<luaconf> cnf, const char* root )
-: _dim(cnf->get_int("%s.dim", root)), _step_num(cnf->get_int("%s.classifier_num", root)),
-  _alpha(_step_num), _p1(_step_num), _p2(_step_num), _cl(_step_num), _qualities(_step_num, vector(_dim))
+: _is_test(cnf->get_int("#%s.qualities", root) != 1),
+  _dim(cnf->get_int("%s.dim", root)), _step_num(cnf->get_int("%s.classifier_num", root)),
+  _alpha(_step_num),
+  _p1(cnf->get_int("#%s.p1", root)), _p2(cnf->get_int("#%s.p2", root)),
+  _cl(_step_num), _qualities(cnf->get_int("#%s.qualities", root), vector(_dim))
 {
   refowner<i_simple_classifier_maker> sc_fact;
   cstrng cl_type = cnf->get_str("%s.simple_classifier", root);
@@ -29,15 +32,17 @@ adaboost::adaboost( referer<luaconf> cnf, const char* root )
     _p1[i] = cnf->get_real("%s.p1[%d]", root, i+1);
     _p2[i] = cnf->get_real("%s.p2[%d]", root, i+1);
   }
+
   for( int i = 0; i < _cl.len(); i++ ){
     strng str = strng::form("%s.simple_classifiers[%d]", root, i+1);
     _cl[i].reset(sc_fact->create(_dim, cnf, str.ascstr()));
   }
 
-  for( int i = 0; i < _step_num; i++ ){
+  for( int i = 0; i < _qualities.len(); i++ ){
     for( int j = 0; j < _dim; j++ )
       _qualities[i][j] = cnf->get_real("%s.qualities[%d][%d]", root, i+1, j+1);
   }
+
 }
 
 // размерности векторов в наборах полагаются одинаковыми
@@ -164,12 +169,16 @@ void adaboost::calc_confidences( const i_vector_set& vs1, const i_vector_set& vs
   }
 
   // вычисление условных вероятностей
-  // pj - вероятность того, что точка,
-  // которую мы классифицировали в j-й класс
-  // действительно относится к j-му классу
-  for( int k = 0; k < step_num(); k++ ){
-    _p1[k] = (double)_n_r1[k]/ (_n_r1[k] + _n_w1[k]);
-    _p2[k] = (double)_n_r2[k]/ (_n_r2[k] + _n_w2[k]);
+  if( _is_test ){
+    int k = step_num()-1;
+    _p1[0] = (double)_n_r1[k]/ (_n_r1[k] + _n_w1[k]);
+    _p2[0] = (double)_n_r2[k]/ (_n_r2[k] + _n_w2[k]);
+  }
+  else{
+    for( int k = 0; k < step_num(); k++ ){
+      _p1[k] = (double)_n_r1[k]/ (_n_r1[k] + _n_w1[k]);
+      _p2[k] = (double)_n_r2[k]/ (_n_r2[k] + _n_w2[k]);
+    }
   }
 }
 
@@ -195,13 +204,13 @@ void adaboost::calc_feature_quality( const i_vector_set& vs1, const i_vector_set
 
   // мы посчитали качество и количество точек для каждого шага
   // теперь записываем значения - сумма до этого шага
-  for( int k = 0; k < _step_num -1; k++ ){
+  for( int k = 0; k < step_num() -1; k++ ){
     _qualities[k+1] += _qualities[k];
     vnums[k+1] += vnums[k];
   }
 
   // вычисляем среднее значение
-  for( int k = 0; k < _step_num; k++ ){
+  for( int k = 0; k < step_num(); k++ ){
     _qualities[k] /= vnums[k];
   }
 }
@@ -215,7 +224,7 @@ void adaboost::calc_feature_quality( int_vector& vnums, const vector& x, int cl 
   vector buf(_dim);
   vector cl_value(_step_num, 0.0);
   classify(x, cl_value);
-  for( int k = 0; k < _step_num; k++ ){
+  for( int k = 0; k < step_num(); k++ ){
     if( k == 0|| cl_value[k-1]*cl_value[k] < 0 ){ // сумма сменила знак
       _cl[k]->get_weights(buf);
       vnums[k]++;
@@ -333,8 +342,8 @@ real adaboost::get_complexity( int cl, int idx ) const
 void adaboost::get_feature_quality( vector& q, int num, int m_idx ) const
 {
   test_index(num, _step_num);
-  if( num == 0 )
-    q = _qualities[_step_num - 1];
+  if( num == 0 || _is_test )
+    q = _qualities[_qualities.len() - 1];
   else
     q = _qualities[num];
 }
@@ -347,6 +356,8 @@ real adaboost::get_confidence( const vector& x, int num ) const
     num = step_num();
   if( num < 1 || num > step_num() )
     runtime("adaboost::classify: incorrect number of classifiers");
+  if( !_is_test )
+    num = 1;
 
   if( classify(x, num) == 0 )
     return _p1[num-1]; // num -количество шагов классификатора
@@ -372,11 +383,11 @@ void adaboost::save_result( referer<luaconf> res, const char* root ) const
 
   // массив p1 p2 для подсчета уверенности классификации
   res->exec("%s.adaboost.p1 = {}", root);
-  for( int i = 0; i < _step_num; i++ )
+  for( int i = 0; i < _p1.len(); i++ )
     res->exec("%s.adaboost.p1[%d] = %.12g", root, i+1, _p1[i]);
 
   res->exec("%s.adaboost.p2 = {}", root);
-  for( int i = 0; i < _step_num; i++ )
+  for( int i = 0; i < _p2.len(); i++ )
     res->exec("%s.adaboost.p2[%d] = %.12g", root, i+1, _p2[i]);
 
   // сереализация простых классификаторов
@@ -389,10 +400,17 @@ void adaboost::save_result( referer<luaconf> res, const char* root ) const
   // вывод качества признаков
   // для каждого шага adaboost, выводится качество для каждого признака
   res->exec("%s.adaboost.qualities = {}", root);
-  for( int i = 0; i < _step_num; i++ ){
-    res->exec("%s.adaboost.qualities[%d] = {}", root, i+1);
+  if( !_is_test ){
+    res->exec("%s.adaboost.qualities[%d] = {}", root, 1);
     for( int j = 0; j < _dim; j++ )
-      res->exec("%s.adaboost.qualities[%d][%d] = %.12g", root, i+1, j+1, _qualities[i][j]);
+      res->exec("%s.adaboost.qualities[%d][%d] = %.12g", root, 1, j+1, _qualities[0][j]);
+  }
+  else{
+    for( int i = 0; i < _qualities.len(); i++ ){
+      res->exec("%s.adaboost.qualities[%d] = {}", root, i+1);
+      for( int j = 0; j < _dim; j++ )
+        res->exec("%s.adaboost.qualities[%d][%d] = %.12g", root, i+1, j+1, _qualities[i][j]);
+    }
   }
 }
 
