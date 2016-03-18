@@ -15,7 +15,7 @@ namespace lwml {
 // При каждом вызове proc( sigma_x, sigma_y, phi ),
 // результат сворачивается с
 // нормированной гауссианой шириной sigma_x, sigma_y по осям и повернутой
-// на phi радиан протоив часовой стрелки.
+// на phi радиан против часовой стрелки.
 // Предположение: нулевая строка матрицы - низ изображения, то есть росту
 // номера строки соответствует рост координаты y изображения.
 
@@ -34,13 +34,13 @@ public:
 
   void get( matrix& dst ) const;
 
+  real gauss2d( real sx, real sy, real phi, real x, real y );
 private:
   int _ly, _lx, _hly, _hlx;
   int _ny2, _nx2;
   matrix _rx, _ix;               // для преобразования фурье и обработки
   matrix _rg, _ig;               // для преобразования гауссианы
 
-  real gauss2d( real sx, real sy, real phi, real x, real y );
 };
 
 }; // namespace lwml
