@@ -9,7 +9,8 @@ svm::svm( const keypoint_list_lvset& kpl, bool train_immediately )
   _need_learn = true;
 
   // Move training set to svm_problem
-
+  zzz("Move training set to svm_problem.");
+  
   int len = kpl.len();
   _dim = kpl.dim();
 
@@ -48,6 +49,7 @@ svm::svm( const keypoint_list_lvset& kpl, bool train_immediately )
     printf("%s\n", str);
 
   // Если необходимо, обучемся сразу
+  zzz("Start_train");
   if( train_immediately )
     start_train();
 }
@@ -87,6 +89,7 @@ svm::svm( const char* file_name_prefix )
 
 svm::svm( referer<luaconf> cnf, const char* root )
 {
+  zzz("Load SVM."); 
   // Generate model without teaching
   _need_learn = false;
   _svm_problem = NULL;
@@ -136,10 +139,13 @@ svm::svm( referer<luaconf> cnf, const char* root )
   _model->SV = Malloc(svm_node *, nSV);
   for( int i = 0; i < nSV; ++i ){
     _model->SV[i] = Malloc(svm_node, _dim + 1);
-    for( int j = 0; j <= _dim; ++j ){
-      _model->SV[i][j].index = cnf->get_int("%s.svm.SV[%d][%d].index", root, i, j);
+    for( int j = 0; j < _dim; ++j ){
+      _model->SV[i][j].index = j + 1;
       _model->SV[i][j].value = cnf->get_real("%s.svm.SV[%d][%d].value", root, i, j);
     }
+    _model->SV[i][_dim].index = -1;
+    _model->SV[i][_dim].value = -1;
+    
   }
   _model->sv_coef = Malloc(double *, k - 1);
   for( int i = 0; i < k - 1; i++ ){
@@ -254,7 +260,6 @@ int svm::step_num() const
 
 int svm::classify( const vector& vec, int num ) const
 {
-  zzz("SVM boosting classifier, vec_len = %d, _dim = %d", vec.len(), _dim);
   vector scaled_vec(vec);
   scale_vector(scaled_vec);
 
@@ -269,7 +274,6 @@ int svm::classify( const vector& vec, int num ) const
   test_node[_dim].value = -1;
   int res_class = svm_predict(_model, test_node); // Классификация точки
   delete[] test_node;
-  zzz("Point in %d class", res_class);
   return res_class;
 }
 void svm::get_feature_quality( vector& q, int num, int m_idx ) const
@@ -355,6 +359,7 @@ real svm::get_confidence_for_one_class( const vector& vec, int num, int class_id
 
 void svm::save_result( referer<luaconf> res, const char* root ) const
 {
+  zzz("Save_result of model.");
   // основная таблица с параметрами обученного классификатора
   res->exec("%s.svm = {}", root);
 
@@ -393,7 +398,6 @@ void svm::save_result( referer<luaconf> res, const char* root ) const
     res->exec("%s.svm.SV[%d] = {}", root, i);
     for( int j = 0; j <= _dim; ++j ){
       res->exec("%s.svm.SV[%d][%d] = {}", root, i, j);
-      res->exec("%s.svm.SV[%d][%d].index = %d", root, i, j, _model->SV[i][j].index);
       res->exec("%s.svm.SV[%d][%d].value = %.8g", root, i, j, _model->SV[i][j].value);
     }
   }
