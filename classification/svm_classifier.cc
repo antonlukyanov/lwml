@@ -25,6 +25,7 @@ svm::svm( const keypoint_list_lvset& kpl, bool train_immediately )
       x[i][j].value = kpl.get(i, j);
       x[i][j].index = j + 1;
     }
+    x[i][_dim].value = -1;
     x[i][_dim].index = -1;
   }
 
@@ -265,6 +266,7 @@ int svm::classify( const vector& vec, int num ) const
     test_node[i].index = i + 1;
   }
   test_node[_dim].index = -1;
+  test_node[_dim].value = -1;
   int res_class = svm_predict(_model, test_node); // Классификация точки
   delete[] test_node;
   zzz("Point in %d class", res_class);
@@ -289,6 +291,7 @@ real svm::get_confidence( const vector& vec, int num ) const
       test_node[i].index = i + 1;
     }
     test_node[_dim].index = -1;
+    test_node[_dim].value = -1;
     double *prob_estimates = new double[nr_class]; // Вероятности отнесения точки к каждому из классов(в сумме = 1)
 
     // Получаем вероятность отнесения точки к каждому из классов
@@ -330,6 +333,7 @@ real svm::get_confidence_for_one_class( const vector& vec, int num, int class_id
       test_node[i].index = i + 1;
     }
     test_node[_dim].index = -1;
+    test_node[_dim].value = -1;
     double *prob_estimates = new double[nr_class]; // Вероятности отнесения точки к каждому из классов(в сумме = 1)
 
     // Получаем вероятность отнесения точки к каждому из классов
