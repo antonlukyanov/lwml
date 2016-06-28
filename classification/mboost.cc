@@ -284,7 +284,10 @@ void mult_adaboost::calc_confidence( const keypoint_list_lvset& kpl )
     for( int ab_idx = 0; ab_idx < _m_ab.len(); ab_idx++ ){
       int len = _probabilities_of_classes[cl_idx].col();
       for( int step = 0; step < len; step++ ){
-        _probabilities_of_classes[cl_idx](ab_idx, step) /= _cl_probability[cl_idx];
+        if( _cl_probability[cl_idx] != 0 )  
+          _probabilities_of_classes[cl_idx](ab_idx, step) /= _cl_probability[cl_idx];
+        else
+          _probabilities_of_classes[cl_idx](ab_idx, step) = 0.0;  
       }
       zzz("cl_idx=%d ab_idx=%d num=%f", cl_idx, ab_idx, _probabilities_of_classes[cl_idx](ab_idx, len-1));
     }
@@ -320,7 +323,7 @@ int mult_adaboost::calc_best_class( const vector x, int num, real* confidence ) 
 
 real mult_adaboost::calc_conditional_prob( int num, const int_vector& ab_answer, vector& conditional_prob ) const
 {
-  if( _is_test && num != step_num() )
+  if( !_is_test && num != step_num() )
     zzz("mult_adaboost::calc_conditional_prob incorrect STEP NUM %d", num);
   if( _is_test )
     num = 1;
@@ -369,7 +372,7 @@ void mult_adaboost::dump_probabilities( int num )
     res->printf(" p_answer=%f ", sum_err);
     for( int k = 0; k < _class_num; k++ ){
       if( sum_err != 0 )
-        res->printf("p_%d=%f ", k, conditional_prob[k]/sum_err);
+        res->printf("p_%d=%f ", k, conditional_prob[k] / sum_err);
       else
         res->printf("p_%d=%f ", k, 0.0);
     }

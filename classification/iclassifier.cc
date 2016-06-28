@@ -296,7 +296,7 @@ coord_classifier::coord_classifier( const i_vector_set& vs1, const vector& w1, c
   _cidx = opt_cidx;
   _thr = opt_thr;
   _is_invers = is_invers;
-  zzz("coord_classifier: opt_cidx=%d _thr=%f _is_invers=%d", _cidx, _thr, _is_invers);
+  //zzz("coord_classifier: opt_cidx=%d _thr=%f _is_invers=%d", _cidx, _thr, _is_invers);
 }
 
 void coord_classifier::get_weights( vector& w ) const
