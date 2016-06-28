@@ -25,13 +25,13 @@ namespace lwml {
 
 class mult_adaboost : public i_classifier {
 public:
-  enum mboost_type { ONE_VS_ALL = 0, ONE_VS_ONE = 1, RAND_HALF = 2 };
+  enum mboost_type { ONE_VS_ALL = 0, ONE_VS_ONE = 1, RAND_HALF = 2, ECOC_BCH = 3 };
 
   /**
    * Создание классификатора по набору параметров и его обучение.
    *
    * @param m_type
-   *   Тип mult_adaboost: ONE_VS_ALL, ONE_VS_ONE или RAND_HALF.
+   *   Тип mult_adaboost: ONE_VS_ALL, ONE_VS_ONE или RAND_HALF, ECOC_BCH.
    * @param steps_num
    *   Число шагов каждого классификатора adaboost на этапе обучения.
    * @param sc_fact
@@ -142,8 +142,39 @@ private:
         dst(set[k], i) = 1;
       }
     }
+    for( int i = 0; i < dst.str(); i++ ){
+      printf("\n");
+      for( int k = 0; k < dst.col(); k++ ){
+        printf("%d ", dst(i, k));
+      }
+    }
   }
 
+  static void gen_ecoc_bch( int_matrix &dst )
+  {
+    int len = 1;
+    dst.set_val(1);
+    for( int i = dst.str() -1; i > 0; i-- ){
+      // fill the line
+      int flag = len;
+      int j = 0;
+      while( j < dst.col() )
+      { 
+         if( flag > 0 ){ // need to add -1
+           dst(i, j) = -1;
+           flag--;
+         }
+         else if( flag <= 0 ){ // need to add 1
+           dst(i, j) = 1;
+           flag--;
+         } 
+         if( flag == -len )
+            flag = len; // next need to add -1 again
+         j++; 
+      }
+      len *= 2;  
+    }    
+  }
 };
 
 }; // namespace lwml

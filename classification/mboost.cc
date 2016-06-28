@@ -19,7 +19,11 @@ int mult_adaboost::calc_adabost_num( int class_num, mboost_type m_type ) const
   }
   if( m_type == ONE_VS_ONE )
     return class_num*(class_num - 1) / 2;
-  else
+  else if( m_type ==  RAND_HALF )
+    return class_num;
+  else if( m_type ==  ECOC_BCH )
+    return intpow(2, class_num - 1) -1;
+  else  
     return 1;
 }
 
@@ -49,7 +53,9 @@ mult_adaboost::mult_adaboost(
     gen_one_vs_one(_coding_matrix);
   if( m_type == RAND_HALF )
     gen_rand_half(_coding_matrix);
-
+  if( m_type == ECOC_BCH )
+    gen_ecoc_bch(_coding_matrix);
+  
   if( zzz_dump() )
     vbmp::save(zzz_dump_name("coding_matrix.bmp").ascstr(), _coding_matrix);
 
