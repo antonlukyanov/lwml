@@ -9,7 +9,16 @@ namespace lwml {
 
 real real_nan()
 {
-  static const char nan_repr[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0xff };
+  static const char nan_repr[] = {
+    static_cast<char>(0x00),
+    static_cast<char>(0x00),
+    static_cast<char>(0x00),
+    static_cast<char>(0x00),
+    static_cast<char>(0x00),
+    static_cast<char>(0x00),
+    static_cast<char>(0xf8),
+    static_cast<char>(0xff)
+  };
 
   typedef const char* cpchar_aliased __attribute__((__may_alias__));
   cpchar_aliased nan_repr_cpca = nan_repr;
