@@ -1,9 +1,0 @@
-use = {
-  'lwml/c_alg', 'lwml/c_base', 'lwml/c_spec', 'lwml/c_struct', 'lwml/classification',
-  'lwml/io', 'lwml/mem', 'lwml/system', 'lwml/utils',
-  'lwml/m_alg', 'lwml/m_base', 'lwml/m_spec', 'lwml/m_struct', 'lwml/m_import',
-  'lwml/random', 'lwml/geometry', 'lwml/fourier',
-  'lwml/environ', 'lwml/formats', 'lwml/local', 'lwml/psgraph',
-  'lwml/libs', 'lwml/bcext',
-  'lwml/wavelets',
-}
