@@ -1,7 +1,7 @@
 // Основной заголовочный файл библиотеки.
 // lwml, (c) ltwood
 
-// Light Wood Math Library -- lwml(tm)
+// Lightweight Math Library -- lwml (tm)
 // (c) ltwood, 1993--2004
 // (c) Light Wood Design Group
 // Light Wood Numerical Solutions (tm)
@@ -25,7 +25,5 @@
 #include "console.h"         // работа с консолью
 #include "config.h"          // файлы конфигурации
 #include "debug.h"
-
-/*#lake:stop*/
 
 #endif // _LWML_
