@@ -1,9 +1,0 @@
-use_rules('lwml/cpp.lru')
-
-name = 'conio_test'
-
-addpar{
-  use = { 'lwml' },
-  start = name .. '.cc',
-  dest = name .. '.exe',
-}

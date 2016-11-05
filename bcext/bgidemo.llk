@@ -1,9 +1,0 @@
-use_rules('lwml/cpp.lru', { gui = true } )
-
-name = 'bgidemo'
-
-addpar{
-  use = { 'lwml' },
-  start = name .. '.cc',
-  dest = name .. '.exe',
-}
