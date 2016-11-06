@@ -5,7 +5,6 @@ lwml structure:
 - `alg` base algorithms (sorting, searching, connected components filling etc)
 - `alg_spec` specific algorithms
 - `base` base definitions, types and other base stuff
-- `types` data structures
 - `classification` interfaces for abstract classifier, AdaBoost implementation, SVM support
 - `console` execution environment for apps
 - `formats` different file types support
@@ -24,5 +23,6 @@ lwml structure:
 - `random` random number generators
 - `system` system-dependent classes
 - `threads` wrapper classes for pthread library
+- `types` data structures
 - `utils` miscellaneous utilities
 - `wavelets` support for wavelet transform
