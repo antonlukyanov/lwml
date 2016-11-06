@@ -2,10 +2,10 @@
 
 lwml structure:
 
-- `c_alg` base algorithms (sorting, searching, connected components filling etc)
-- `c_base` base definitions, types and other base stuff
-- `c_spec` specific algorithms
-- `c_struct` data structures
+- `alg` base algorithms (sorting, searching, connected components filling etc)
+- `alg_spec` specific algorithms
+- `base` base definitions, types and other base stuff
+- `types` data structures
 - `classification` interfaces for abstract classifier, AdaBoost implementation, SVM support
 - `console` execution environment for apps
 - `formats` different file types support
@@ -14,11 +14,11 @@ lwml structure:
 - `imgproc` stuff related to image processing
 - `io` file based input-output
 - `lua` lua-based config, utilities for lua integration
-- `m_alg` mathematical algorithms
+- `m_alg` advanced mathematical algorithms
+- `m_alg_spec` advanced maths
 - `m_base` base maths
 - `m_import` parts of third-party libraries
-- `m_spec` advanced maths
-- `m_struct` data structures for maths
+- `m_types` data structures for maths
 - `memory` memory-related stuff
 - `psgraph` PostScript graphics support
 - `random` random number generators
