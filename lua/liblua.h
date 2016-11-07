@@ -15,9 +15,9 @@
 extern "C" {
   // В Lua 5.2 нет luaL_register и некоторых других функций/структур.
   #define LUA_COMPAT_MODULE
-  #include "lauxlib.h"
-  #include "lua.h"
-  #include "lualib.h"
+  #include <lauxlib.h>
+  #include <lua.h>
+  #include <lualib.h>
 };
 
 #endif // _LIBLUA_
