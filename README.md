@@ -12,6 +12,7 @@ lwml structure:
 - `geometry` geometry structures
 - `imgproc` stuff related to image processing
 - `io` file based input-output
+- `libs` additional libraries on which lwml depends
 - `lua` lua-based config, utilities for lua integration
 - `m_alg` advanced mathematical algorithms
 - `m_alg_spec` advanced maths

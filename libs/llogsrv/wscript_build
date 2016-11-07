@@ -1,0 +1,1 @@
+bld.shlib(source='llogsrv.cc', target='llogsrv')
