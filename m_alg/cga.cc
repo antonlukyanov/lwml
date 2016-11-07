@@ -1,4 +1,4 @@
-#include "cga.h"
+#include "lwml/m_alg/cga.h"
 
 /*#lake:stop*/
 
@@ -9,7 +9,7 @@ real_ga::real_ga( int dim, int len, real alpha, real prtr, uint seed )
     _pop1(len, dim), _pop2(len, dim),
     _cost(len), _child(dim), _state(true)
 {
-  _min_score_idx = -1;  // защита от попытки выполнить get() до start()
+  _min_score_idx = -1;  // Р·Р°С‰РёС‚Р° РѕС‚ РїРѕРїС‹С‚РєРё РІС‹РїРѕР»РЅРёС‚СЊ get() РґРѕ start()
 }
 
 void real_ga::update_opt()
@@ -79,18 +79,18 @@ real real_ga::step( const i_vfunction& fn )
 
     real score = fn.func(_child);
     if( score == REAL_MAX )
-      _penalty_count++; // учет штрафа
+      _penalty_count++; // СѓС‡РµС‚ С€С‚СЂР°С„Р°
     if( score <= _cost[k] ){
       next.put_str(_child, k);
       _cost[k] = score;
-      _sur_count++; // учет выживаемости детей
+      _sur_count++; // СѓС‡РµС‚ РІС‹Р¶РёРІР°РµРјРѕСЃС‚Рё РґРµС‚РµР№
     } else {
       for( int s = 0; s < _dim; s++ )
         next(k, s) = crnt(k, s);
     }
   }
 
-  _state = !_state;     // смена ролей популяций
+  _state = !_state;     // СЃРјРµРЅР° СЂРѕР»РµР№ РїРѕРїСѓР»СЏС†РёР№
 
   update_opt();
   return _min_score;

@@ -1,7 +1,7 @@
-#include "luaconfig.h"
+#include "lwml/lua/luaconfig.h"
 
-#include "filename.h"
-#include "debug.h"
+#include "lwml/io/filename.h"
+#include "lwml/utils/debug.h"
 
 /*#lake:stop*/
 
@@ -45,7 +45,7 @@ void luaconf::open_vm()
 
   luaL_openlibs(_vm);
 
-  // экспортируем функцию отладочного вывода
+  // СЌРєСЃРїРѕСЂС‚РёСЂСѓРµРј С„СѓРЅРєС†РёСЋ РѕС‚Р»Р°РґРѕС‡РЅРѕРіРѕ РІС‹РІРѕРґР°
   lua_pushcfunction(_vm, lua_zzz);
   lua_setglobal(_vm, "zzz");
 }
@@ -137,7 +137,7 @@ DEF_VGETPROC(vget_str, strng, string)
 DEF_VGETPROC(vget_real, real, number)
 DEF_VGETPROC(vget_bool, bool, boolean)
 
-// эта функция необычна проверкой полученного значения на целочисленность
+// СЌС‚Р° С„СѓРЅРєС†РёСЏ РЅРµРѕР±С‹С‡РЅР° РїСЂРѕРІРµСЂРєРѕР№ РїРѕР»СѓС‡РµРЅРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РЅР° С†РµР»РѕС‡РёСЃР»РµРЅРЅРѕСЃС‚СЊ
 int luaconf::vget_int( const char* expr, va_list va ) const
 {
   real res = vget_real(expr, va);

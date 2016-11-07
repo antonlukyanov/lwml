@@ -1,9 +1,9 @@
-#include "vector.h"
+#include "lwml/m_types/vector.h"
 
-#include "stdmem.h"
-#include "mdefs.h"
-#include "filename.h"
-#include "debug.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/io/filename.h"
+#include "lwml/utils/debug.h"
 
 /*#lake:stop*/
 

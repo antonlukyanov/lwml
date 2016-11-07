@@ -1,9 +1,9 @@
 #ifndef _LFACTOR_
 #define _LFACTOR_
 
-#include "defs.h"
-#include "mdefs.h"
-#include "t_membuf.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/types/t_membuf.h"
 
 /*#lake:stop*/
 

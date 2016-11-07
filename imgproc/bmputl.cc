@@ -1,10 +1,10 @@
-#include "bmputl.h"
+#include "lwml/imgproc/bmputl.h"
 
-#include "ivector.h"
-#include "histogram.h"
-#include "progress.h"
-#include "frand.h"
-#include "geom.h"
+#include "lwml/m_types/ivector.h"
+#include "lwml/m_types/histogram.h"
+#include "lwml/console/progress.h"
+#include "lwml/random/frand.h"
+#include "lwml/geometry/geom.h"
 
 /*#lake:stop*/
 

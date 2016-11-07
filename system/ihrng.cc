@@ -1,4 +1,4 @@
-#include "ihrng.h"
+#include "lwml/system/ihrng.h"
 
 /*#lake:stop*/
 
@@ -7,9 +7,9 @@ namespace lwml {
 #include <windows.h>
 #include <wincrypt.h>
 
-// Константы из файла icsp4ms.h из поставки Intel(R) Security Driver
+// РљРѕРЅСЃС‚Р°РЅС‚С‹ РёР· С„Р°Р№Р»Р° icsp4ms.h РёР· РїРѕСЃС‚Р°РІРєРё Intel(R) Security Driver
 
-//// const int PROV_INTEL_SEC = 22; //!! NB: Эта константа уже присутствует в wincrypt.h
+//// const int PROV_INTEL_SEC = 22; //!! NB: Р­С‚Р° РєРѕРЅСЃС‚Р°РЅС‚Р° СѓР¶Рµ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚ РІ wincrypt.h
 
 const char INTEL_DEF_PROV[] = "Intel Hardware Cryptographic Service Provider";
 

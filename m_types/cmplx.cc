@@ -1,5 +1,5 @@
-#include "cmplx.h"
-#include "mdefs.h"
+#include "lwml/m_types/cmplx.h"
+#include "lwml/m_base/mdefs.h"
 
 /*#lake:stop*/
 

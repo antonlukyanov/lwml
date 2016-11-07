@@ -1,7 +1,7 @@
-#include "fre.h"
+#include "lwml/io/fre.h"
 
-#include "alphabet.h"
-#include "lwmlconf.h"
+#include "lwml/system/alphabet.h"
+#include "lwml/lwmlconf.h"
 /*#lake:stop*/
 
 namespace lwml {

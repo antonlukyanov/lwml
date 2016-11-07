@@ -1,4 +1,4 @@
-#include "search.h"
+#include "lwml/alg/search.h"
 
 /*#lake:stop*/
 

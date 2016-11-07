@@ -1,10 +1,10 @@
-#include "randset.h"
+#include "lwml/random/randset.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// ГСЧ Карлина Анатолия Кузьмича
+// Р“РЎР§ РљР°СЂР»РёРЅР° РђРЅР°С‚РѕР»РёСЏ РљСѓР·СЊРјРёС‡Р°
 
 real krand::get()
 {

@@ -1,7 +1,7 @@
-#include "stream.h"
-#include "stdmem.h"
-#include "basex.h"
-#include "debug.h"
+#include "lwml/io/stream.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/base/basex.h"
+#include "lwml/utils/debug.h"
 
 #include <fcntl.h>
 

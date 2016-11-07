@@ -1,9 +1,9 @@
 #ifndef _MRK4DE_
 #define _MRK4DE_
 
-#include "mdefs.h"
-#include "vector.h"
-#include "refcount.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/m_types/vector.h"
+#include "lwml/base/refcount.h"
 
 /*#lake:stop*/
 
@@ -31,12 +31,12 @@ public:
   void get( vector& dst ) const;
 
 private:
-  int     _size;                   // порядок системы
-  vector  _data;                   // текущее состоние
-  vector  _xtmp;                   // промежуточное состоние
-  vector  _k0, _k1, _k2, _k3;      // рабочие области
-  real    _tcur;                   // текущий момент времени
-  referer<i_rk4de_func> _func;     // правые части
+  int     _size;                   // РїРѕСЂСЏРґРѕРє СЃРёСЃС‚РµРјС‹
+  vector  _data;                   // С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕРЅРёРµ
+  vector  _xtmp;                   // РїСЂРѕРјРµР¶СѓС‚РѕС‡РЅРѕРµ СЃРѕСЃС‚РѕРЅРёРµ
+  vector  _k0, _k1, _k2, _k3;      // СЂР°Р±РѕС‡РёРµ РѕР±Р»Р°СЃС‚Рё
+  real    _tcur;                   // С‚РµРєСѓС‰РёР№ РјРѕРјРµРЅС‚ РІСЂРµРјРµРЅРё
+  referer<i_rk4de_func> _func;     // РїСЂР°РІС‹Рµ С‡Р°СЃС‚Рё
 
   void add2tmp( vector& src, real al );
 };

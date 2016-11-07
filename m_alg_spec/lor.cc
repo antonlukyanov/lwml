@@ -1,10 +1,10 @@
-#include "lor.h"
+#include "lwml/m_alg_spec/lor.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// Уравнение Лоренца
+// РЈСЂР°РІРЅРµРЅРёРµ Р›РѕСЂРµРЅС†Р°
 
 void lorenz_eq::func( real, const vector& x, vector& dx )
 {
@@ -14,7 +14,7 @@ void lorenz_eq::func( real, const vector& x, vector& dx )
 }
 
 /*
-// Уравнение в вариацих
+// РЈСЂР°РІРЅРµРЅРёРµ РІ РІР°СЂРёР°С†РёС…
 
 static real fv( int i, real t, real *y )
 {

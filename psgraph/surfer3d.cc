@@ -1,5 +1,5 @@
-#include "surfer3d.h"
-#include "t_sorter.h"
+#include "lwml/psgraph/surfer3d.h"
+#include "lwml/alg/t_sorter.h"
 
 /*#lake:stop*/
 
@@ -33,7 +33,7 @@ void matrix_as_surface::draw( const matrix& m, const i_colorer3d& col )
 {
   int nt = trnum(m);
 
-  // упордочение в z-пордке
+  // СѓРїРѕСЂРґРѕС‡РµРЅРёРµ РІ z-РїРѕСЂРґРєРµ
   triangler triang(*this, m, _vp->scene());
   t_sorter<triangler> idx(triang);
 
@@ -74,7 +74,7 @@ real matrix_as_surface::calccol( fpoint3d p1, fpoint3d p2, fpoint3d p3 )
   fpoint3d l1 = p2; l1 -= p1;
   fpoint3d l2 = p3; l2 -= p1;
   fpoint3d nm = fpoint3d::vector_mul(l1, l2);
-  if( nm.z() < 0 ) // нормаль д.б. наружной
+  if( nm.z() < 0 ) // РЅРѕСЂРјР°Р»СЊ Рґ.Р±. РЅР°СЂСѓР¶РЅРѕР№
     nm *= -1.0;
   nm /= fpoint3d::norm(nm);
   return fpoint3d::inner_mul(nm, _viewpoint.prj_vect());

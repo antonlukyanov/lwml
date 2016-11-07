@@ -1,4 +1,4 @@
-#include "resample.h"
+#include "lwml/m_import/resample.h"
 
 /*#lake:stop*/
 
@@ -12,10 +12,10 @@ void lanczos::warp( vector &dst, const vector &src, real r )
   int n1 = src.len(), n2 = dst.len();
 
   for( int px = 0; px < n2; ++px ){
-    real pos = scale::coord(px, 0, n2-1, 0, n1-1); // получить положение в исходном векторе
+    real pos = scale::coord(px, 0, n2-1, 0, n1-1); // РїРѕР»СѓС‡РёС‚СЊ РїРѕР»РѕР¶РµРЅРёРµ РІ РёСЃС…РѕРґРЅРѕРј РІРµРєС‚РѕСЂРµ
     int start = t_max<int>(0, int_cast(ceil(pos-r)));
     int stop = t_min<int>(n1-1, int_cast(floor(pos+r)));
-    real v = 0, w_sum = 0; // значение, сумма весов
+    real v = 0, w_sum = 0; // Р·РЅР°С‡РµРЅРёРµ, СЃСѓРјРјР° РІРµСЃРѕРІ
     for( int i = start; i <= stop; ++i ){
       real w = lanczos_kernel(i-pos, r);
       w_sum += w;
@@ -36,7 +36,7 @@ real lanczos::calc( const vector &src, real x, real r )
 
   int start = t_max<int>(0, int_cast(ceil(x-r)));
   int stop = t_min<int>(len-1, int_cast(floor(x+r)));
-  real v = 0, w_sum = 0; // значение, сумма весов
+  real v = 0, w_sum = 0; // Р·РЅР°С‡РµРЅРёРµ, СЃСѓРјРјР° РІРµСЃРѕРІ
   for( int i = start; i <= stop; ++i ){
     real w = lanczos_kernel(i-x, r);
     w_sum += w;
@@ -45,14 +45,14 @@ real lanczos::calc( const vector &src, real x, real r )
   return (w_sum != 0) ? v/w_sum : 0.0;
 }
 
-// для ресемплинга используем промежуточную матрицу и вспомогательные векторы
-// неоптимально, но позволяет написать сразу работающий вариант
+// РґР»СЏ СЂРµСЃРµРјРїР»РёРЅРіР° РёСЃРїРѕР»СЊР·СѓРµРј РїСЂРѕРјРµР¶СѓС‚РѕС‡РЅСѓСЋ РјР°С‚СЂРёС†Сѓ Рё РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ РІРµРєС‚РѕСЂС‹
+// РЅРµРѕРїС‚РёРјР°Р»СЊРЅРѕ, РЅРѕ РїРѕР·РІРѕР»СЏРµС‚ РЅР°РїРёСЃР°С‚СЊ СЃСЂР°Р·Сѓ СЂР°Р±РѕС‚Р°СЋС‰РёР№ РІР°СЂРёР°РЅС‚
 void lanczos::warp( matrix &dst, const matrix &src, real r )
 {
   matrix buf(src.str(), dst.col(), 0.0);
 
-  { // проход по строкам
-    vector str_src(src.col(), 0.0); // строка источник и назначение
+  { // РїСЂРѕС…РѕРґ РїРѕ СЃС‚СЂРѕРєР°Рј
+    vector str_src(src.col(), 0.0); // СЃС‚СЂРѕРєР° РёСЃС‚РѕС‡РЅРёРє Рё РЅР°Р·РЅР°С‡РµРЅРёРµ
     vector str_dst(dst.col(), 0.0);
     for( int s = 0; s < buf.str(); ++s ){
       src.get_str(str_src, s);
@@ -61,8 +61,8 @@ void lanczos::warp( matrix &dst, const matrix &src, real r )
     }
   }
 
-  { // проход по столбцам
-    vector col_src(src.str(), 0.0); // столбец источник и назначение
+  { // РїСЂРѕС…РѕРґ РїРѕ СЃС‚РѕР»Р±С†Р°Рј
+    vector col_src(src.str(), 0.0); // СЃС‚РѕР»Р±РµС† РёСЃС‚РѕС‡РЅРёРє Рё РЅР°Р·РЅР°С‡РµРЅРёРµ
     vector col_dst(dst.str(), 0.0);
     for( int c = 0; c < buf.col(); ++c ){
       buf.get_col(col_src, c);
@@ -72,15 +72,15 @@ void lanczos::warp( matrix &dst, const matrix &src, real r )
   }
 }
 
-// Вычисление значения в точке x для одномерного интерполянта в строке y.
-// Никакие проверки корректности аргументов не выполняются
+// Р’С‹С‡РёСЃР»РµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ РІ С‚РѕС‡РєРµ x РґР»СЏ РѕРґРЅРѕРјРµСЂРЅРѕРіРѕ РёРЅС‚РµСЂРїРѕР»СЏРЅС‚Р° РІ СЃС‚СЂРѕРєРµ y.
+// РќРёРєР°РєРёРµ РїСЂРѕРІРµСЂРєРё РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё Р°СЂРіСѓРјРµРЅС‚РѕРІ РЅРµ РІС‹РїРѕР»РЅСЏСЋС‚СЃСЏ
 real lanczos::calc_in_line( const matrix &src, int y, real x, real r )
 {
   int len = src.col();
 
   int start = t_max<int>(0, int_cast(ceil(x-r)));
   int stop = t_min<int>(len-1, int_cast(floor(x+r)));
-  real v = 0, w_sum = 0; // значение, сумма весов
+  real v = 0, w_sum = 0; // Р·РЅР°С‡РµРЅРёРµ, СЃСѓРјРјР° РІРµСЃРѕРІ
   for( int i = start; i <= stop; ++i ){
     real w = lanczos_kernel(i-x, r);
     w_sum += w;
@@ -95,7 +95,7 @@ real lanczos::calc( const matrix &src, real y, real x, real r )
 
   int start = t_max<int>(0, int_cast(ceil(y-r)));
   int stop = t_min<int>(len-1, int_cast(floor(y+r)));
-  real v = 0, w_sum = 0; // значение, сумма весов
+  real v = 0, w_sum = 0; // Р·РЅР°С‡РµРЅРёРµ, СЃСѓРјРјР° РІРµСЃРѕРІ
   for( int i = start; i <= stop; ++i ){
     real w = lanczos_kernel(i-y, r);
     w_sum += w;

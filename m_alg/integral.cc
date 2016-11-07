@@ -1,5 +1,5 @@
-#include "integral.h"
-#include "basex.h"
+#include "lwml/m_alg/integral.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 
@@ -7,7 +7,7 @@ namespace lwml {
 
 real integral::fixed( const i_function& func, real a, real b, int sect )
 {
-  real dx = (b - a) / sect;     // мелкость разбиения
+  real dx = (b - a) / sect;     // РјРµР»РєРѕСЃС‚СЊ СЂР°Р·Р±РёРµРЅРёСЏ
   double res = 0.0;
   real x = a;
   for( int j = 0; j < sect; j++ ){

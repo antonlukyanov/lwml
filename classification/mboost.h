@@ -1,19 +1,19 @@
-// Классификация по нескольким классам.
+// РљР»Р°СЃСЃРёС„РёРєР°С†РёСЏ РїРѕ РЅРµСЃРєРѕР»СЊРєРёРј РєР»Р°СЃСЃР°Рј.
 // lwml, (c) ltwood
 
 #ifndef _MBOOST_
 #define _MBOOST_
 
-#include "defs.h"
-#include "mdefs.h"
-#include "ivector.h"
-#include "randcomb.h"
-#include "debug.h"
-#include "vbmp.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/m_types/ivector.h"
+#include "lwml/random/randcomb.h"
+#include "lwml/utils/debug.h"
+#include "lwml/formats/vbmp.h"
 
-#include "adaboost.h"
-#include "msg_receiver.h"
-#include "keypoints.h"
+#include "lwml/classification/adaboost.h"
+#include "lwml/console/msg_receiver.h"
+#include "lwml/classification/keypoints.h"
 
 /*#build_stop*/
 
@@ -28,33 +28,33 @@ public:
   enum mboost_type { ONE_VS_ALL = 0, ONE_VS_ONE = 1, RAND_HALF = 2, ECOC_BCH = 3 };
 
   /**
-   * Создание классификатора по набору параметров и его обучение.
+   * РЎРѕР·РґР°РЅРёРµ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР° РїРѕ РЅР°Р±РѕСЂСѓ РїР°СЂР°РјРµС‚СЂРѕРІ Рё РµРіРѕ РѕР±СѓС‡РµРЅРёРµ.
    *
    * @param m_type
-   *   Тип mult_adaboost: ONE_VS_ALL, ONE_VS_ONE или RAND_HALF, ECOC_BCH.
+   *   РўРёРї mult_adaboost: ONE_VS_ALL, ONE_VS_ONE РёР»Рё RAND_HALF, ECOC_BCH.
    * @param steps_num
-   *   Число шагов каждого классификатора adaboost на этапе обучения.
+   *   Р§РёСЃР»Рѕ С€Р°РіРѕРІ РєР°Р¶РґРѕРіРѕ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР° adaboost РЅР° СЌС‚Р°РїРµ РѕР±СѓС‡РµРЅРёСЏ.
    * @param sc_fact
-   *   Фабрика простых классификаторов.
+   *   Р¤Р°Р±СЂРёРєР° РїСЂРѕСЃС‚С‹С… РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂРѕРІ.
    * @param kpl
-   *   Список объектов.
+   *   РЎРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ.
    * @param weights
-   *   Список весов объектов.
+   *   РЎРїРёСЃРѕРє РІРµСЃРѕРІ РѕР±СЉРµРєС‚РѕРІ.
    * @param classes_num
-   *   Число классов.
+   *   Р§РёСЃР»Рѕ РєР»Р°СЃСЃРѕРІ.
    * @param msg
-   *   Логгер.
+   *   Р›РѕРіРіРµСЂ.
    * @param tick
    */
   mult_adaboost(
-    // Параметры mult_adaboost.
+    // РџР°СЂР°РјРµС‚СЂС‹ mult_adaboost.
     mboost_type m_type,
     int steps_num,
     const i_simple_classifier_maker& sc_fact,
-    // Обучающая выборка.
+    // РћР±СѓС‡Р°СЋС‰Р°СЏ РІС‹Р±РѕСЂРєР°.
     const keypoint_list_lvset& kpl,
     int classes_num,
-    // Логгер и прогресс-индикатор.
+    // Р›РѕРіРіРµСЂ Рё РїСЂРѕРіСЂРµСЃСЃ-РёРЅРґРёРєР°С‚РѕСЂ.
     const i_msg_receiver& log,
     tick_mode tick = tmOFF,
     bool is_test = true
@@ -80,10 +80,10 @@ public:
   virtual void save_result( referer<luaconf> res, const char* root ) const;
   virtual void save_result_file(const char *file_name) const;
 
-  // функции calc_error(s) могут вызываться для набора точек НЕ на котором обучились
+  // С„СѓРЅРєС†РёРё calc_error(s) РјРѕРіСѓС‚ РІС‹Р·С‹РІР°С‚СЊСЃСЏ РґР»СЏ РЅР°Р±РѕСЂР° С‚РѕС‡РµРє РќР• РЅР° РєРѕС‚РѕСЂРѕРј РѕР±СѓС‡РёР»РёСЃСЊ
   real calc_error( const keypoint_list_lvset& kpl, int num ) const;
   virtual void calc_errors( const keypoint_list_lvset& kpl, vector& errors ) const;
-  // выводит таблицу вероятностей принадлежности точки к классу, при различных ответах классификаторов
+  // РІС‹РІРѕРґРёС‚ С‚Р°Р±Р»РёС†Сѓ РІРµСЂРѕСЏС‚РЅРѕСЃС‚РµР№ РїСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚Рё С‚РѕС‡РєРё Рє РєР»Р°СЃСЃСѓ, РїСЂРё СЂР°Р·Р»РёС‡РЅС‹С… РѕС‚РІРµС‚Р°С… РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂРѕРІ
   void dump_probabilities( int num );
 
 private:
@@ -100,11 +100,11 @@ private:
 
   void calc_confidence( const keypoint_list_lvset& kpl );
   int calc_best_class( const vector x, int num, real* confidence ) const;
-  // считает вектор вероятностей принадлежности к классу при условии заданного вектора ответов бинарных классификаторов
-  // возвращает вероятность данного ответа
+  // СЃС‡РёС‚Р°РµС‚ РІРµРєС‚РѕСЂ РІРµСЂРѕСЏС‚РЅРѕСЃС‚РµР№ РїСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚Рё Рє РєР»Р°СЃСЃСѓ РїСЂРё СѓСЃР»РѕРІРёРё Р·Р°РґР°РЅРЅРѕРіРѕ РІРµРєС‚РѕСЂР° РѕС‚РІРµС‚РѕРІ Р±РёРЅР°СЂРЅС‹С… РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂРѕРІ
+  // РІРѕР·РІСЂР°С‰Р°РµС‚ РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РґР°РЅРЅРѕРіРѕ РѕС‚РІРµС‚Р°
   real calc_conditional_prob( int num, const int_vector& ab_answer, vector& conditional_prob ) const;
 
-  // функции для генерации coding_matrix
+  // С„СѓРЅРєС†РёРё РґР»СЏ РіРµРЅРµСЂР°С†РёРё coding_matrix
   static void gen_one_vs_all( int_matrix &dst )
   {
     dst.set_val(-1);

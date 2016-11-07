@@ -1,4 +1,4 @@
-#include "dirstr.h"
+#include "lwml/system/dirstr.h"
 
 #include <dirent.h>
 

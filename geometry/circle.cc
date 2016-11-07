@@ -1,7 +1,7 @@
-#include "circle.h"
+#include "lwml/geometry/circle.h"
 
-#include "igeom.h"
-#include "t_list.h"
+#include "lwml/geometry/igeom.h"
+#include "lwml/types/t_list.h"
 
 /*#lake:stop*/
 
@@ -11,7 +11,7 @@ void circlegen::circle( i_circle_pixel_map& pm, int cx, int cy, int r )
 {
   t_list<int_point> arc;
 
-  // целочисленный алгоритм рисования окружности
+  // С†РµР»РѕС‡РёСЃР»РµРЅРЅС‹Р№ Р°Р»РіРѕСЂРёС‚Рј СЂРёСЃРѕРІР°РЅРёСЏ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё
   int x = 0, y = r;
   int d = 1 - r;
   int delta1 = 3, delta2 = -2 * r + 5;

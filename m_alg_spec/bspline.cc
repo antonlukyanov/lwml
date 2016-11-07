@@ -1,4 +1,4 @@
-#include "bspline.h"
+#include "lwml/m_alg_spec/bspline.h"
 
 /*#lake:stop*/
 

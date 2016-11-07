@@ -1,7 +1,7 @@
-#include "bmp.h"
-#include "stdmem.h"
-#include "filename.h"
-#include "basex.h"
+#include "lwml/formats/bmp.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/io/filename.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 
@@ -129,13 +129,13 @@ int bmp_header::read32( referer<stream> file, int ofs )
   return x;
 }
 
-// Константные поля:
+// РљРѕРЅСЃС‚Р°РЅС‚РЅС‹Рµ РїРѕР»СЏ:
 //   magic, image header size, planes, compression
-// Безразличные поля:
+// Р‘РµР·СЂР°Р·Р»РёС‡РЅС‹Рµ РїРѕР»СЏ:
 //   file size, reserved, image size,
 //   xbitspermeter, xbitspermeter,
 //   colors, importantcolors,
-// Важные поля:
+// Р’Р°Р¶РЅС‹Рµ РїРѕР»СЏ:
 //   image offset, width, height, bits per pixel
 
 void bmp_header::write( referer<stream> file )
@@ -355,19 +355,19 @@ bmp_rgb bitmap::get( int y, int x ) const
   int ly = _hdr.height();
   test_index2(x, lx, y, ly);
 
-  // переходим к естественной для bmp системе координат
+  // РїРµСЂРµС…РѕРґРёРј Рє РµСЃС‚РµСЃС‚РІРµРЅРЅРѕР№ РґР»СЏ bmp СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚
   y = _hdr.height() - y - 1;
 
-  // вычисляем смещение строки
+  // РІС‹С‡РёСЃР»СЏРµРј СЃРјРµС‰РµРЅРёРµ СЃС‚СЂРѕРєРё
   int lidx = y * _hdr.bytesperline();
 
   const int bpp = _hdr.bitsperpixel();
 
   if( bpp == 24 || bpp == 32 ){
-    lidx += x * (bpp / 8); // добавляем смещение RGB
+    lidx += x * (bpp / 8); // РґРѕР±Р°РІР»СЏРµРј СЃРјРµС‰РµРЅРёРµ RGB
     return bmp_rgb(_image[lidx+2], _image[lidx+1], _image[lidx]);
   }else{
-    uchar cidx = getcolidx(lidx, x); // получаем индекс цвета точки
+    uchar cidx = getcolidx(lidx, x); // РїРѕР»СѓС‡Р°РµРј РёРЅРґРµРєСЃ С†РІРµС‚Р° С‚РѕС‡РєРё
     return _pal.get(cidx);
   }
 }
@@ -380,13 +380,13 @@ void bitmap::put( int y, int x, bmp_rgb rgb )
   if( _hdr.bitsperpixel() != 24 && _hdr.bitsperpixel() != 32 )
     fail_assert("can't set RGB for image with palette");
 
-  // переходим к естественной для bmp системе координат
+  // РїРµСЂРµС…РѕРґРёРј Рє РµСЃС‚РµСЃС‚РІРµРЅРЅРѕР№ РґР»СЏ bmp СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚
   y = _hdr.height() - y - 1;
 
-  // вычисляем смещение строки
+  // РІС‹С‡РёСЃР»СЏРµРј СЃРјРµС‰РµРЅРёРµ СЃС‚СЂРѕРєРё
   int lidx = y * _hdr.bytesperline();
 
-  lidx += x * (_hdr.bitsperpixel() / 8); // добавляем смещение RGB
+  lidx += x * (_hdr.bitsperpixel() / 8); // РґРѕР±Р°РІР»СЏРµРј СЃРјРµС‰РµРЅРёРµ RGB
   _image[lidx+2] = rgb.red();
   _image[lidx+1] = rgb.green();
   _image[lidx] = rgb.blue();
@@ -400,11 +400,11 @@ void bitmap::fill( bmp_rgb rgb )
   int lx = _hdr.width();
   int ly = _hdr.height();
   for( int y = 0; y < ly; y++ ){
-    int yy = _hdr.height() - y - 1;      // переходим к естественной для bmp системе координат
-    int lidx = yy * _hdr.bytesperline(); // вычисляем смещение строки
+    int yy = _hdr.height() - y - 1;      // РїРµСЂРµС…РѕРґРёРј Рє РµСЃС‚РµСЃС‚РІРµРЅРЅРѕР№ РґР»СЏ bmp СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚
+    int lidx = yy * _hdr.bytesperline(); // РІС‹С‡РёСЃР»СЏРµРј СЃРјРµС‰РµРЅРёРµ СЃС‚СЂРѕРєРё
 
     for( int x = 0; x < lx; x++ ){
-      int lidx_x = lidx + x * (_hdr.bitsperpixel() / 8); // добавляем смещение RGB
+      int lidx_x = lidx + x * (_hdr.bitsperpixel() / 8); // РґРѕР±Р°РІР»СЏРµРј СЃРјРµС‰РµРЅРёРµ RGB
       _image[lidx_x+2] = rgb.red();
       _image[lidx_x+1] = rgb.green();
       _image[lidx_x] = rgb.blue();
@@ -422,13 +422,13 @@ void bitmap::put( int y, int x, int cidx )
   if( cidx < 0 || cidx >= _hdr.palsize() )
     runtime("color out of palette (%d)", cidx);
 
-  // переходим к естественной для bmp системе координат
+  // РїРµСЂРµС…РѕРґРёРј Рє РµСЃС‚РµСЃС‚РІРµРЅРЅРѕР№ РґР»СЏ bmp СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚
   y = _hdr.height() - y - 1;
 
-  // вычисляем смещение строки
+  // РІС‹С‡РёСЃР»СЏРµРј СЃРјРµС‰РµРЅРёРµ СЃС‚СЂРѕРєРё
   int lidx = y * _hdr.bytesperline();
 
-  // установить индекс цвета для точки
+  // СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РёРЅРґРµРєСЃ С†РІРµС‚Р° РґР»СЏ С‚РѕС‡РєРё
   setcolidx(lidx, x, cidx);
 }
 
@@ -442,8 +442,8 @@ void bitmap::fill( int cidx )
   int lx = _hdr.width();
   int ly = _hdr.height();
   for( int y = 0; y < ly; y++ ){
-    int yy = _hdr.height() - y - 1;      // переходим к естественной для bmp системе координат
-    int lidx = yy * _hdr.bytesperline(); // вычисляем смещение строки
+    int yy = _hdr.height() - y - 1;      // РїРµСЂРµС…РѕРґРёРј Рє РµСЃС‚РµСЃС‚РІРµРЅРЅРѕР№ РґР»СЏ bmp СЃРёСЃС‚РµРјРµ РєРѕРѕСЂРґРёРЅР°С‚
+    int lidx = yy * _hdr.bytesperline(); // РІС‹С‡РёСЃР»СЏРµРј СЃРјРµС‰РµРЅРёРµ СЃС‚СЂРѕРєРё
 
     for( int x = 0; x < lx; x++ )
       setcolidx(lidx, x, cidx);

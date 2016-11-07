@@ -1,6 +1,6 @@
-#include "regr.h"
-#include "mdefs.h"
-#include "basex.h"
+#include "lwml/m_alg/regr.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 
@@ -23,9 +23,9 @@ void lregr::put( const vector& x, const vector& y )
   _c = sy - (sxy/sxx) * sx;
 }
 
-//    s2   - сумма квадратов уклонений
-//    err  - коэффициент перед квантилем Стьюдента (n-2 степеней свободы)
-//           в оценке доверительного интервала дл параметра k
+//    s2   - СЃСѓРјРјР° РєРІР°РґСЂР°С‚РѕРІ СѓРєР»РѕРЅРµРЅРёР№
+//    err  - РєРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµРґ РєРІР°РЅС‚РёР»РµРј РЎС‚СЊСЋРґРµРЅС‚Р° (n-2 СЃС‚РµРїРµРЅРµР№ СЃРІРѕР±РѕРґС‹)
+//           РІ РѕС†РµРЅРєРµ РґРѕРІРµСЂРёС‚РµР»СЊРЅРѕРіРѕ РёРЅС‚РµСЂРІР°Р»Р° РґР» РїР°СЂР°РјРµС‚СЂР° k
 // *s2 = ( syy - sxy*sxy / sxx );
 // ss2 = real_cast(*s2) / real_cast(n-2);
 // *err = sqrt( ss2 / sxx );

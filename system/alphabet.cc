@@ -1,6 +1,6 @@
-#include "alphabet.h"
+#include "lwml/system/alphabet.h"
 
-#include "basex.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 

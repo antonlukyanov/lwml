@@ -1,9 +1,9 @@
-#include "fft.h"
-#include "cmplx.h"
-#include "mdefs.h"
-#include "basex.h"
-#include "bits.h"
-#include "trig_gen.h"
+#include "lwml/fourier/fft.h"
+#include "lwml/m_types/cmplx.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/base/basex.h"
+#include "lwml/alg/bits.h"
+#include "lwml/m_base/trig_gen.h"
 
 /*#lake:stop*/
 

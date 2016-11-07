@@ -4,26 +4,26 @@
 #ifndef _CMAP_
 #define _CMAP_
 
-#include "defs.h"
-#include "mdefs.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
 
-#include "rgb.h"
-#include "matrix.h"
-#include "imatrix.h"
+#include "lwml/types/rgb.h"
+#include "lwml/m_types/matrix.h"
+#include "lwml/m_types/imatrix.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// Интерфейс преобразователя значений в цвет.
+// РРЅС‚РµСЂС„РµР№СЃ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚РµР»СЏ Р·РЅР°С‡РµРЅРёР№ РІ С†РІРµС‚.
 
 class i_mapcolorer : public interface {
 public:
   virtual hsbcolor operator()( real x ) const = 0;
 };
 
-// colorer, рисующий изображение в градациях серого,
-// но с масштабированием из фиксированного диапазона.
+// colorer, СЂРёСЃСѓСЋС‰РёР№ РёР·РѕР±СЂР°Р¶РµРЅРёРµ РІ РіСЂР°РґР°С†РёСЏС… СЃРµСЂРѕРіРѕ,
+// РЅРѕ СЃ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµРј РёР· С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ РґРёР°РїР°Р·РѕРЅР°.
 
 class fixed_gray_colorer : public i_mapcolorer, public value {
 public:
@@ -37,9 +37,9 @@ private:
   real _ax, _bx;
 };
 
-// colorer, рисующий простые карты (содержит магические константы).
-// Отрицательные значения рисуются синим цветом,
-// положительные -- красным.
+// colorer, СЂРёСЃСѓСЋС‰РёР№ РїСЂРѕСЃС‚С‹Рµ РєР°СЂС‚С‹ (СЃРѕРґРµСЂР¶РёС‚ РјР°РіРёС‡РµСЃРєРёРµ РєРѕРЅСЃС‚Р°РЅС‚С‹).
+// РћС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ СЂРёСЃСѓСЋС‚СЃСЏ СЃРёРЅРёРј С†РІРµС‚РѕРј,
+// РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рµ -- РєСЂР°СЃРЅС‹Рј.
 
 class map_colorer : public i_mapcolorer, public value {
 public:
@@ -58,7 +58,7 @@ private:
   real _ax, _bx;
 };
 
-// Функции для вывода матриц в виде цветовых карт.
+// Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РјР°С‚СЂРёС† РІ РІРёРґРµ С†РІРµС‚РѕРІС‹С… РєР°СЂС‚.
 
 class cmap : public scope {
 public:

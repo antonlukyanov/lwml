@@ -1,17 +1,17 @@
-#include "limlib.h"
+#include "lwml/formats/limlib.h"
 
-#include "dload.h"
+#include "lwml/system/dload.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-#define LIMLIB_OK    0 // код нормального выполнения
-#define LIMLIB_FAIL -1 // код ошибки
+#define LIMLIB_OK    0 // РєРѕРґ РЅРѕСЂРјР°Р»СЊРЅРѕРіРѕ РІС‹РїРѕР»РЅРµРЅРёСЏ
+#define LIMLIB_FAIL -1 // РєРѕРґ РѕС€РёР±РєРё
 
-//!! TODO: Тут все плохо с потоками.
-// Раз, неблокировнные вызовы dll
-// Два, буфер в errmsg
+//!! TODO: РўСѓС‚ РІСЃРµ РїР»РѕС…Рѕ СЃ РїРѕС‚РѕРєР°РјРё.
+// Р Р°Р·, РЅРµР±Р»РѕРєРёСЂРѕРІРЅРЅС‹Рµ РІС‹Р·РѕРІС‹ dll
+// Р”РІР°, Р±СѓС„РµСЂ РІ errmsg
 
 namespace {
   typedef int (*ver_t)();

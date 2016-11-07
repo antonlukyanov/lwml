@@ -1,6 +1,6 @@
-#include "cwt_drv.h"
+#include "lwml/wavelets/cwt_drv.h"
 
-#include "fft.h"
+#include "lwml/fourier/fft.h"
 
 /*#build_stop*/
 

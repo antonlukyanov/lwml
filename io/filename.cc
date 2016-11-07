@@ -1,8 +1,8 @@
-#include "filename.h"
+#include "lwml/io/filename.h"
 
-#include "stdmem.h"
-#include "alphabet.h"
-#include "lwmlconf.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/system/alphabet.h"
+#include "lwml/lwmlconf.h"
 
 #if OS_WIN
   #include <io.h>
@@ -35,12 +35,12 @@ void filename::parse( const char* fullname )
 {
   int buflen = strlen(fullname)+1;
   char* fn = raw_alloc<char>(buflen);
-  prot_strcpy(fn, fullname, buflen); // перестраховка
+  prot_strcpy(fn, fullname, buflen); // РїРµСЂРµСЃС‚СЂР°С…РѕРІРєР°
   norm_path_x(fn);
 
-  char* pbs = strrchr(fn, '/');   // самый правый слэш
-  char* pnm = pbs ? pbs+1 : fn;   // имя файла
-  char* pdt = strrchr(fn, '.');   // самая правая точка
+  char* pbs = strrchr(fn, '/');   // СЃР°РјС‹Р№ РїСЂР°РІС‹Р№ СЃР»СЌС€
+  char* pnm = pbs ? pbs+1 : fn;   // РёРјСЏ С„Р°Р№Р»Р°
+  char* pdt = strrchr(fn, '.');   // СЃР°РјР°СЏ РїСЂР°РІР°СЏ С‚РѕС‡РєР°
 
   _path.set_zero();
   if( pbs ){
@@ -140,7 +140,7 @@ bool filename::is_dir( const char *fname )
   return (S_IFDIR & sst.st_mode) != 0;
 }
 
-//!! TODO: проверить корректность вызова fail_syscall()
+//!! TODO: РїСЂРѕРІРµСЂРёС‚СЊ РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РІС‹Р·РѕРІР° fail_syscall()
 void filename::remove( const char* fname )
 {
   if( !is_exists(fname) ) return;
@@ -218,8 +218,8 @@ strng filename::norm_path( const char* path, delimiter delim, case_sensitivity c
   return (cs == CASE_SENS) ? res : res.tolower(_FILENAME_CODEPAGE_);
 }
 
-// Размер буфера под текущий путь.
-// Размер указан для полного размера буфера, включая завершающий нуль.
+// Р Р°Р·РјРµСЂ Р±СѓС„РµСЂР° РїРѕРґ С‚РµРєСѓС‰РёР№ РїСѓС‚СЊ.
+// Р Р°Р·РјРµСЂ СѓРєР°Р·Р°РЅ РґР»СЏ РїРѕР»РЅРѕРіРѕ СЂР°Р·РјРµСЂР° Р±СѓС„РµСЂР°, РІРєР»СЋС‡Р°СЏ Р·Р°РІРµСЂС€Р°СЋС‰РёР№ РЅСѓР»СЊ.
 
 const int CWD_BUFLEN = 1024;
 

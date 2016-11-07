@@ -1,9 +1,9 @@
-// Свертка матрицы с произвольным ядром
+// РЎРІРµСЂС‚РєР° РјР°С‚СЂРёС†С‹ СЃ РїСЂРѕРёР·РІРѕР»СЊРЅС‹Рј СЏРґСЂРѕРј
 // lwml, (c) ltwood
 
-#include "conv_blur.h"
+#include "lwml/fourier/conv_blur.h"
 
-#include "fft2d.h"
+#include "lwml/fourier/fft2d.h"
 
 namespace lwml {
 
@@ -20,11 +20,11 @@ void conv_blur::proc( const matrix& src, const i_function2& func, tick_mode tick
   test_size2(src.str(), _ly, src.col(), _lx);
 
   _rg.set_zero();
-  // дискретизируем ядро и находим спектр
+  // РґРёСЃРєСЂРµС‚РёР·РёСЂСѓРµРј СЏРґСЂРѕ Рё РЅР°С…РѕРґРёРј СЃРїРµРєС‚СЂ
   for( int jy = 0; jy < _ny2; jy++ ){
-    int iy = (jy < _ny2 / 2) ? jy : jy-_ny2; // отражение
+    int iy = (jy < _ny2 / 2) ? jy : jy-_ny2; // РѕС‚СЂР°Р¶РµРЅРёРµ
     for( int jx = 0; jx < _nx2; jx++ ){
-      int ix = (jx < _nx2 / 2) ? jx : jx-_nx2; // отражение
+      int ix = (jx < _nx2 / 2) ? jx : jx-_nx2; // РѕС‚СЂР°Р¶РµРЅРёРµ
       _rg(jy, jx) = func(ix, iy);
     }
   }
@@ -38,12 +38,12 @@ void conv_blur::proc( const matrix& src, const i_function2& func, tick_mode tick
   _ix.set_zero();
   fft2d::cfft(_rx, _ix, tick);
 
-  // перемножить спектры
+  // РїРµСЂРµРјРЅРѕР¶РёС‚СЊ СЃРїРµРєС‚СЂС‹
   for( int jy = 0; jy < _ny2; jy++ )
     for( int jx = 0; jx < _nx2; jx++ ){
       real re_k = _rg(jy, jx);
       real im_k = _ig(jy, jx);
-      //!! NB: быстрое комплексное умножение ??
+      //!! NB: Р±С‹СЃС‚СЂРѕРµ РєРѕРјРїР»РµРєСЃРЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ ??
       real a = (_rx(jy, jx) + _ix(jy, jx)) * (re_k + im_k);
       real b = _rx(jy, jx) * re_k, c = _ix(jy, jx) * im_k;
       _rx(jy, jx) = b - c;

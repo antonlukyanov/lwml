@@ -1,9 +1,9 @@
-#include "llogsrv.h"
+#include "lwml/utils/llogsrv.h"
 
-#include "syssrv.h"
-#include "dload.h"
-#include "mthread.h"
-#include "platforms.h"
+#include "lwml/system/syssrv.h"
+#include "lwml/system/dload.h"
+#include "lwml/threads/mthread.h"
+#include "lwml/platforms.h"
 
 /*#lake:stop*/
 
@@ -30,13 +30,13 @@ namespace {
   getid_t  _getid = 0;
   getct_t  _getct = 0;
 
-  locker _lock; // блокировщик для использования в init() на случай многопоточности
+  locker _lock; // Р±Р»РѕРєРёСЂРѕРІС‰РёРє РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РІ init() РЅР° СЃР»СѓС‡Р°Р№ РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕСЃС‚Рё
 };
 
 void llogsrv::setup_log_func( log_func_t fn )
 {
   _lock.lock();
-  _is_first_call = true; // перводим логгер в начальное состояние
+  _is_first_call = true; // РїРµСЂРІРѕРґРёРј Р»РѕРіРіРµСЂ РІ РЅР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
   log_func = fn;
   _lock.unlock();
 }

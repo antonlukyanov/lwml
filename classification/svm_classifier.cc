@@ -1,4 +1,4 @@
-#include "svm_classifier.h"
+#include "lwml/classification/svm_classifier.h"
 
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
@@ -48,7 +48,7 @@ svm::svm( const keypoint_list_lvset& kpl, bool train_immediately )
   else
     printf("%s\n", str);
 
-  // Если необходимо, обучемся сразу
+  // Р•СЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ, РѕР±СѓС‡РµРјСЃСЏ СЃСЂР°Р·Сѓ
   zzz("Start_train");
   if( train_immediately )
     start_train();
@@ -199,12 +199,12 @@ svm::svm( referer<luaconf> cnf, const char* root )
 
 void svm::init_scaling_params()
 {
-  // Все значения масштабируются от -1 до 1
+  // Р’СЃРµ Р·РЅР°С‡РµРЅРёСЏ РјР°СЃС€С‚Р°Р±РёСЂСѓСЋС‚СЃСЏ РѕС‚ -1 РґРѕ 1
   _lower = -1;
   _upper = 1;
   _scaling_params = new scaling_params[_dim];
 
-  // Находим минимальное и максимальное значения для каждого признака
+  // РќР°С…РѕРґРёРј РјРёРЅРёРјР°Р»СЊРЅРѕРµ Рё РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РєР°Р¶РґРѕРіРѕ РїСЂРёР·РЅР°РєР°
   for( int j = 0; j < _dim; j++ ){
     _scaling_params[j].max_value = REAL_MIN;
     _scaling_params[j].min_value = REAL_MAX;
@@ -272,7 +272,7 @@ int svm::classify( const vector& vec, int num ) const
   }
   test_node[_dim].index = -1;
   test_node[_dim].value = -1;
-  int res_class = svm_predict(_model, test_node); // Классификация точки
+  int res_class = svm_predict(_model, test_node); // РљР»Р°СЃСЃРёС„РёРєР°С†РёСЏ С‚РѕС‡РєРё
   delete[] test_node;
   return res_class;
 }
@@ -296,12 +296,12 @@ real svm::get_confidence( const vector& vec, int num ) const
     }
     test_node[_dim].index = -1;
     test_node[_dim].value = -1;
-    double *prob_estimates = new double[nr_class]; // Вероятности отнесения точки к каждому из классов(в сумме = 1)
+    double *prob_estimates = new double[nr_class]; // Р’РµСЂРѕСЏС‚РЅРѕСЃС‚Рё РѕС‚РЅРµСЃРµРЅРёСЏ С‚РѕС‡РєРё Рє РєР°Р¶РґРѕРјСѓ РёР· РєР»Р°СЃСЃРѕРІ(РІ СЃСѓРјРјРµ = 1)
 
-    // Получаем вероятность отнесения точки к каждому из классов
+    // РџРѕР»СѓС‡Р°РµРј РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РѕС‚РЅРµСЃРµРЅРёСЏ С‚РѕС‡РєРё Рє РєР°Р¶РґРѕРјСѓ РёР· РєР»Р°СЃСЃРѕРІ
     svm_predict_probability(_model, test_node, prob_estimates);
 
-    // Находим степень уверенности классифкации (максимальное значение среди оценок вероятностей prob_estimates)
+    // РќР°С…РѕРґРёРј СЃС‚РµРїРµРЅСЊ СѓРІРµСЂРµРЅРЅРѕСЃС‚Рё РєР»Р°СЃСЃРёС„РєР°С†РёРё (РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ СЃСЂРµРґРё РѕС†РµРЅРѕРє РІРµСЂРѕСЏС‚РЅРѕСЃС‚РµР№ prob_estimates)
     int prob_max_idx = 0;
     for( int i = 1; i < nr_class; i++ )
       if( prob_estimates[i] > prob_estimates[prob_max_idx] )
@@ -338,9 +338,9 @@ real svm::get_confidence_for_one_class( const vector& vec, int num, int class_id
     }
     test_node[_dim].index = -1;
     test_node[_dim].value = -1;
-    double *prob_estimates = new double[nr_class]; // Вероятности отнесения точки к каждому из классов(в сумме = 1)
+    double *prob_estimates = new double[nr_class]; // Р’РµСЂРѕСЏС‚РЅРѕСЃС‚Рё РѕС‚РЅРµСЃРµРЅРёСЏ С‚РѕС‡РєРё Рє РєР°Р¶РґРѕРјСѓ РёР· РєР»Р°СЃСЃРѕРІ(РІ СЃСѓРјРјРµ = 1)
 
-    // Получаем вероятность отнесения точки к каждому из классов
+    // РџРѕР»СѓС‡Р°РµРј РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РѕС‚РЅРµСЃРµРЅРёСЏ С‚РѕС‡РєРё Рє РєР°Р¶РґРѕРјСѓ РёР· РєР»Р°СЃСЃРѕРІ
     svm_predict_probability(_model, test_node, prob_estimates);
 
     if (class_idx >= nr_class || class_idx < 0)
@@ -360,7 +360,7 @@ real svm::get_confidence_for_one_class( const vector& vec, int num, int class_id
 void svm::save_result( referer<luaconf> res, const char* root ) const
 {
   zzz("Save_result of model.");
-  // основная таблица с параметрами обученного классификатора
+  // РѕСЃРЅРѕРІРЅР°СЏ С‚Р°Р±Р»РёС†Р° СЃ РїР°СЂР°РјРµС‚СЂР°РјРё РѕР±СѓС‡РµРЅРЅРѕРіРѕ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°
   res->exec("%s.svm = {}", root);
 
   // *** svm_parameter ***
@@ -387,7 +387,7 @@ void svm::save_result( referer<luaconf> res, const char* root ) const
 
   // *** model ***
 
-  // количество классов
+  // РєРѕР»РёС‡РµСЃС‚РІРѕ РєР»Р°СЃСЃРѕРІ
   res->exec("%s.svm.nr_class = %d", root, _model->nr_class);
   int k = _model->nr_class;
   // total SV

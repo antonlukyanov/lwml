@@ -1,7 +1,7 @@
-#include "stdmem.h"
+#include "lwml/memory/stdmem.h"
 
-#include "lwmlconf.h"
-#include "debug.h"
+#include "lwml/lwmlconf.h"
+#include "lwml/utils/debug.h"
 
 /*#lake:stop*/
 
@@ -56,9 +56,9 @@ void* mem::realloc( void* mem, int size )
 char* mem::strdup( const char *src )
 {
   int buflen = strlen(src) + 1;
-  //!! SIC: здесь вызывается mem::alloc(), поэтому вывод лога не выполняется
+  //!! SIC: Р·РґРµСЃСЊ РІС‹Р·С‹РІР°РµС‚СЃСЏ mem::alloc(), РїРѕСЌС‚РѕРјСѓ РІС‹РІРѕРґ Р»РѕРіР° РЅРµ РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ
   char *res = raw_alloc<char>(buflen);
-  prot_strcpy(res, src, buflen); // перестраховка
+  prot_strcpy(res, src, buflen); // РїРµСЂРµСЃС‚СЂР°С…РѕРІРєР°
   return res;
 }
 

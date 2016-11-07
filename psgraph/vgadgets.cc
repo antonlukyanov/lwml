@@ -1,5 +1,5 @@
-#include "vgadgets.h"
-#include "basex.h"
+#include "lwml/psgraph/vgadgets.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 

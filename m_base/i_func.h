@@ -1,18 +1,18 @@
-// Класс-функция
+// РљР»Р°СЃСЃ-С„СѓРЅРєС†РёСЏ
 // lwml, (c) ltwood
 
 #ifndef _I_FUNC_
 #define _I_FUNC_
 
-#include "defs.h"
-#include "mdefs.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// Абстрактный предок классов-функций.
-// Потомки переопределяют чистую виртуальную функцию func().
+// РђР±СЃС‚СЂР°РєС‚РЅС‹Р№ РїСЂРµРґРѕРє РєР»Р°СЃСЃРѕРІ-С„СѓРЅРєС†РёР№.
+// РџРѕС‚РѕРјРєРё РїРµСЂРµРѕРїСЂРµРґРµР»СЏСЋС‚ С‡РёСЃС‚СѓСЋ РІРёСЂС‚СѓР°Р»СЊРЅСѓСЋ С„СѓРЅРєС†РёСЋ func().
 
 class i_function : public interface {
 public:

@@ -1,7 +1,7 @@
-#include "basex.h"
+#include "lwml/base/basex.h"
 
-#include "llogsrv.h"
-#include "syssrv.h"
+#include "lwml/utils/llogsrv.h"
+#include "lwml/system/syssrv.h"
 
 /*#lake:stop*/
 

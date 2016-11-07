@@ -4,13 +4,13 @@
 #ifndef _MINICVWRAP_
 #define _MINICVWRAP_
 
-#include "defs.h"
-#include "mdefs.h"
-#include "stdmem.h"
-#include "refcount.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/base/refcount.h"
 
-#include "minicv.h"
-#include "canvas.h"
+#include "lwml/psgraph/minicv.h"
+#include "lwml/psgraph/canvas.h"
 
 /*#lake:stop*/
 

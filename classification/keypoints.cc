@@ -1,6 +1,6 @@
 // keypoints.cc, (c) Anton Lukyanov
 
-#include "keypoints.h"
+#include "lwml/classification/keypoints.h"
 
 /*#build_stop*/
 

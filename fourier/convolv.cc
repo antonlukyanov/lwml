@@ -1,5 +1,5 @@
-#include "convolv.h"
-#include "fft.h"
+#include "lwml/fourier/convolv.h"
+#include "lwml/fourier/fft.h"
 
 /*#lake:stop*/
 
@@ -43,7 +43,7 @@ void convolver::operator()( vector& dst, const vector& src )
   _xr.set_zero();
   _xi.set_zero();
   for( int j = 0; j < src.len(); j++ )
-    _xr[j] = src[j] * _splen; // óáèðàåì äåëèòåëü N â öèêëè÷åñêîé ñâåðòêå
+    _xr[j] = src[j] * _splen; // ÑƒÐ±Ð¸Ñ€Ð°ÐµÐ¼ Ð´ÐµÐ»Ð¸Ñ‚ÐµÐ»ÑŒ N Ð² Ñ†Ð¸ÐºÐ»Ð¸Ñ‡ÐµÑÐºÐ¾Ð¹ ÑÐ²ÐµÑ€Ñ‚ÐºÐµ
   fft::cfft(_xr, _xi);
   for( int j = 0; j < _splen; j++ ){
     cmplx y = cmplx(_xr[j], _xi[j]) * cmplx(_hr[j], _hi[j]);
@@ -74,14 +74,14 @@ void crosscorr::operator()( const vector& src1, const vector& src2 )
   _xr.set_zero();
   real mid1 = src1.mid();
   for( int j = 0; j < src1.len(); j++ )
-    _xr[j] = (src1[j] - mid1) * fsqrt(_splen); // óáèðàåì äåëèòåëü N â ÊÊÔ
+    _xr[j] = (src1[j] - mid1) * fsqrt(_splen); // ÑƒÐ±Ð¸Ñ€Ð°ÐµÐ¼ Ð´ÐµÐ»Ð¸Ñ‚ÐµÐ»ÑŒ N Ð² ÐšÐšÐ¤
   _xi.set_zero();
   fft::cfft(_xr, _xi);
 
   _xxr.set_zero();
   real mid2 = src2.mid();
   for( int j = 0; j < src2.len(); j++ )
-    _xxr[j] = (src2[j] - mid2) * fsqrt(_splen); // óáèðàåì äåëèòåëü N â ÊÊÔ
+    _xxr[j] = (src2[j] - mid2) * fsqrt(_splen); // ÑƒÐ±Ð¸Ñ€Ð°ÐµÐ¼ Ð´ÐµÐ»Ð¸Ñ‚ÐµÐ»ÑŒ N Ð² ÐšÐšÐ¤
   _xxi.set_zero();
   fft::cfft(_xxr, _xxi);
 
@@ -109,7 +109,7 @@ void autocorr::operator()( const vector& src )
 
   _xr.set_zero();
   real mid1 = src.mid();
-  for( int j = 0; j < src.len(); j++ ) // óáèðàåì äåëèòåëü N â ÊÊÔ
+  for( int j = 0; j < src.len(); j++ ) // ÑƒÐ±Ð¸Ñ€Ð°ÐµÐ¼ Ð´ÐµÐ»Ð¸Ñ‚ÐµÐ»ÑŒ N Ð² ÐšÐšÐ¤
     _xr[j] = (src[j] - mid1) * fsqrt(_splen) / fsqrt(src.len());
   _xi.set_zero();
   fft::cfft(_xr, _xi);

@@ -1,8 +1,8 @@
-#include "riff.h"
-#include "stdmem.h"
-#include "mdefs.h"
-#include "basex.h"
-#include "filename.h"
+#include "lwml/formats/riff.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/base/basex.h"
+#include "lwml/io/filename.h"
 
 /*#lake:stop*/
 
@@ -10,19 +10,19 @@ namespace lwml {
 
 // definitions
 
-const char RIFFCHUNK_ID[] = "RIFF";  // идентификатор чанка RIFF
-const char FMTCHUNK_ID[]  = "fmt ";  // идентификатор чанка fmt
-const char DATACHUNK_ID[] = "data";  // идентификатор чанка data
+const char RIFFCHUNK_ID[] = "RIFF";  // РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ С‡Р°РЅРєР° RIFF
+const char FMTCHUNK_ID[]  = "fmt ";  // РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ С‡Р°РЅРєР° fmt
+const char DATACHUNK_ID[] = "data";  // РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ С‡Р°РЅРєР° data
 
-const int CHUNKID_SIZE  = 4;  // размер идентификатора чанка
-const int CHUNKHDR_SIZE = 8;  // размер заголовка чанка
+const int CHUNKID_SIZE  = 4;  // СЂР°Р·РјРµСЂ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° С‡Р°РЅРєР°
+const int CHUNKHDR_SIZE = 8;  // СЂР°Р·РјРµСЂ Р·Р°РіРѕР»РѕРІРєР° С‡Р°РЅРєР°
 
-const char WAVEFORM_ID[]  = "WAVE"; // инентификатор WAVE-формы
-const int WAVEFORMID_SIZE = 4;      // размер инентификатора WAVE-формы
+const char WAVEFORM_ID[]  = "WAVE"; // РёРЅРµРЅС‚РёС„РёРєР°С‚РѕСЂ WAVE-С„РѕСЂРјС‹
+const int WAVEFORMID_SIZE = 4;      // СЂР°Р·РјРµСЂ РёРЅРµРЅС‚РёС„РёРєР°С‚РѕСЂР° WAVE-С„РѕСЂРјС‹
 
-const int PCMFORMAT_ID      = 1;   // идентификатор PCM-формата
-const int FMTCHUNK_DATASIZE = 16;  // размер данных чанка fmt
-const int FMTCHUNK_SIZE = CHUNKHDR_SIZE + FMTCHUNK_DATASIZE; // (заголовок + данные)
+const int PCMFORMAT_ID      = 1;   // РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ PCM-С„РѕСЂРјР°С‚Р°
+const int FMTCHUNK_DATASIZE = 16;  // СЂР°Р·РјРµСЂ РґР°РЅРЅС‹С… С‡Р°РЅРєР° fmt
+const int FMTCHUNK_SIZE = CHUNKHDR_SIZE + FMTCHUNK_DATASIZE; // (Р·Р°РіРѕР»РѕРІРѕРє + РґР°РЅРЅС‹Рµ)
 
 // common
 
@@ -36,7 +36,7 @@ inline bool ISODD( int size )
   return size & 0x01;
 }
 
-// параметры сигнала
+// РїР°СЂР°РјРµС‚СЂС‹ СЃРёРіРЅР°Р»Р°
 
 const int PCM8_MIN = 0;
 const int PCM8_MAX = 255;
@@ -63,8 +63,8 @@ public:
   int  size() const { return _sz; }
 
 private:
-  char   _id[CHUNKID_SIZE];  // идентификатор чанка
-  uint32 _sz;                // размер данных в байтах
+  char   _id[CHUNKID_SIZE];  // РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ С‡Р°РЅРєР°
+  uint32 _sz;                // СЂР°Р·РјРµСЂ РґР°РЅРЅС‹С… РІ Р±Р°Р№С‚Р°С…
 
   bool isid( const char* id ) const;
 };
@@ -119,12 +119,12 @@ public:
   int alignment() const { return _alignment; }
 
 private:
-  uint16 _formattag;         // категория формата
-  uint16 _channels;          // число каналов
-  uint16  _bitspersample;    // разрядность сампла (в одном канале)
-  uint32 _samplespersec;     // частота дискретизации (самплов в секунду в одном канале)
-  uint32 _bytespersec;       // число байт в секунду для всех каналов
-  uint16 _alignment;         // выравнивание данных
+  uint16 _formattag;         // РєР°С‚РµРіРѕСЂРёСЏ С„РѕСЂРјР°С‚Р°
+  uint16 _channels;          // С‡РёСЃР»Рѕ РєР°РЅР°Р»РѕРІ
+  uint16  _bitspersample;    // СЂР°Р·СЂСЏРґРЅРѕСЃС‚СЊ СЃР°РјРїР»Р° (РІ РѕРґРЅРѕРј РєР°РЅР°Р»Рµ)
+  uint32 _samplespersec;     // С‡Р°СЃС‚РѕС‚Р° РґРёСЃРєСЂРµС‚РёР·Р°С†РёРё (СЃР°РјРїР»РѕРІ РІ СЃРµРєСѓРЅРґСѓ РІ РѕРґРЅРѕРј РєР°РЅР°Р»Рµ)
+  uint32 _bytespersec;       // С‡РёСЃР»Рѕ Р±Р°Р№С‚ РІ СЃРµРєСѓРЅРґСѓ РґР»СЏ РІСЃРµС… РєР°РЅР°Р»РѕРІ
+  uint16 _alignment;         // РІС‹СЂР°РІРЅРёРІР°РЅРёРµ РґР°РЅРЅС‹С…
   // _bytespersec = (_channels * _samplespersec * _bitspersample)/8
   // _alignment = (nChannels * nBitsPerSample)/8
 };
@@ -187,20 +187,20 @@ void riffwave_reader::seek( int pos )
 
 riffwave_reader::riffwave_reader( const char *nm, int bufsize )
 {
-  // открыть файл
+  // РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»
   _file = stream::create(nm, fmREAD, fmBINARY);
 
-  // проверить чанк RIFF
+  // РїСЂРѕРІРµСЂРёС‚СЊ С‡Р°РЅРє RIFF
   chunkhdr chh(_file);
   if( !chh.is_riff() )
     throw ex_riff("bad riff-chunk, <%s>", nm);
 
-  // проверить чанк WAVE
+  // РїСЂРѕРІРµСЂРёС‚СЊ С‡Р°РЅРє WAVE
   waveformhdr wfh(_file);
   if( !wfh.is_wave() )
     throw ex_riff("bad wave-chunk, <%s>", nm);
 
-  // дождаться чанка fmt и прочитать
+  // РґРѕР¶РґР°С‚СЊСЃСЏ С‡Р°РЅРєР° fmt Рё РїСЂРѕС‡РёС‚Р°С‚СЊ
   int fmtsize = wait4fmt();
   fmtchunk fmt(_file, fmtsize);
   _channels = fmt.channels();
@@ -212,15 +212,15 @@ riffwave_reader::riffwave_reader( const char *nm, int bufsize )
   if( _alignment * 8 != _channels * _bitspersample )
     throw ex_riff("incorrect value of alignment field in RIFF fmt chunk");
 
-  // дождаться данных и прочитать
+  // РґРѕР¶РґР°С‚СЊСЃСЏ РґР°РЅРЅС‹С… Рё РїСЂРѕС‡РёС‚Р°С‚СЊ
   _datasize = wait4data();
   _datapos = _file->tell();
   if( _datasize % _alignment != 0 )
     throw ex_riff("incorrect data size in RIFF data chunk");
 
-  if( bufsize > 0 ) // задан размер буфера
+  if( bufsize > 0 ) // Р·Р°РґР°РЅ СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР°
     _data.resize(bufsize * _alignment);
-  else // буфер вмещает все данные из файла
+  else // Р±СѓС„РµСЂ РІРјРµС‰Р°РµС‚ РІСЃРµ РґР°РЅРЅС‹Рµ РёР· С„Р°Р№Р»Р°
     _data.resize(_datasize);
 
   seek(0);
@@ -249,10 +249,10 @@ int riffwave_reader::operator()( int j, channel ch ) const
 // out parameters
 
 namespace {
-  const int OUT_BYTESPERSAMPLE = 2;  // байт на отсчет при выводе
+  const int OUT_BYTESPERSAMPLE = 2;  // Р±Р°Р№С‚ РЅР° РѕС‚СЃС‡РµС‚ РїСЂРё РІС‹РІРѕРґРµ
   const int OUT_BITSPERSAMPLE  =  OUT_BYTESPERSAMPLE * 8;
 
-  inline int OUT_ALIGNMENT( int channels ) // число байтов на отсчет (во всех каналах)
+  inline int OUT_ALIGNMENT( int channels ) // С‡РёСЃР»Рѕ Р±Р°Р№С‚РѕРІ РЅР° РѕС‚СЃС‡РµС‚ (РІРѕ РІСЃРµС… РєР°РЅР°Р»Р°С…)
   {
     return channels * OUT_BYTESPERSAMPLE;
   }
@@ -293,12 +293,12 @@ void riffwave_saver::write_chunkhdr( referer<stream> file, const char *id, uint3
 
 void riffwave_saver::write_fmt( referer<stream> file, int sps, int channels )
 {
-  uint16 formattag = PCMFORMAT_ID;                      // категори формата
-  uint16 channels_buf = channels;                       // число каналов
-  uint32 samplespersec = sps;                           // частота дискретизации
-  uint16 bitspersample = OUT_BITSPERSAMPLE;             // разрдность дискретизации
-  uint32 bytespersec = OUT_BYTESPERSEC(sps, channels);  // число байт в секунду
-  uint16 alignment = OUT_ALIGNMENT(channels);           // выравнивание данных
+  uint16 formattag = PCMFORMAT_ID;                      // РєР°С‚РµРіРѕСЂРё С„РѕСЂРјР°С‚Р°
+  uint16 channels_buf = channels;                       // С‡РёСЃР»Рѕ РєР°РЅР°Р»РѕРІ
+  uint32 samplespersec = sps;                           // С‡Р°СЃС‚РѕС‚Р° РґРёСЃРєСЂРµС‚РёР·Р°С†РёРё
+  uint16 bitspersample = OUT_BITSPERSAMPLE;             // СЂР°Р·СЂРґРЅРѕСЃС‚СЊ РґРёСЃРєСЂРµС‚РёР·Р°С†РёРё
+  uint32 bytespersec = OUT_BYTESPERSEC(sps, channels);  // С‡РёСЃР»Рѕ Р±Р°Р№С‚ РІ СЃРµРєСѓРЅРґСѓ
+  uint16 alignment = OUT_ALIGNMENT(channels);           // РІС‹СЂР°РІРЅРёРІР°РЅРёРµ РґР°РЅРЅС‹С…
 
   file->write(&formattag, sizeof(formattag));
   file->write(&channels_buf, sizeof(channels_buf));
@@ -387,6 +387,6 @@ void riffwave_saver::write( const char* name, const int_vector& xl, const int_ve
   write_suff(file, xl.len(), 2/*channels*/);
 }
 
-// данные хрантся в старших bitspersample битах
+// РґР°РЅРЅС‹Рµ С…СЂР°РЅС‚СЃСЏ РІ СЃС‚Р°СЂС€РёС… bitspersample Р±РёС‚Р°С…
 
 }; // namespace lwml

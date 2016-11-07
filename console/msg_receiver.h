@@ -1,32 +1,32 @@
 #ifndef _MSG_RECIEVER_
 #define _MSG_RECIEVER_
 
-#include "defs.h"
-#include "refcount.h"
-#include "stream.h"
-#include "cstrng.h"
+#include "lwml/base/defs.h"
+#include "lwml/base/refcount.h"
+#include "lwml/io/stream.h"
+#include "lwml/types/cstrng.h"
 
 namespace lwml {
 
 //
-// Приемники строковых сообщений.
+// РџСЂРёРµРјРЅРёРєРё СЃС‚СЂРѕРєРѕРІС‹С… СЃРѕРѕР±С‰РµРЅРёР№.
 //
 
-// Интерфейс приемника строковых сообщений.
+// РРЅС‚РµСЂС„РµР№СЃ РїСЂРёРµРјРЅРёРєР° СЃС‚СЂРѕРєРѕРІС‹С… СЃРѕРѕР±С‰РµРЅРёР№.
 class i_msg_receiver : public interface {
 public:
   virtual void put_msg( const char* msg, int mode = 0 ) const = 0;
   virtual void put_msg( const strng& msg, int mode = 0 ) const = 0;
 };
 
-// Пустой приемник текстовых сообщений.
+// РџСѓСЃС‚РѕР№ РїСЂРёРµРјРЅРёРє С‚РµРєСЃС‚РѕРІС‹С… СЃРѕРѕР±С‰РµРЅРёР№.
 class empty_msg_receiver : public i_msg_receiver {
 public:
   virtual void put_msg( const char* msg, int mode ) const {}
   virtual void put_msg( const strng& msg, int mode ) const {}
 };
 
-// Приемник текстовых сообщений с выводом на экран.
+// РџСЂРёРµРјРЅРёРє С‚РµРєСЃС‚РѕРІС‹С… СЃРѕРѕР±С‰РµРЅРёР№ СЃ РІС‹РІРѕРґРѕРј РЅР° СЌРєСЂР°РЅ.
 class screen_msg_receiver : public i_msg_receiver {
 public:
   virtual void put_msg( const char* msg, int mode = 0 ) const {
@@ -37,7 +37,7 @@ public:
   }
 };
 
-// Приемник текстовых сообщений с выводом на экран и в файл.
+// РџСЂРёРµРјРЅРёРє С‚РµРєСЃС‚РѕРІС‹С… СЃРѕРѕР±С‰РµРЅРёР№ СЃ РІС‹РІРѕРґРѕРј РЅР° СЌРєСЂР°РЅ Рё РІ С„Р°Р№Р».
 class file_msg_receiver : public i_msg_receiver {
 public:
   enum msg_mode { TO_ALL = 0, TO_FILE = 1, TO_SCREEN = 2 };

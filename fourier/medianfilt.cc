@@ -1,5 +1,5 @@
-#include "medianfilt.h"
-#include "t_sel_sort.h"
+#include "lwml/fourier/medianfilt.h"
+#include "lwml/alg/t_sel_sort.h"
 
 /*#lake:stop*/
 
@@ -44,11 +44,11 @@ bool medianfilt::calc( vector& dst, const vector& src, int rank, topology top )
 // 2d median filter
 
 namespace {
-  // Инициализация гистограммы по участку изображения.
-  // Дополнительно вычисляет медиану по гистограмме.
-  // В переменную *num помещает количество обработанных точек.
-  // В переменную *less помещает количество точек, лежащих левее медианы.
-  // Возвращает значение индекса, соответствующее медиане.
+  // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РіРёСЃС‚РѕРіСЂР°РјРјС‹ РїРѕ СѓС‡Р°СЃС‚РєСѓ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ.
+  // Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РІС‹С‡РёСЃР»СЏРµС‚ РјРµРґРёР°РЅСѓ РїРѕ РіРёСЃС‚РѕРіСЂР°РјРјРµ.
+  // Р’ РїРµСЂРµРјРµРЅРЅСѓСЋ *num РїРѕРјРµС‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РѕР±СЂР°Р±РѕС‚Р°РЅРЅС‹С… С‚РѕС‡РµРє.
+  // Р’ РїРµСЂРµРјРµРЅРЅСѓСЋ *less РїРѕРјРµС‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє, Р»РµР¶Р°С‰РёС… Р»РµРІРµРµ РјРµРґРёР°РЅС‹.
+  // Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ РёРЅРґРµРєСЃР°, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРµ РјРµРґРёР°РЅРµ.
   int set_hist(
     int_vector& hst, const int_matrix& data, int x0, int y0, int apt_x, int apt_y, int min,
     int* less, int* num
@@ -57,7 +57,7 @@ namespace {
     int lx = data.col();
     int ly = data.str();
 
-    // построение гистограммы
+    // РїРѕСЃС‚СЂРѕРµРЅРёРµ РіРёСЃС‚РѕРіСЂР°РјРјС‹
     hst.set_val(0);
     *num = 0;
     for( int dy = -apt_y; dy <= apt_y; ++dy ){
@@ -71,7 +71,7 @@ namespace {
       }
     }
 
-    // вычисление медианы
+    // РІС‹С‡РёСЃР»РµРЅРёРµ РјРµРґРёР°РЅС‹
     int num2 = (*num-1)/2;
     int med_idx = 0;
     *less = 0;
@@ -137,7 +137,7 @@ int medianfilt::calc( int_matrix& dst, const int_matrix& src, int apt )
       dst(y, 0) = med;
     }
     for( int x = 1; x < lx; ++x ){
-      if( x-apt-1 >= 0 ){ // удаление вертикальной линии
+      if( x-apt-1 >= 0 ){ // СѓРґР°Р»РµРЅРёРµ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ Р»РёРЅРёРё
         for( int yy = y - apt ; yy <= y + apt; ++yy ){
           if( yy >= 0 && yy < ly ){
             --num;
@@ -147,7 +147,7 @@ int medianfilt::calc( int_matrix& dst, const int_matrix& src, int apt )
           }
         }
       }
-      if( x+apt < lx ){ // добавление вертикальной линии
+      if( x+apt < lx ){ // РґРѕР±Р°РІР»РµРЅРёРµ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ Р»РёРЅРёРё
         for( int yy = y - apt ; yy <= y + apt; ++yy ){
           if( yy >= 0 && yy < ly ){
             ++num;
@@ -157,7 +157,7 @@ int medianfilt::calc( int_matrix& dst, const int_matrix& src, int apt )
           }
         }
       }
-      // корректируем медиану
+      // РєРѕСЂСЂРµРєС‚РёСЂСѓРµРј РјРµРґРёР°РЅСѓ
       int num2 = (num-1)/2;
       if( less > num2 ){
         while( less > num2 ){
@@ -199,7 +199,7 @@ int medianfilt::calc( int_matrix& dst, const int_matrix& src, int apt_x, int apt
       dst(y, 0) = med;
     }
     for( int x = 1; x < lx; ++x ){
-      if( x-apt_x-1 >= 0 ){ // удаление вертикальной линии
+      if( x-apt_x-1 >= 0 ){ // СѓРґР°Р»РµРЅРёРµ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ Р»РёРЅРёРё
         for( int yy = y - apt_y; yy <= y + apt_y; ++yy ){
           if( yy >= 0 && yy < ly ){
             --num;
@@ -209,7 +209,7 @@ int medianfilt::calc( int_matrix& dst, const int_matrix& src, int apt_x, int apt
           }
         }
       }
-      if( x+apt_x < lx ){ // добавление вертикальной линии
+      if( x+apt_x < lx ){ // РґРѕР±Р°РІР»РµРЅРёРµ РІРµСЂС‚РёРєР°Р»СЊРЅРѕР№ Р»РёРЅРёРё
         for( int yy = y - apt_y; yy <= y + apt_y; ++yy ){
           if( yy >= 0 && yy < ly ){
             ++num;
@@ -219,7 +219,7 @@ int medianfilt::calc( int_matrix& dst, const int_matrix& src, int apt_x, int apt
           }
         }
       }
-      // корректируем медиану
+      // РєРѕСЂСЂРµРєС‚РёСЂСѓРµРј РјРµРґРёР°РЅСѓ
       int num2 = (num-1)/2;
       if( less > num2 ){
         while( less > num2 ){

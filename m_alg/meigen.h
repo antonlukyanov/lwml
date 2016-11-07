@@ -1,10 +1,10 @@
 #ifndef _MEIGEN_
 #define _MEIGEN_
 
-//!! TODO: проверить работу с абсолютной ошибкой
+//!! TODO: РїСЂРѕРІРµСЂРёС‚СЊ СЂР°Р±РѕС‚Сѓ СЃ Р°Р±СЃРѕР»СЋС‚РЅРѕР№ РѕС€РёР±РєРѕР№
 
-#include "defs.h"
-#include "matrix.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_types/matrix.h"
 
 /*#lake:stop*/
 

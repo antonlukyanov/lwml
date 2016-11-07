@@ -1,7 +1,7 @@
-#include "rfft.h"
+#include "lwml/fourier/rfft.h"
 
-#include "fft.h"
-#include "trig_gen.h"
+#include "lwml/fourier/fft.h"
+#include "lwml/m_base/trig_gen.h"
 
 /*#lake:stop*/
 

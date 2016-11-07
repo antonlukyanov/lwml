@@ -1,7 +1,7 @@
-#include "imatrix.h"
+#include "lwml/m_types/imatrix.h"
 
-#include "stdmem.h"
-#include "filename.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/io/filename.h"
 
 /*#lake:stop*/
 

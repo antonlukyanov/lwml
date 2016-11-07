@@ -1,4 +1,4 @@
-#include "endians.h"
+#include "lwml/alg_spec/endians.h"
 
 /*#lake:stop*/
 

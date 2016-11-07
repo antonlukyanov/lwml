@@ -4,12 +4,12 @@
 #ifndef _CWT_
 #define _CWT_
 
-#include "defs.h"
-#include "mdefs.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
 
-#include "cmplx.h"
-#include "vector.h"
-#include "matrix.h"
+#include "lwml/m_types/cmplx.h"
+#include "lwml/m_types/vector.h"
+#include "lwml/m_types/matrix.h"
 
 /*#build_stop*/
 
@@ -76,13 +76,13 @@ private:
 
 class cwt {
 public:
-  // Вычисление количества отсчетов по оси масштабов начиная с масштаба min_sc
-  // и заканчивая масштабом max_sc, если на каждое удвоение масштаба (октаву)
-  // приходится octave отсчетов.
+  // Р’С‹С‡РёСЃР»РµРЅРёРµ РєРѕР»РёС‡РµСЃС‚РІР° РѕС‚СЃС‡РµС‚РѕРІ РїРѕ РѕСЃРё РјР°СЃС€С‚Р°Р±РѕРІ РЅР°С‡РёРЅР°СЏ СЃ РјР°СЃС€С‚Р°Р±Р° min_sc
+  // Рё Р·Р°РєР°РЅС‡РёРІР°СЏ РјР°СЃС€С‚Р°Р±РѕРј max_sc, РµСЃР»Рё РЅР° РєР°Р¶РґРѕРµ СѓРґРІРѕРµРЅРёРµ РјР°СЃС€С‚Р°Р±Р° (РѕРєС‚Р°РІСѓ)
+  // РїСЂРёС…РѕРґРёС‚СЃСЏ octave РѕС‚СЃС‡РµС‚РѕРІ.
   static int calc_scales_num( real min_sc, real max_sc, int octave );
 
-  // Преобразование номера отсчета idx по оси масштабов в значение масштаба
-  // при заданном минимальном масштабе min_sc и количестве отсчетов в октаве octave.
+  // РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РЅРѕРјРµСЂР° РѕС‚СЃС‡РµС‚Р° idx РїРѕ РѕСЃРё РјР°СЃС€С‚Р°Р±РѕРІ РІ Р·РЅР°С‡РµРЅРёРµ РјР°СЃС€С‚Р°Р±Р°
+  // РїСЂРё Р·Р°РґР°РЅРЅРѕРј РјРёРЅРёРјР°Р»СЊРЅРѕРј РјР°СЃС€С‚Р°Р±Рµ min_sc Рё РєРѕР»РёС‡РµСЃС‚РІРµ РѕС‚СЃС‡РµС‚РѕРІ РІ РѕРєС‚Р°РІРµ octave.
   static real idx2scale( real min_sc, int octave, int idx );
 
   // simple complex wavelet transform:

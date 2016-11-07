@@ -1,7 +1,7 @@
-#include "mineuro.h"
+#include "lwml/m_alg_spec/mineuro.h"
 
-#include "stdmem.h"
-#include "mdefs.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/m_base/mdefs.h"
 
 /*#lake:stop*/
 

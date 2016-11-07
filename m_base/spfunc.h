@@ -1,11 +1,11 @@
-// Вычисление специальных функций
+// Р’С‹С‡РёСЃР»РµРЅРёРµ СЃРїРµС†РёР°Р»СЊРЅС‹С… С„СѓРЅРєС†РёР№
 
 #ifndef _SPFUNC_
 #define _SPFUNC_
 
-#include "defs.h"
-#include "mdefs.h"
-#include "basex.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 
@@ -13,26 +13,26 @@ namespace lwml {
 
 class spfunc : public scope {
 public:
-  // Гамма-функция
-  // Г(a) = \int_0^{\infty} t^{a-1} e^{-t} dt,
-  // Г(a+1) = a! = a * (a-1)! = a * Г(a),
-  // Г(1) = 0! = 1, Г(2) = 1 * Г(1) = 1.
+  // Р“Р°РјРјР°-С„СѓРЅРєС†РёСЏ
+  // Р“(a) = \int_0^{\infty} t^{a-1} e^{-t} dt,
+  // Р“(a+1) = a! = a * (a-1)! = a * Р“(a),
+  // Р“(1) = 0! = 1, Р“(2) = 1 * Р“(1) = 1.
   static real log_gamma( real x );
 
-  // логарифм факториала целого цисла
+  // Р»РѕРіР°СЂРёС„Рј С„Р°РєС‚РѕСЂРёР°Р»Р° С†РµР»РѕРіРѕ С†РёСЃР»Р°
   static real log_factr( int n );
 
-  // Логарифм бета-функции
+  // Р›РѕРіР°СЂРёС„Рј Р±РµС‚Р°-С„СѓРЅРєС†РёРё
   static real log_beta( real a, real b );
 
-  // Бета-функция
+  // Р‘РµС‚Р°-С„СѓРЅРєС†РёСЏ
   // B(a,b) = \int_{0}^{1} t^{a-1} (1-t)^{b-1} dt
   static real beta( real a, real b );
 
-  // Логарифм биномиального коэффициента
+  // Р›РѕРіР°СЂРёС„Рј Р±РёРЅРѕРјРёР°Р»СЊРЅРѕРіРѕ РєРѕСЌС„С„РёС†РёРµРЅС‚Р°
   static real log_bico( int n, int k );
 
-  // Значение биномиального коэффициента
+  // Р—РЅР°С‡РµРЅРёРµ Р±РёРЅРѕРјРёР°Р»СЊРЅРѕРіРѕ РєРѕСЌС„С„РёС†РёРµРЅС‚Р°
   static real bico( int n, int k );
 
 private:

@@ -1,7 +1,7 @@
-#include "dload.h"
+#include "lwml/system/dload.h"
 
-#include "debug.h"
-#include "cstrng.h"
+#include "lwml/utils/debug.h"
+#include "lwml/types/cstrng.h"
 
 #if OS_WIN
   #include <windows.h>

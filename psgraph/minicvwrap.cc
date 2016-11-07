@@ -1,4 +1,4 @@
-#include "minicvwrap.h"
+#include "lwml/psgraph/minicvwrap.h"
 
 /*#lake:stop*/
 

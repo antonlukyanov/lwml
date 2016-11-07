@@ -1,5 +1,5 @@
-#include "fbmgen.h"
-#include "fft.h"
+#include "lwml/fourier/fbmgen.h"
+#include "lwml/fourier/fft.h"
 
 /*#lake:stop*/
 

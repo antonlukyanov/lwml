@@ -1,5 +1,5 @@
-#include "lms.h"
-#include "matrix.h"
+#include "lwml/m_alg/lms.h"
+#include "lwml/m_types/matrix.h"
 
 /*#lake:stop*/
 
@@ -9,14 +9,14 @@ real lmspoly::calc( const vector& x, const vector& y, polyn& c )
 {
   test_size(x.len(), y.len());
   vector res(c.len());
-  // формируем вектор правых частей \sum_j x_j^k y_j
+  // С„РѕСЂРјРёСЂСѓРµРј РІРµРєС‚РѕСЂ РїСЂР°РІС‹С… С‡Р°СЃС‚РµР№ \sum_j x_j^k y_j
   for( int k = 0; k < c.len(); k++ ){
     double s = 0.0;
     for( int j = 0; j < x.len(); j++ )
       s += intpow(x[j], k) * y[j];
     res[k] = s;
   }
-  // формируем вектор степеней \sum_j x_j^k  k \in [0..2m-2]
+  // С„РѕСЂРјРёСЂСѓРµРј РІРµРєС‚РѕСЂ СЃС‚РµРїРµРЅРµР№ \sum_j x_j^k  k \in [0..2m-2]
   vector pwa(2 * c.len() - 1);
   for( int k = 0; k < 2 * c.len() - 1; k++ ){
     double s = 0.0;
@@ -24,13 +24,13 @@ real lmspoly::calc( const vector& x, const vector& y, polyn& c )
       s += intpow(x[j], k);
     pwa[k] = s;
   }
-  // расписываем вектор степеней в матрицу
+  // СЂР°СЃРїРёСЃС‹РІР°РµРј РІРµРєС‚РѕСЂ СЃС‚РµРїРµРЅРµР№ РІ РјР°С‚СЂРёС†Сѓ
   matrix b(c.len(), c.len());
   for( int k = 0; k < c.len(); k++ )
     for( int j = 0; j < c.len(); j++ )
       b(k, j) = pwa[k+j];
 
-  // собственно решение
+  // СЃРѕР±СЃС‚РІРµРЅРЅРѕ СЂРµС€РµРЅРёРµ
   lud lu(b.str());
   lu.put(b, lud::SCALE);
   real relerr = lu.cond();

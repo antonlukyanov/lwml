@@ -1,7 +1,7 @@
-#include "fft2d.h"
+#include "lwml/fourier/fft2d.h"
 
-#include "progress.h"
-#include "fft.h"
+#include "lwml/console/progress.h"
+#include "lwml/fourier/fft.h"
 
 /*#lake:stop*/
 
@@ -17,7 +17,7 @@ void fft2d::cfft( matrix& rm, matrix& im, tick_mode tick )
   if( tick == tmON )
     progress::start("dft2d", steps);
 
-  // обработка столбцов
+  // РѕР±СЂР°Р±РѕС‚РєР° СЃС‚РѕР»Р±С†РѕРІ
   vector rcv(ns);
   vector icv(ns);
   for( int c = 0; c < nc; c++ ){
@@ -30,7 +30,7 @@ void fft2d::cfft( matrix& rm, matrix& im, tick_mode tick )
       progress::up(c);
   }
 
-  // обработка строк
+  // РѕР±СЂР°Р±РѕС‚РєР° СЃС‚СЂРѕРє
   vector rsv(nc);
   vector isv(nc);
   for( int s = 0; s < ns; s++ ){

@@ -1,26 +1,26 @@
-// Алгоритм selection sort
+// РђР»РіРѕСЂРёС‚Рј selection sort
 // lwml, (c) ltwood
 
 #ifndef _SEL_SORT_
 #define _SEL_SORT_
 
-#include "defs.h"
-#include "ivector.h"
-#include "vector.h"
-#include "mdefs.h"
-#include "basex.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_types/ivector.h"
+#include "lwml/m_types/vector.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// При сортировке исходный объект не изменяется, а строится индекс,
-// так, что если src реализует функции 
+// РџСЂРё СЃРѕСЂС‚РёСЂРѕРІРєРµ РёСЃС…РѕРґРЅС‹Р№ РѕР±СЉРµРєС‚ РЅРµ РёР·РјРµРЅСЏРµС‚СЃСЏ, Р° СЃС‚СЂРѕРёС‚СЃСЏ РёРЅРґРµРєСЃ,
+// С‚Р°Рє, С‡С‚Рѕ РµСЃР»Рё src СЂРµР°Р»РёР·СѓРµС‚ С„СѓРЅРєС†РёРё 
 //   int len() const;
 //   int comp( int i, int j ) const;
-// и  
+// Рё  
 //   sel_sort<srcT> idx(src);
-// то
+// С‚Рѕ
 //   src[idx[j]] <= src[idx[j+1]]
 
 template<typename T> 
@@ -34,10 +34,10 @@ public:
 
   void put( const T& src, direction dir = SORT_INC );
 
-  // Получить длину индекса.
+  // РџРѕР»СѓС‡РёС‚СЊ РґР»РёРЅСѓ РёРЅРґРµРєСЃР°.
   int len() const { return _data.len(); }
 
-  // Получить j-й элемент индекса.
+  // РџРѕР»СѓС‡РёС‚СЊ j-Р№ СЌР»РµРјРµРЅС‚ РёРЅРґРµРєСЃР°.
   int operator[]( int j ) const { return _data[j]; }
 
 private:

@@ -1,5 +1,5 @@
-#include "goldsect.h"
-#include "basex.h"
+#include "lwml/m_alg/goldsect.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 
@@ -7,9 +7,9 @@ namespace lwml {
 
 real gminf::calc( const i_function& func, real a, real b, real eps )
 {
-  // вычисляем абсолютную погрешность решения по относительной
-  // предохраняясь от слишком малых значений eps и случая
-  // когда max(fabs(a), fabs(b)) расположено вблизи нуля
+  // РІС‹С‡РёСЃР»СЏРµРј Р°Р±СЃРѕР»СЋС‚РЅСѓСЋ РїРѕРіСЂРµС€РЅРѕСЃС‚СЊ СЂРµС€РµРЅРёСЏ РїРѕ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕР№
+  // РїСЂРµРґРѕС…СЂР°РЅСЏСЏСЃСЊ РѕС‚ СЃР»РёС€РєРѕРј РјР°Р»С‹С… Р·РЅР°С‡РµРЅРёР№ eps Рё СЃР»СѓС‡Р°СЏ
+  // РєРѕРіРґР° max(fabs(a), fabs(b)) СЂР°СЃРїРѕР»РѕР¶РµРЅРѕ РІР±Р»РёР·Рё РЅСѓР»СЏ
   real abseps = (eps + sqrt(REAL_EPS)) * (1.0 + t_max<real>(fabs(a), fabs(b)));
 
   real al = (sqrt( 5.0 ) - 1.0) / 2.0;

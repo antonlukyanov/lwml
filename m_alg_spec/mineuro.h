@@ -3,18 +3,18 @@
 #ifndef _MINEURO_
 #define _MINEURO_
 
-#include "defs.h"
-#include "t_ring.h"
-#include "matrix.h"
-#include "basex.h"
-#include "refcount.h"
-#include "t_array.h"
+#include "lwml/base/defs.h"
+#include "lwml/types/t_ring.h"
+#include "lwml/m_types/matrix.h"
+#include "lwml/base/basex.h"
+#include "lwml/base/refcount.h"
+#include "lwml/types/t_array.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// параметры, определющие абстрактное уравнение нейрона
+// РїР°СЂР°РјРµС‚СЂС‹, РѕРїСЂРµРґРµР»СЋС‰РёРµ Р°Р±СЃС‚СЂР°РєС‚РЅРѕРµ СѓСЂР°РІРЅРµРЅРёРµ РЅРµР№СЂРѕРЅР°
 
 class i_equation_param : public interface, public refcount {
 public:
@@ -32,11 +32,11 @@ public:
   real T2() const { return 2.0 + al1() + al2()/al(); }
 
 private:
-  real _la; // большой параметр в уравнении нейрона
+  real _la; // Р±РѕР»СЊС€РѕР№ РїР°СЂР°РјРµС‚СЂ РІ СѓСЂР°РІРЅРµРЅРёРё РЅРµР№СЂРѕРЅР°
 };
 
-// параметры, определющие уравнение нейрона при
-// заданном виде функций u0(), fna(), fka()
+// РїР°СЂР°РјРµС‚СЂС‹, РѕРїСЂРµРґРµР»СЋС‰РёРµ СѓСЂР°РІРЅРµРЅРёРµ РЅРµР№СЂРѕРЅР° РїСЂРё
+// Р·Р°РґР°РЅРЅРѕРј РІРёРґРµ С„СѓРЅРєС†РёР№ u0(), fna(), fka()
 
 class std_equation_param : public i_equation_param { // public refcount
 private:
@@ -60,7 +60,7 @@ private:
   real _rna, _rka;
 };
 
-// общий динамический элемент со скалярным входом
+// РѕР±С‰РёР№ РґРёРЅР°РјРёС‡РµСЃРєРёР№ СЌР»РµРјРµРЅС‚ СЃРѕ СЃРєР°Р»СЏСЂРЅС‹Рј РІС…РѕРґРѕРј
 
 class i_dynel : public interface, public refcount {
 public:
@@ -68,24 +68,24 @@ public:
   virtual real get() const = 0;
 };
 
-// численная схема решени уравнени нейрона
+// С‡РёСЃР»РµРЅРЅР°СЏ СЃС…РµРјР° СЂРµС€РµРЅРё СѓСЂР°РІРЅРµРЅРё РЅРµР№СЂРѕРЅР°
 
-// Состояние is_spikestart() выставляется на один шаг в момент, когда
-// впервые выставлено состояние is_inspike(), т.е. когда достигнут уровень val.
-// Состояние is_spikeend() выставляется на один шаг в момент, когда
-// впервые сброшено состояние is_inspike(), т.е. когда значение стало меньше val.
-// Состояние is_max() выставляется на один шаг в момент, когда
-// состояние is_dn() впервые выставлено после состояния is_up().
-// Состояние is_min() выставляется на один шаг в момент, когда
-// состояние is_up() впервые выставлено после состояния is_dn().
+// РЎРѕСЃС‚РѕСЏРЅРёРµ is_spikestart() РІС‹СЃС‚Р°РІР»СЏРµС‚СЃСЏ РЅР° РѕРґРёРЅ С€Р°Рі РІ РјРѕРјРµРЅС‚, РєРѕРіРґР°
+// РІРїРµСЂРІС‹Рµ РІС‹СЃС‚Р°РІР»РµРЅРѕ СЃРѕСЃС‚РѕСЏРЅРёРµ is_inspike(), С‚.Рµ. РєРѕРіРґР° РґРѕСЃС‚РёРіРЅСѓС‚ СѓСЂРѕРІРµРЅСЊ val.
+// РЎРѕСЃС‚РѕСЏРЅРёРµ is_spikeend() РІС‹СЃС‚Р°РІР»СЏРµС‚СЃСЏ РЅР° РѕРґРёРЅ С€Р°Рі РІ РјРѕРјРµРЅС‚, РєРѕРіРґР°
+// РІРїРµСЂРІС‹Рµ СЃР±СЂРѕС€РµРЅРѕ СЃРѕСЃС‚РѕСЏРЅРёРµ is_inspike(), С‚.Рµ. РєРѕРіРґР° Р·РЅР°С‡РµРЅРёРµ СЃС‚Р°Р»Рѕ РјРµРЅСЊС€Рµ val.
+// РЎРѕСЃС‚РѕСЏРЅРёРµ is_max() РІС‹СЃС‚Р°РІР»СЏРµС‚СЃСЏ РЅР° РѕРґРёРЅ С€Р°Рі РІ РјРѕРјРµРЅС‚, РєРѕРіРґР°
+// СЃРѕСЃС‚РѕСЏРЅРёРµ is_dn() РІРїРµСЂРІС‹Рµ РІС‹СЃС‚Р°РІР»РµРЅРѕ РїРѕСЃР»Рµ СЃРѕСЃС‚РѕСЏРЅРёСЏ is_up().
+// РЎРѕСЃС‚РѕСЏРЅРёРµ is_min() РІС‹СЃС‚Р°РІР»СЏРµС‚СЃСЏ РЅР° РѕРґРёРЅ С€Р°Рі РІ РјРѕРјРµРЅС‚, РєРѕРіРґР°
+// СЃРѕСЃС‚РѕСЏРЅРёРµ is_up() РІРїРµСЂРІС‹Рµ РІС‹СЃС‚Р°РІР»РµРЅРѕ РїРѕСЃР»Рµ СЃРѕСЃС‚РѕСЏРЅРёСЏ is_dn().
 
 class scheme : public i_dynel { // public refcount
 private:
   scheme( referer<i_equation_param> eq, int pp1, real val, int history_len );
 
 public:
-  // pp1 -- число точек на единицу длины
-  // val -- уровень, соответствующий началу спайка
+  // pp1 -- С‡РёСЃР»Рѕ С‚РѕС‡РµРє РЅР° РµРґРёРЅРёС†Сѓ РґР»РёРЅС‹
+  // val -- СѓСЂРѕРІРµРЅСЊ, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ РЅР°С‡Р°Р»Сѓ СЃРїР°Р№РєР°
   static referer<scheme> create( referer<i_equation_param> eq, int pp1, real val = 1.0, int history_len = 0 ) {
     return referer<scheme>(new(lwml_alloc) scheme(eq, pp1, val, history_len));
   }
@@ -121,12 +121,12 @@ public:
 //  real sigma2link( real sigma );
 
 private:
-  t_ring<real> _tl;              // очередь прошлых значений
-  referer<i_equation_param> _eq; // решаемое уравнение
-  int _pp1;                      // число отрезков интегрировани на единицу времени
-  real _dt;                      // шаг по времени
-  real _t;                       // текущий момент времени
-  real _val;                     // индикатор нахождени в спайке
+  t_ring<real> _tl;              // РѕС‡РµСЂРµРґСЊ РїСЂРѕС€Р»С‹С… Р·РЅР°С‡РµРЅРёР№
+  referer<i_equation_param> _eq; // СЂРµС€Р°РµРјРѕРµ СѓСЂР°РІРЅРµРЅРёРµ
+  int _pp1;                      // С‡РёСЃР»Рѕ РѕС‚СЂРµР·РєРѕРІ РёРЅС‚РµРіСЂРёСЂРѕРІР°РЅРё РЅР° РµРґРёРЅРёС†Сѓ РІСЂРµРјРµРЅРё
+  real _dt;                      // С€Р°Рі РїРѕ РІСЂРµРјРµРЅРё
+  real _t;                       // С‚РµРєСѓС‰РёР№ РјРѕРјРµРЅС‚ РІСЂРµРјРµРЅРё
+  real _val;                     // РёРЅРґРёРєР°С‚РѕСЂ РЅР°С…РѕР¶РґРµРЅРё РІ СЃРїР°Р№РєРµ
 
   real next( real u10, real u00, real du );
 };
@@ -145,11 +145,11 @@ public:
 
   bool is_ready() const { return _st == READY; }
 
-  real ss_time()  const { test(); return _tss; }  // начало спайка
-  real max_time() const { test(); return _tmax; } // максимум
-  real se_time()  const { test(); return _tse; }  // конец спайка
-  real min_time() const { test(); return _tmin; } // минимум
-  real ra_time()  const { test(); return _tra; }  // реактивация
+  real ss_time()  const { test(); return _tss; }  // РЅР°С‡Р°Р»Рѕ СЃРїР°Р№РєР°
+  real max_time() const { test(); return _tmax; } // РјР°РєСЃРёРјСѓРј
+  real se_time()  const { test(); return _tse; }  // РєРѕРЅРµС† СЃРїР°Р№РєР°
+  real min_time() const { test(); return _tmin; } // РјРёРЅРёРјСѓРј
+  real ra_time()  const { test(); return _tra; }  // СЂРµР°РєС‚РёРІР°С†РёСЏ
 
   real max_val()  const { test(); return _vmax; }
   real min_val()  const { test(); return _vmin; }
@@ -170,7 +170,7 @@ private:
   void test() const;
 };
 
-// фабрика элементов матрицы из динамических элементов
+// С„Р°Р±СЂРёРєР° СЌР»РµРјРµРЅС‚РѕРІ РјР°С‚СЂРёС†С‹ РёР· РґРёРЅР°РјРёС‡РµСЃРєРёС… СЌР»РµРјРµРЅС‚РѕРІ
 
 class dynel_matrix_factory : public interface, public refcount {
 public:
@@ -178,7 +178,7 @@ public:
   virtual void destroy( i_dynel* ) = 0;
 };
 
-// матрица динамических элементов
+// РјР°С‚СЂРёС†Р° РґРёРЅР°РјРёС‡РµСЃРєРёС… СЌР»РµРјРµРЅС‚РѕРІ
 
 class dynel_matrix : public value {
 public:
@@ -194,13 +194,13 @@ public:
 
 private:
   referer<dynel_matrix_factory> _factory;
-  int _str, _col;        // число строк и столбцов
+  int _str, _col;        // С‡РёСЃР»Рѕ СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ
   t_array< referer<i_dynel> > _data;
 
   int index( int s, int c ) const { return s * _col + c; }
 };
 
-// сеть динамических элементов
+// СЃРµС‚СЊ РґРёРЅР°РјРёС‡РµСЃРєРёС… СЌР»РµРјРµРЅС‚РѕРІ
 
 class i_network2d : public interface, public value {
 public:
@@ -219,13 +219,13 @@ public:
 private:
   int _str, _col;
   dynel_matrix _net;
-  matrix _buffer;           // буфер выходов элементов сети
+  matrix _buffer;           // Р±СѓС„РµСЂ РІС‹С…РѕРґРѕРІ СЌР»РµРјРµРЅС‚РѕРІ СЃРµС‚Рё
   real _weight;
 
   void updatebuffer();
 };
 
-// Правильная треугольная сеть динамических элементов
+// РџСЂР°РІРёР»СЊРЅР°СЏ С‚СЂРµСѓРіРѕР»СЊРЅР°СЏ СЃРµС‚СЊ РґРёРЅР°РјРёС‡РµСЃРєРёС… СЌР»РµРјРµРЅС‚РѕРІ
 
 class hexagonal_network : public i_network2d { // public value
 public:

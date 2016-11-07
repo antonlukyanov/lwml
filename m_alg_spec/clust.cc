@@ -1,6 +1,6 @@
-#include "clust.h"
+#include "lwml/m_alg_spec/clust.h"
 
-#include "progress.h"
+#include "lwml/console/progress.h"
 
 /*#lake:stop*/
 

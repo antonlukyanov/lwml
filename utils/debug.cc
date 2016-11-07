@@ -1,9 +1,9 @@
-#include "debug.h"
+#include "lwml/utils/debug.h"
 
-#include "basex.h"
-#include "llogsrv.h"
-#include "syssrv.h"
-#include "apphome.h"
+#include "lwml/base/basex.h"
+#include "lwml/utils/llogsrv.h"
+#include "lwml/system/syssrv.h"
+#include "lwml/system/apphome.h"
 
 /*#lake:stop*/
 
@@ -69,7 +69,7 @@ strng zzz_dump_name( const char* fmt, ... )
   return res;
 }
 
-// Реализация потока вывода поверх потока отладочного вывода
+// Р РµР°Р»РёР·Р°С†РёСЏ РїРѕС‚РѕРєР° РІС‹РІРѕРґР° РїРѕРІРµСЂС… РїРѕС‚РѕРєР° РѕС‚Р»Р°РґРѕС‡РЅРѕРіРѕ РІС‹РІРѕРґР°
 
 void zstream::out( const strng& s )
 {

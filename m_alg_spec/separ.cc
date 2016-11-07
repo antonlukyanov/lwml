@@ -1,15 +1,15 @@
-#include "separ.h"
-#include "matrix.h"
-#include "t_sorter.h"
-#include "basex.h"
+#include "lwml/m_alg_spec/separ.h"
+#include "lwml/m_types/matrix.h"
+#include "lwml/alg/t_sorter.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// delta-критерий (В.В.Майоров)
+// delta-РєСЂРёС‚РµСЂРёР№ (Р’.Р’.РњР°Р№РѕСЂРѕРІ)
 
-// формирует усредненный вектор по векторам из строк матрицы
+// С„РѕСЂРјРёСЂСѓРµС‚ СѓСЃСЂРµРґРЅРµРЅРЅС‹Р№ РІРµРєС‚РѕСЂ РїРѕ РІРµРєС‚РѕСЂР°Рј РёР· СЃС‚СЂРѕРє РјР°С‚СЂРёС†С‹
 void delta_separ::setmid( vector& mid, const i_vector_set& matr )
 {
   for( int j = 0; j < matr.len(); j++ )
@@ -17,7 +17,7 @@ void delta_separ::setmid( vector& mid, const i_vector_set& matr )
       mid[i] += matr(j, i);
 }
 
-// находит скалярное произведение вектора и j-й строки матрицы
+// РЅР°С…РѕРґРёС‚ СЃРєР°Р»СЏСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ РІРµРєС‚РѕСЂР° Рё j-Р№ СЃС‚СЂРѕРєРё РјР°С‚СЂРёС†С‹
 real delta_separ::inner( const vector& a, const i_vector_set& m, int j )
 {
   double res = 0.0;
@@ -26,7 +26,7 @@ real delta_separ::inner( const vector& a, const i_vector_set& m, int j )
   return res;
 }
 
-// вычисляет значение дельта-критерия В.В.Майорова для двух наборов векторов
+// РІС‹С‡РёСЃР»СЏРµС‚ Р·РЅР°С‡РµРЅРёРµ РґРµР»СЊС‚Р°-РєСЂРёС‚РµСЂРёСЏ Р’.Р’.РњР°Р№РѕСЂРѕРІР° РґР»СЏ РґРІСѓС… РЅР°Р±РѕСЂРѕРІ РІРµРєС‚РѕСЂРѕРІ
 real delta_separ::calc( const i_vector_set& m1, const i_vector_set& m2 )
 {
   int j;
@@ -58,7 +58,7 @@ real delta_separ::calc( const i_vector_set& m1, const i_vector_set& m2 )
     if( aX[aXidx[j]] > aY[aYidx[m2.len() - 1 - j]] )
       break;
   if( j == m1.len() || j == m2.len() )
-    fail_unexpected(); //!! SIC: никогда не должно произойти
+    fail_unexpected(); //!! SIC: РЅРёРєРѕРіРґР° РЅРµ РґРѕР»Р¶РЅРѕ РїСЂРѕРёР·РѕР№С‚Рё
 
 ////  Qx = m1->str - j; Qy = m2->str - j; //!! SIC: !!
 
@@ -87,7 +87,7 @@ void delta_separ::weights( vector& a, const i_vector_set& m1, const i_vector_set
     a[j] = (mid1[j] - mid2[j]) / (m1.len() + m2.len());
 }
 
-// gamma-критерий (А.Ю.Левин)
+// gamma-РєСЂРёС‚РµСЂРёР№ (Рђ.Р®.Р›РµРІРёРЅ)
 
 real gamma_separ::dist( const i_vector_set& m1, int j, const i_vector_set& m2, int i )
 {
@@ -97,8 +97,8 @@ real gamma_separ::dist( const i_vector_set& m1, int j, const i_vector_set& m2, i
   return s;
 }
 
-// Определяет число векторов из m1, имеющих
-// ближайшим вектором вектор из своего класса
+// РћРїСЂРµРґРµР»СЏРµС‚ С‡РёСЃР»Рѕ РІРµРєС‚РѕСЂРѕРІ РёР· m1, РёРјРµСЋС‰РёС…
+// Р±Р»РёР¶Р°Р№С€РёРј РІРµРєС‚РѕСЂРѕРј РІРµРєС‚РѕСЂ РёР· СЃРІРѕРµРіРѕ РєР»Р°СЃСЃР°
 int gamma_separ::num( const i_vector_set& m1, const i_vector_set& m2 )
 {
   int num = 0;

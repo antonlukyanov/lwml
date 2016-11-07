@@ -1,6 +1,6 @@
-#include "mthread.h"
-#include "basex.h"
-#include "stdmem.h"
+#include "lwml/threads/mthread.h"
+#include "lwml/base/basex.h"
+#include "lwml/memory/stdmem.h"
 
 #include <pthread.h>
 

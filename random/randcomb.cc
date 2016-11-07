@@ -1,4 +1,4 @@
-#include "randcomb.h"
+#include "lwml/random/randcomb.h"
 
 /*#lake:stop*/
 

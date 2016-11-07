@@ -1,5 +1,5 @@
-#include "epsfile.h"
-#include "filename.h"
+#include "lwml/psgraph/epsfile.h"
+#include "lwml/io/filename.h"
 
 /*#lake:stop*/
 

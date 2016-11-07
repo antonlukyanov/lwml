@@ -1,5 +1,5 @@
-#include "systimer.h"
-#include "lwmlconf.h"
+#include "lwml/system/systimer.h"
+#include "lwml/lwmlconf.h"
 
 /*#lake:stop*/
 
@@ -15,16 +15,16 @@ namespace lwml {
 namespace {
   double init();
 
-  // Неказисто, зато не требует блокировок при каждом обращении.
+  // РќРµРєР°Р·РёСЃС‚Рѕ, Р·Р°С‚Рѕ РЅРµ С‚СЂРµР±СѓРµС‚ Р±Р»РѕРєРёСЂРѕРІРѕРє РїСЂРё РєР°Р¶РґРѕРј РѕР±СЂР°С‰РµРЅРёРё.
   double _resol = init();
 
 #if OS_WIN
   bool _is_hrt;
 
-  //!! SIC: использование этой переменной вообще-то не обязательно,
-  // но позволяет увеличить точность таймера высокого разрешения
-  // при измерении больших интервалов времени за счет более
-  // позднего выдавливания значащих разрядов в порядок.
+  //!! SIC: РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ СЌС‚РѕР№ РїРµСЂРµРјРµРЅРЅРѕР№ РІРѕРѕР±С‰Рµ-С‚Рѕ РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ,
+  // РЅРѕ РїРѕР·РІРѕР»СЏРµС‚ СѓРІРµР»РёС‡РёС‚СЊ С‚РѕС‡РЅРѕСЃС‚СЊ С‚Р°Р№РјРµСЂР° РІС‹СЃРѕРєРѕРіРѕ СЂР°Р·СЂРµС€РµРЅРёСЏ
+  // РїСЂРё РёР·РјРµСЂРµРЅРёРё Р±РѕР»СЊС€РёС… РёРЅС‚РµСЂРІР°Р»РѕРІ РІСЂРµРјРµРЅРё Р·Р° СЃС‡РµС‚ Р±РѕР»РµРµ
+  // РїРѕР·РґРЅРµРіРѕ РІС‹РґР°РІР»РёРІР°РЅРёСЏ Р·РЅР°С‡Р°С‰РёС… СЂР°Р·СЂСЏРґРѕРІ РІ РїРѕСЂСЏРґРѕРє.
   __int64 _start;
 #endif
 
@@ -36,7 +36,7 @@ namespace {
     LARGE_INTEGER buf;
     _is_hrt = QueryPerformanceFrequency(&buf);
     if( _is_hrt ){
-      res = 1.0/static_cast<double>(buf.QuadPart); //!! SIC: делим вещественные числа
+      res = 1.0/static_cast<double>(buf.QuadPart); //!! SIC: РґРµР»РёРј РІРµС‰РµСЃС‚РІРµРЅРЅС‹Рµ С‡РёСЃР»Р°
       QueryPerformanceCounter(&buf);
       _start = buf.QuadPart;
     }
@@ -57,7 +57,7 @@ double systimer::time()
   if( _is_hrt ){
     LARGE_INTEGER tm;
     QueryPerformanceCounter(&tm);
-    return static_cast<double>(tm.QuadPart - _start) * _resol; //!! SIC: умножаем вещественные числа
+    return static_cast<double>(tm.QuadPart - _start) * _resol; //!! SIC: СѓРјРЅРѕР¶Р°РµРј РІРµС‰РµСЃС‚РІРµРЅРЅС‹Рµ С‡РёСЃР»Р°
   } else
     return clock() * _resol;
 #else

@@ -1,4 +1,4 @@
-#include "luaextn.h"
+#include "lwml/lua/luaextn.h"
 
 /*#lake:stop*/
 
@@ -29,11 +29,11 @@ bool luaextn::is_tbl( int num ) const
   return lua_istable(_L, num);
 }
 
-// Получение аргументов функции со стека с проверкой типа.
+// РџРѕР»СѓС‡РµРЅРёРµ Р°СЂРіСѓРјРµРЅС‚РѕРІ С„СѓРЅРєС†РёРё СЃРѕ СЃС‚РµРєР° СЃ РїСЂРѕРІРµСЂРєРѕР№ С‚РёРїР°.
 
 bool luaextn::get_bool( int num ) const
 {
-  luaL_checkany(_L, num);  // любой тип включая nil
+  luaL_checkany(_L, num);  // Р»СЋР±РѕР№ С‚РёРї РІРєР»СЋС‡Р°СЏ nil
   return lua_toboolean(_L, num);
 }
 
@@ -68,7 +68,7 @@ real luaextn::get_idx( int num, int idx ) const
   return val;
 }
 
-// Помещение результата на стек.
+// РџРѕРјРµС‰РµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅР° СЃС‚РµРє.
 
 void luaextn::put_nil()
 {
@@ -120,7 +120,7 @@ void luaextn::put_error( const char* fmt, ... )
   va_end(va);
 }
 
-// Генерация ошибки, передаваемой интерпретатору Lua.
+// Р“РµРЅРµСЂР°С†РёСЏ РѕС€РёР±РєРё, РїРµСЂРµРґР°РІР°РµРјРѕР№ РёРЅС‚РµСЂРїСЂРµС‚Р°С‚РѕСЂСѓ Lua.
 
 void luaextn::error( const char* fmt, ... ) const
 {
@@ -146,12 +146,12 @@ void luaextn::handlex( const ex_base& ex ) const
   lua_error(_L);
 }
 
-// Регистрация библиотек и классов.
+// Р РµРіРёСЃС‚СЂР°С†РёСЏ Р±РёР±Р»РёРѕС‚РµРє Рё РєР»Р°СЃСЃРѕРІ.
 
 void luaextn::reg_library( const char* lib_name, const luaL_Reg* lib_exptbl )
 {
-  // Создает пустую таблицу t, присваивает ее глобальной переменной lib_name
-  // и регистрирует в ней все функции из списка lib_exptbl.
+  // РЎРѕР·РґР°РµС‚ РїСѓСЃС‚СѓСЋ С‚Р°Р±Р»РёС†Сѓ t, РїСЂРёСЃРІР°РёРІР°РµС‚ РµРµ РіР»РѕР±Р°Р»СЊРЅРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№ lib_name
+  // Рё СЂРµРіРёСЃС‚СЂРёСЂСѓРµС‚ РІ РЅРµР№ РІСЃРµ С„СѓРЅРєС†РёРё РёР· СЃРїРёСЃРєР° lib_exptbl.
   luaL_register(_L, lib_name, lib_exptbl);
   ++_out_count;
 }

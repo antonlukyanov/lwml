@@ -1,4 +1,4 @@
-#include "incstat.h"
+#include "lwml/m_alg_spec/incstat.h"
 
 /*#lake:stop*/
 

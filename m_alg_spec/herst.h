@@ -1,11 +1,11 @@
 #ifndef _HERST_
 #define _HERST_
 
-//!! TODO: οεπεδελΰςό
+//!! TODO: ΠΏΠµΡ€ΠµΠ΄ΠµΠ»Π°Ρ‚Ρ
 
-#include "defs.h"
-#include "mdefs.h"
-#include "vector.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/m_types/vector.h"
 
 /*#lake:stop*/
 

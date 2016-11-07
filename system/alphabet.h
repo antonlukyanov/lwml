@@ -1,9 +1,9 @@
-// Операции с текущим набором символов
+// РћРїРµСЂР°С†РёРё СЃ С‚РµРєСѓС‰РёРј РЅР°Р±РѕСЂРѕРј СЃРёРјРІРѕР»РѕРІ
 
 #ifndef _ALPHABET_
 #define _ALPHABET_
 
-#include "defs.h"
+#include "lwml/base/defs.h"
 
 /*#lake:stop*/
 

@@ -1,5 +1,5 @@
-#include "viewport.h"
-#include "geomx.h"
+#include "lwml/psgraph/viewport.h"
+#include "lwml/geometry/geomx.h"
 
 /*#lake:stop*/
 

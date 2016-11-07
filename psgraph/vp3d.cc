@@ -1,4 +1,4 @@
-#include "vp3d.h"
+#include "lwml/psgraph/vp3d.h"
 
 /*#lake:stop*/
 

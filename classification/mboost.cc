@@ -1,5 +1,5 @@
-#include "mboost.h"
-#include "stream.h"
+#include "lwml/classification/mboost.h"
+#include "lwml/io/stream.h"
 
 /*#build_stop*/
 
@@ -69,7 +69,7 @@ mult_adaboost::mult_adaboost(
     if( _m_ab[i]->step_num() > _max_step_num )
       _max_step_num = _m_ab[i]->step_num();
   }
-  // считаем статистику для уверенности классификации
+  // СЃС‡РёС‚Р°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РґР»СЏ СѓРІРµСЂРµРЅРЅРѕСЃС‚Рё РєР»Р°СЃСЃРёС„РёРєР°С†РёРё
   calc_confidence(kpl);
   dump_probabilities(_max_step_num);
 }
@@ -92,7 +92,7 @@ mult_adaboost::mult_adaboost( referer<luaconf> cnf, const char* root )
     strng str = strng::form("%s.adaboosts[%d].adaboost", root, i+1);
     _m_ab[i] = new adaboost(cnf, str.ascstr());
   }
-  // чтение данных для вычисления степени уверенности классификации
+  // С‡С‚РµРЅРёРµ РґР°РЅРЅС‹С… РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёСЏ СЃС‚РµРїРµРЅРё СѓРІРµСЂРµРЅРЅРѕСЃС‚Рё РєР»Р°СЃСЃРёС„РёРєР°С†РёРё
   for( int cl_idx = 0; cl_idx < _class_num; cl_idx++ ){
     _cl_probability[cl_idx] = cnf->get_real("%s.confidence_inform.class_probability[%d]", root, cl_idx+1);
     strng str = cstrng::form("%s.confidence_inform.answer_probability[%d]", root, cl_idx+1);
@@ -166,22 +166,22 @@ real mult_adaboost::get_confidence_for_one_class(const vector& x, int num, int c
 
 void mult_adaboost::save_result( referer<luaconf> res, const char* root ) const
 {
-  // основная таблица с параметрами обученного классификатора root
+  // РѕСЃРЅРѕРІРЅР°СЏ С‚Р°Р±Р»РёС†Р° СЃ РїР°СЂР°РјРµС‚СЂР°РјРё РѕР±СѓС‡РµРЅРЅРѕРіРѕ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР° root
   if( _is_test )
     res->exec("%s.is_test = true", root);
   else
     res->exec("%s.is_test = false", root);
 
-  // количество классов
+  // РєРѕР»РёС‡РµСЃС‚РІРѕ РєР»Р°СЃСЃРѕРІ
   res->exec("%s.class_num = %d", root, _class_num);
-  // количество итераций (столбцов в матрице)
+  // РєРѕР»РёС‡РµСЃС‚РІРѕ РёС‚РµСЂР°С†РёР№ (СЃС‚РѕР»Р±С†РѕРІ РІ РјР°С‚СЂРёС†Рµ)
   res->exec("%s.adaboost_num = %d", root, _adaboost_num);
-  // размерность вектора признака
+  // СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ РІРµРєС‚РѕСЂР° РїСЂРёР·РЅР°РєР°
   res->exec("%s.dim = %d", root, _dim);
-  // максимальное количество шагов классификатора
+  // РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ С€Р°РіРѕРІ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°
   res->exec("%s.max_step_num = %d", root, _max_step_num);
 
-  // вывод coding_matrix
+  // РІС‹РІРѕРґ coding_matrix
   res->exec("%s.coding_matrix = {}", root);
   for( int i = 0; i < _class_num; i++ ){
     res->exec("%s.coding_matrix[%d] = {}", root, i+1);
@@ -190,14 +190,14 @@ void mult_adaboost::save_result( referer<luaconf> res, const char* root ) const
     }
   }
 
-  // сереализация классификаторов на каждой итерации
+  // СЃРµСЂРµР°Р»РёР·Р°С†РёСЏ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂРѕРІ РЅР° РєР°Р¶РґРѕР№ РёС‚РµСЂР°С†РёРё
   res->exec("%s.adaboosts = {}", root);
   for( int i = 0; i < _adaboost_num; i++ ){
     strng str = cstrng::form("%s.adaboosts[%d]", root, i+1);
     res->exec("%s = {}", str.ascstr());
     _m_ab[i]->save_result(res, str.ascstr());
   }
-  // сохранение данных для вычисления степени уверенности классификации
+  // СЃРѕС…СЂР°РЅРµРЅРёРµ РґР°РЅРЅС‹С… РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёСЏ СЃС‚РµРїРµРЅРё СѓРІРµСЂРµРЅРЅРѕСЃС‚Рё РєР»Р°СЃСЃРёС„РёРєР°С†РёРё
   res->exec("%s.confidence_inform = {}", root);
   res->exec("%s.confidence_inform.answer_probability = {}", root);
   for( int cl_idx = 0; cl_idx < _class_num; cl_idx++ ){
@@ -264,16 +264,16 @@ void mult_adaboost::calc_errors( const keypoint_list_lvset& kpl, vector& errors 
 
 void mult_adaboost::calc_confidence( const keypoint_list_lvset& kpl )
 {
-  int dim = kpl.dim(); // размерность вектора-признаков
+  int dim = kpl.dim(); // СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ РІРµРєС‚РѕСЂР°-РїСЂРёР·РЅР°РєРѕРІ
   vector x(dim);
   for( int j = 0; j < kpl.len(); j++ ){
     int cl_idx = kpl.loading(j);
-    // увеличиваем счетчик количества точек попавших в этот класс
+    // СѓРІРµР»РёС‡РёРІР°РµРј СЃС‡РµС‚С‡РёРє РєРѕР»РёС‡РµСЃС‚РІР° С‚РѕС‡РµРє РїРѕРїР°РІС€РёС… РІ СЌС‚РѕС‚ РєР»Р°СЃСЃ
     _cl_probability[cl_idx]++;
 
-    // берем вектор-признаков
+    // Р±РµСЂРµРј РІРµРєС‚РѕСЂ-РїСЂРёР·РЅР°РєРѕРІ
     kpl.get(x, j);
-    // бежим по всем adaboost-ам, считаем на скольких точках каждыий из нах сказал 0
+    // Р±РµР¶РёРј РїРѕ РІСЃРµРј adaboost-Р°Рј, СЃС‡РёС‚Р°РµРј РЅР° СЃРєРѕР»СЊРєРёС… С‚РѕС‡РєР°С… РєР°Р¶РґС‹РёР№ РёР· РЅР°С… СЃРєР°Р·Р°Р» 0
     for( int ab_idx = 0; ab_idx < _m_ab.len(); ab_idx++ ){
       vector cl_value(_probabilities_of_classes[cl_idx].col(), 0.0);
       _m_ab[ab_idx]->classify(x, cl_value);
@@ -285,7 +285,7 @@ void mult_adaboost::calc_confidence( const keypoint_list_lvset& kpl )
     }
   }
 
-  // вычисление вероятности
+  // РІС‹С‡РёСЃР»РµРЅРёРµ РІРµСЂРѕСЏС‚РЅРѕСЃС‚Рё
   for( int cl_idx = 0; cl_idx < _cl_probability.len(); cl_idx++ ){
     for( int ab_idx = 0; ab_idx < _m_ab.len(); ab_idx++ ){
       int len = _probabilities_of_classes[cl_idx].col();
@@ -310,7 +310,7 @@ int mult_adaboost::calc_best_class( const vector x, int num, real* confidence ) 
     runtime("adaboost::classify: incorrect number of classifiers");
 
   int_vector ab_answer(_adaboost_num);
-  // вычисляем ответы adaboost-ов
+  // РІС‹С‡РёСЃР»СЏРµРј РѕС‚РІРµС‚С‹ adaboost-РѕРІ
   for( int t = 0; t < _adaboost_num; t++ ){
     ab_answer[t] = _m_ab[t]->classify(x, num);
   }
@@ -341,7 +341,7 @@ real mult_adaboost::calc_conditional_prob( int num, const int_vector& ab_answer,
   for( int cl_idx = 0; cl_idx < _class_num; cl_idx++ ){
     for( int ab_idx = 0; ab_idx < _adaboost_num; ab_idx++ ){
       if( ab_answer[ab_idx] == 0 )
-        conditional_prob[cl_idx] *= _probabilities_of_classes[cl_idx](ab_idx, num-1); // -1 т.к. num-количество шагов классификатора
+        conditional_prob[cl_idx] *= _probabilities_of_classes[cl_idx](ab_idx, num-1); // -1 С‚.Рє. num-РєРѕР»РёС‡РµСЃС‚РІРѕ С€Р°РіРѕРІ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°
       else
         conditional_prob[cl_idx] *= 1 - _probabilities_of_classes[cl_idx](ab_idx, num-1);
     }

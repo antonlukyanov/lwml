@@ -1,4 +1,4 @@
-#include "herst.h"
+#include "lwml/m_alg_spec/herst.h"
 
 /*#lake:stop*/
 

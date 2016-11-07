@@ -1,6 +1,6 @@
-#include "cmap.h"
+#include "lwml/formats/cmap.h"
 
-#include "bmp.h"
+#include "lwml/formats/bmp.h"
 
 /*#lake:stop*/
 

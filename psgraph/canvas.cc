@@ -1,4 +1,4 @@
-#include "canvas.h"
+#include "lwml/psgraph/canvas.h"
 
 /*#lake:stop*/
 

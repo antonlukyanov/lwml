@@ -1,9 +1,9 @@
-#include "progress.h"
+#include "lwml/console/progress.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-referer<i_progress_renderer> progress::_pr; //!! TODO: многопоточность?
+referer<i_progress_renderer> progress::_pr; //!! TODO: РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕСЃС‚СЊ?
 
 }; // namespace lwml

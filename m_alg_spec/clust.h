@@ -1,12 +1,12 @@
-// Кластеризатор (алгоритм динамических ядер)
+// РљР»Р°СЃС‚РµСЂРёР·Р°С‚РѕСЂ (Р°Р»РіРѕСЂРёС‚Рј РґРёРЅР°РјРёС‡РµСЃРєРёС… СЏРґРµСЂ)
 // lwml, (c) ltwood
 
 #ifndef _CLUST_
 #define _CLUST_
 
-#include "ivector.h"
-#include "i_vset.h"
-#include "matrix.h"
+#include "lwml/m_types/ivector.h"
+#include "lwml/m_base/i_vset.h"
+#include "lwml/m_types/matrix.h"
 
 /*#lake:stop*/
 
@@ -17,27 +17,27 @@ public:
   clust( const i_vector_set&, int cnum, int max_steps = 100, tick_mode tick = tmOFF );
 
   int len() const { return _len; }
-    // общее число векторов
+    // РѕР±С‰РµРµ С‡РёСЃР»Рѕ РІРµРєС‚РѕСЂРѕРІ
   int cnum() const { return _cnum; }
-    // число кластеров
+    // С‡РёСЃР»Рѕ РєР»Р°СЃС‚РµСЂРѕРІ
   int dim() const { return _dim; }
-    // размерность векторов
+    // СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ РІРµРєС‚РѕСЂРѕРІ
   int steps() const { return _steps; }
-    // число шагов кластеризатора
+    // С‡РёСЃР»Рѕ С€Р°РіРѕРІ РєР»Р°СЃС‚РµСЂРёР·Р°С‚РѕСЂР°
 
-  // Получение номера кластера для вектора с номером idx.
+  // РџРѕР»СѓС‡РµРЅРёРµ РЅРѕРјРµСЂР° РєР»Р°СЃС‚РµСЂР° РґР»СЏ РІРµРєС‚РѕСЂР° СЃ РЅРѕРјРµСЂРѕРј idx.
   int operator[]( int idx ) const {
     test_index(idx, _len);
     return _labels[idx];
   }
   
-  // Получение числа векторов в кластере cidx.
+  // РџРѕР»СѓС‡РµРЅРёРµ С‡РёСЃР»Р° РІРµРєС‚РѕСЂРѕРІ РІ РєР»Р°СЃС‚РµСЂРµ cidx.
   int cvol( int cidx ) const {
     test_index(cidx, _cnum);
     return _cvol[cidx];
   }
 
-  // Получение координаты didx для ядра cidx.
+  // РџРѕР»СѓС‡РµРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹ didx РґР»СЏ СЏРґСЂР° cidx.
   real operator()( int cidx, int didx ) const {
     test_index(cidx, _cnum);
     test_index(didx, _dim);

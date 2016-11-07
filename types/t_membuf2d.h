@@ -1,12 +1,12 @@
-// Обобщенная матрица для POD
+// РћР±РѕР±С‰РµРЅРЅР°СЏ РјР°С‚СЂРёС†Р° РґР»СЏ POD
 // lwml, (c) ltwood
 
 #ifndef _T_MEMBUF2D_
 #define _T_MEMBUF2D_
 
-#include "defs.h"
-#include "t_membuf.h"
-#include "stream.h"
+#include "lwml/base/defs.h"
+#include "lwml/types/t_membuf.h"
+#include "lwml/io/stream.h"
 
 /*#lake:stop*/
 
@@ -15,26 +15,26 @@ namespace lwml {
 template<typename T>
 class t_membuf2d: public value {
 public:
-  // Конструирование пустой матрицы.
+  // РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ РїСѓСЃС‚РѕР№ РјР°С‚СЂРёС†С‹.
   t_membuf2d();
 
-  // Конструирование по размерам.
+  // РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ РїРѕ СЂР°Р·РјРµСЂР°Рј.
   t_membuf2d( int m, int n );
 
-  // Конструирование по размерам и начальному значению элементов.
+  // РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ РїРѕ СЂР°Р·РјРµСЂР°Рј Рё РЅР°С‡Р°Р»СЊРЅРѕРјСѓ Р·РЅР°С‡РµРЅРёСЋ СЌР»РµРјРµРЅС‚РѕРІ.
   t_membuf2d( int m, int n, const T& val );
 
   t_membuf2d( const t_membuf2d<T>& );
 
   t_membuf2d<T>& operator=( const t_membuf2d<T>& src );
 
-  // Изменение размеров матрицы.
+  // РР·РјРµРЅРµРЅРёРµ СЂР°Р·РјРµСЂРѕРІ РјР°С‚СЂРёС†С‹.
   void resize( int m, int n );
 
-  // присвоить всем элементам значение val
+  // РїСЂРёСЃРІРѕРёС‚СЊ РІСЃРµРј СЌР»РµРјРµРЅС‚Р°Рј Р·РЅР°С‡РµРЅРёРµ val
   void set_val( const T& val );
 
-  // Получение размеров матрицы.
+  // РџРѕР»СѓС‡РµРЅРёРµ СЂР°Р·РјРµСЂРѕРІ РјР°С‚СЂРёС†С‹.
   int str() const { return _str; }
   int col() const { return _col; }
 
@@ -47,7 +47,7 @@ public:
     return _repr[i*_col + j];
   }
 
-  // Низкоуровневый доступ к "сырым" данным.
+  // РќРёР·РєРѕСѓСЂРѕРІРЅРµРІС‹Р№ РґРѕСЃС‚СѓРї Рє "СЃС‹СЂС‹Рј" РґР°РЅРЅС‹Рј.
         T* access_raw_data()       { return _repr.access_raw_data(); }
   const T* access_raw_data() const { return _repr.access_raw_data(); }
 

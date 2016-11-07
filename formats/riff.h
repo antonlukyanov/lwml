@@ -7,24 +7,24 @@
 // Pulse Code Modulation
 // Resource Interchange File Format
 
-#include "defs.h"
-#include "vector.h"
-#include "ivector.h"
-#include "stream.h"
-#include "t_membuf.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_types/vector.h"
+#include "lwml/m_types/ivector.h"
+#include "lwml/io/stream.h"
+#include "lwml/types/t_membuf.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// Исключение при ошибке интерпретации содержимого RIFF-Файла
+// РСЃРєР»СЋС‡РµРЅРёРµ РїСЂРё РѕС€РёР±РєРµ РёРЅС‚РµСЂРїСЂРµС‚Р°С†РёРё СЃРѕРґРµСЂР¶РёРјРѕРіРѕ RIFF-Р¤Р°Р№Р»Р°
 
 DEF_EX_TYPE_MSG(ex_integrity, ex_riff, "incorrect riff");
 
 class riffwave_reader : public value {
 public:
-  // Параметр bufsize задает размер буфера для варианта буфериованного чтения данных.
-  // Если значение этого параметра равно 0 (по умолчанию), то все данные читаются сразу.
+  // РџР°СЂР°РјРµС‚СЂ bufsize Р·Р°РґР°РµС‚ СЂР°Р·РјРµСЂ Р±СѓС„РµСЂР° РґР»СЏ РІР°СЂРёР°РЅС‚Р° Р±СѓС„РµСЂРёРѕРІР°РЅРЅРѕРіРѕ С‡С‚РµРЅРёСЏ РґР°РЅРЅС‹С….
+  // Р•СЃР»Рё Р·РЅР°С‡РµРЅРёРµ СЌС‚РѕРіРѕ РїР°СЂР°РјРµС‚СЂР° СЂР°РІРЅРѕ 0 (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ), С‚Рѕ РІСЃРµ РґР°РЅРЅС‹Рµ С‡РёС‚Р°СЋС‚СЃСЏ СЃСЂР°Р·Сѓ.
   riffwave_reader( const char*, int bufsize = 0 );
 
   void printinfo( referer<stream> ) const;
@@ -47,14 +47,14 @@ private:
   referer<stream> _file;
 
   int _channels;
-  int _samplespersec; // в одном канале
-  int _bitspersample; // в одном канале
-  int _alignment;     // байтов на один отсчет обоих каналов
-  int _datasize;      // всего данных в байтах
-  int _datapos;       // позиция начала данных в файле в байтах
+  int _samplespersec; // РІ РѕРґРЅРѕРј РєР°РЅР°Р»Рµ
+  int _bitspersample; // РІ РѕРґРЅРѕРј РєР°РЅР°Р»Рµ
+  int _alignment;     // Р±Р°Р№С‚РѕРІ РЅР° РѕРґРёРЅ РѕС‚СЃС‡РµС‚ РѕР±РѕРёС… РєР°РЅР°Р»РѕРІ
+  int _datasize;      // РІСЃРµРіРѕ РґР°РЅРЅС‹С… РІ Р±Р°Р№С‚Р°С…
+  int _datapos;       // РїРѕР·РёС†РёСЏ РЅР°С‡Р°Р»Р° РґР°РЅРЅС‹С… РІ С„Р°Р№Р»Рµ РІ Р±Р°Р№С‚Р°С…
 
-  int _bufpos;           // текущая позиция буфера в отсчетах
-  int _bufsize;          // размер заполненной части буфера
+  int _bufpos;           // С‚РµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ Р±СѓС„РµСЂР° РІ РѕС‚СЃС‡РµС‚Р°С…
+  int _bufsize;          // СЂР°Р·РјРµСЂ Р·Р°РїРѕР»РЅРµРЅРЅРѕР№ С‡Р°СЃС‚Рё Р±СѓС„РµСЂР°
   t_membuf<uchar> _data;
 
   int wait4data();
@@ -64,11 +64,11 @@ private:
 class riffwave_saver : public scope {
 public:
   static void write( const char*, const vector&, int sps );
-    // запись одного канала с масштабированием
+    // Р·Р°РїРёСЃСЊ РѕРґРЅРѕРіРѕ РєР°РЅР°Р»Р° СЃ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµРј
   static void write( const char* name, const int_vector& x, int sps );
-    // запись одного канала без масштабирования
+    // Р·Р°РїРёСЃСЊ РѕРґРЅРѕРіРѕ РєР°РЅР°Р»Р° Р±РµР· РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
   static void write( const char* name, const int_vector& lx, const int_vector& rx, int sps );
-    // запись двух каналов без масштабирования
+    // Р·Р°РїРёСЃСЊ РґРІСѓС… РєР°РЅР°Р»РѕРІ Р±РµР· РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ
 
 private:
   static void write_chunkhdr( referer<stream> file, const char *id, uint32 sz );

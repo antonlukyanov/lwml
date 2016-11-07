@@ -1,13 +1,13 @@
-#include "cstrng.h"
-#include "stdmem.h"
-#include "alphabet.h"
+#include "lwml/types/cstrng.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/system/alphabet.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// Размеры буферов для вывода значений специфических типов
-// Во всех случаях указан размер полного буфера, включая место под завершающий нуль.
+// Р Р°Р·РјРµСЂС‹ Р±СѓС„РµСЂРѕРІ РґР»СЏ РІС‹РІРѕРґР° Р·РЅР°С‡РµРЅРёР№ СЃРїРµС†РёС„РёС‡РµСЃРєРёС… С‚РёРїРѕРІ
+// Р’Рѕ РІСЃРµС… СЃР»СѓС‡Р°СЏС… СѓРєР°Р·Р°РЅ СЂР°Р·РјРµСЂ РїРѕР»РЅРѕРіРѕ Р±СѓС„РµСЂР°, РІРєР»СЋС‡Р°СЏ РјРµСЃС‚Рѕ РїРѕРґ Р·Р°РІРµСЂС€Р°СЋС‰РёР№ РЅСѓР»СЊ.
 
 const int NUM_BUFSZ  = 64;
 const int TIME_BUFSZ = 64;
@@ -33,7 +33,7 @@ cstrng& cstrng::_assign( const char* src, int slen )
 {
   if( _size < slen )
     realloc(slen);
-  prot_strcpy(_data, src, _size+1); // перестраховка
+  prot_strcpy(_data, src, _size+1); // РїРµСЂРµСЃС‚СЂР°С…РѕРІРєР°
   return *this;
 }
 
@@ -70,13 +70,13 @@ cstrng::cstrng( int sz )
 cstrng::cstrng( const char* src )
 {
   alloc(strlen(src));
-  prot_strcpy(_data, src, _size+1); // перестраховка
+  prot_strcpy(_data, src, _size+1); // РїРµСЂРµСЃС‚СЂР°С…РѕРІРєР°
 }
 
 cstrng::cstrng( const cstrng& src )
 {
-  alloc(src.len());       // отводим память только под реальное содержимое
-  prot_strcpy(_data, src._data, _size+1); // перестраховка
+  alloc(src.len());       // РѕС‚РІРѕРґРёРј РїР°РјСЏС‚СЊ С‚РѕР»СЊРєРѕ РїРѕРґ СЂРµР°Р»СЊРЅРѕРµ СЃРѕРґРµСЂР¶РёРјРѕРµ
+  prot_strcpy(_data, src._data, _size+1); // РїРµСЂРµСЃС‚СЂР°С…РѕРІРєР°
 }
 
 cstrng::~cstrng()
@@ -291,7 +291,7 @@ int cstrng::search( const char* str ) const
 cstrng cstrng::subs( int pos, int len ) const
 {
   int slen = this->len();
-  test_index(pos, slen+1); // позволяем адресовать завершающий нуль
+  test_index(pos, slen+1); // РїРѕР·РІРѕР»СЏРµРј Р°РґСЂРµСЃРѕРІР°С‚СЊ Р·Р°РІРµСЂС€Р°СЋС‰РёР№ РЅСѓР»СЊ
 
   cstrng res(_data + pos);
   if( res.len() > len )

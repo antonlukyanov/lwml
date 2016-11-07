@@ -1,17 +1,17 @@
-#include "config.h"
+#include "lwml/lua/config.h"
 
-#include "apphome.h"
-#include "filename.h"
-#include "refowner.h"
-#include "debug.h"
-#include "stdmem.h"
+#include "lwml/system/apphome.h"
+#include "lwml/io/filename.h"
+#include "lwml/base/refowner.h"
+#include "lwml/utils/debug.h"
+#include "lwml/memory/stdmem.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
 namespace {
-  referer<luaconf> _appcfg; //!! TODO: многопоточность?
+  referer<luaconf> _appcfg; //!! TODO: РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕСЃС‚СЊ?
 
   void init_appcfg( const char* fname = 0 )
   {

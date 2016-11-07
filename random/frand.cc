@@ -1,4 +1,4 @@
-#include "frand.h"
+#include "lwml/random/frand.h"
 
 /*#lake:stop*/
 

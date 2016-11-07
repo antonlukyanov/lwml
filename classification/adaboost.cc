@@ -1,8 +1,8 @@
-#include "adaboost.h"
+#include "lwml/classification/adaboost.h"
 
-#include "debug.h"
-#include "ivector.h"
-#include "progress.h"
+#include "lwml/utils/debug.h"
+#include "lwml/m_types/ivector.h"
+#include "lwml/console/progress.h"
 
 /*#build_stop*/
 
@@ -45,8 +45,8 @@ adaboost::adaboost( referer<luaconf> cnf, const char* root )
 
 }
 
-// размерности векторов в наборах полагаются одинаковыми
-// длины векторов весов согласованы с длинами наборов векторов
+// СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё РІРµРєС‚РѕСЂРѕРІ РІ РЅР°Р±РѕСЂР°С… РїРѕР»Р°РіР°СЋС‚СЃСЏ РѕРґРёРЅР°РєРѕРІС‹РјРё
+// РґР»РёРЅС‹ РІРµРєС‚РѕСЂРѕРІ РІРµСЃРѕРІ СЃРѕРіР»Р°СЃРѕРІР°РЅС‹ СЃ РґР»РёРЅР°РјРё РЅР°Р±РѕСЂРѕРІ РІРµРєС‚РѕСЂРѕРІ
 real adaboost::calc_error(
   const i_vector_set& vs1, const vector& w1,
   const i_vector_set& vs2, const vector& w2,
@@ -98,7 +98,7 @@ real adaboost::recalc_weights(
   return alpha;
 }
 
-// размерности векторов в наборах полагаются одинаковыми
+// СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё РІРµРєС‚РѕСЂРѕРІ РІ РЅР°Р±РѕСЂР°С… РїРѕР»Р°РіР°СЋС‚СЃСЏ РѕРґРёРЅР°РєРѕРІС‹РјРё
 void adaboost::mk_classifier(
   const i_simple_classifier_maker& sc_fact,
   const i_vector_set& vs1, const i_vector_set& vs2,
@@ -121,7 +121,7 @@ void adaboost::mk_classifier(
 
     _step_num++;
 
-    if( error == 0.0 ){ // все нашли идеально
+    if( error == 0.0 ){ // РІСЃРµ РЅР°С€Р»Рё РёРґРµР°Р»СЊРЅРѕ
       if( tick == tmON )
         progress::finish();
       return;
@@ -135,17 +135,17 @@ void adaboost::mk_classifier(
 
 void adaboost::calc_part_confidence( const vector& x, int cl )
 {
-  // пробегаемся по всем шагам классификатора
+  // РїСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ РІСЃРµРј С€Р°РіР°Рј РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°
   vector cl_value(_step_num, 0.0);
   classify(x, cl_value);
   for( int k = 0; k < step_num(); k++ ){
     if( cl == 1 ){
-      bool is_ok = (cl_value[k] < 0.0); // классифицировали в 1-й класс
+      bool is_ok = (cl_value[k] < 0.0); // РєР»Р°СЃСЃРёС„РёС†РёСЂРѕРІР°Р»Рё РІ 1-Р№ РєР»Р°СЃСЃ
       _n_r1[k] += is_ok ? 1 : 0;
       _n_w1[k] += !is_ok ? 1 : 0;
     }
     else if( cl == 2 ){
-      bool is_ok = !(cl_value[k] < 0.0); // классифицировали во 2-й класс
+      bool is_ok = !(cl_value[k] < 0.0); // РєР»Р°СЃСЃРёС„РёС†РёСЂРѕРІР°Р»Рё РІРѕ 2-Р№ РєР»Р°СЃСЃ
       _n_r2[k] += is_ok ? 1 : 0;
       _n_w2[k] += !is_ok ? 1 : 0;
     }
@@ -157,7 +157,7 @@ void adaboost::calc_confidences( const i_vector_set& vs1, const i_vector_set& vs
   test_size(vs1.dim(), _dim);
   test_size(vs2.dim(), _dim);
 
-  // пробегаемся по всем точкам обоих классов
+  // РїСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ РІСЃРµРј С‚РѕС‡РєР°Рј РѕР±РѕРёС… РєР»Р°СЃСЃРѕРІ
   vector x(vs1.dim());
   for( int j = 0; j < vs1.len(); j++ ){
     vs1.get(x, j);
@@ -168,7 +168,7 @@ void adaboost::calc_confidences( const i_vector_set& vs1, const i_vector_set& vs
     calc_part_confidence(x, 2);
   }
 
-  // вычисление условных вероятностей
+  // РІС‹С‡РёСЃР»РµРЅРёРµ СѓСЃР»РѕРІРЅС‹С… РІРµСЂРѕСЏС‚РЅРѕСЃС‚РµР№
   if( _is_test ){
     int k = step_num()-1;
     _p1[0] = (double)_n_r1[k]/ (_n_r1[k] + _n_w1[k]);
@@ -182,10 +182,10 @@ void adaboost::calc_confidences( const i_vector_set& vs1, const i_vector_set& vs
   }
 }
 
-// Оценивает качество признаков на заданной тестовой выборке.
-// Усредняет веса координат классифицируемого вектора,
-// в усреднении участвуют только те простые классификаторы,
-// которые сработали на одном из векторов тестовой выборки.
+// РћС†РµРЅРёРІР°РµС‚ РєР°С‡РµСЃС‚РІРѕ РїСЂРёР·РЅР°РєРѕРІ РЅР° Р·Р°РґР°РЅРЅРѕР№ С‚РµСЃС‚РѕРІРѕР№ РІС‹Р±РѕСЂРєРµ.
+// РЈСЃСЂРµРґРЅСЏРµС‚ РІРµСЃР° РєРѕРѕСЂРґРёРЅР°С‚ РєР»Р°СЃСЃРёС„РёС†РёСЂСѓРµРјРѕРіРѕ РІРµРєС‚РѕСЂР°,
+// РІ СѓСЃСЂРµРґРЅРµРЅРёРё СѓС‡Р°СЃС‚РІСѓСЋС‚ С‚РѕР»СЊРєРѕ С‚Рµ РїСЂРѕСЃС‚С‹Рµ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂС‹,
+// РєРѕС‚РѕСЂС‹Рµ СЃСЂР°Р±РѕС‚Р°Р»Рё РЅР° РѕРґРЅРѕРј РёР· РІРµРєС‚РѕСЂРѕРІ С‚РµСЃС‚РѕРІРѕР№ РІС‹Р±РѕСЂРєРё.
 void adaboost::calc_feature_quality( const i_vector_set& vs1, const i_vector_set& vs2 )
 {
   test_size(vs1.dim(), _dim);
@@ -202,20 +202,20 @@ void adaboost::calc_feature_quality( const i_vector_set& vs1, const i_vector_set
     calc_feature_quality(vnums, x);
   }
 
-  // мы посчитали качество и количество точек для каждого шага
-  // теперь записываем значения - сумма до этого шага
+  // РјС‹ РїРѕСЃС‡РёС‚Р°Р»Рё РєР°С‡РµСЃС‚РІРѕ Рё РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РґР»СЏ РєР°Р¶РґРѕРіРѕ С€Р°РіР°
+  // С‚РµРїРµСЂСЊ Р·Р°РїРёСЃС‹РІР°РµРј Р·РЅР°С‡РµРЅРёСЏ - СЃСѓРјРјР° РґРѕ СЌС‚РѕРіРѕ С€Р°РіР°
   for( int k = 0; k < step_num() -1; k++ ){
     _qualities[k+1] += _qualities[k];
     vnums[k+1] += vnums[k];
   }
 
-  // вычисляем среднее значение
+  // РІС‹С‡РёСЃР»СЏРµРј СЃСЂРµРґРЅРµРµ Р·РЅР°С‡РµРЅРёРµ
   for( int k = 0; k < step_num(); k++ ){
     _qualities[k] /= vnums[k];
   }
 }
 
-// Считает качества признаков для
+// РЎС‡РёС‚Р°РµС‚ РєР°С‡РµСЃС‚РІР° РїСЂРёР·РЅР°РєРѕРІ РґР»СЏ
 void adaboost::calc_feature_quality( int_vector& vnums, const vector& x )
 {
   if( _step_num == 0 )
@@ -225,7 +225,7 @@ void adaboost::calc_feature_quality( int_vector& vnums, const vector& x )
   vector cl_value(_step_num, 0.0);
   classify(x, cl_value);
   for( int k = 0; k < step_num(); k++ ){
-    if( k == 0|| cl_value[k-1]*cl_value[k] < 0 ){ // сумма сменила знак
+    if( k == 0|| cl_value[k-1]*cl_value[k] < 0 ){ // СЃСѓРјРјР° СЃРјРµРЅРёР»Р° Р·РЅР°Рє
       _cl[k]->get_weights(buf);
       vnums[k]++;
       _qualities[k] += buf;
@@ -257,14 +257,14 @@ void adaboost::classify( const vector& x, vector& cl_value ) const
   int st_num = t_min(cl_value.len(), step_num());
   cl_value.set_val(0.0);
   real classify_sum = 0;
-  // пробегаемся по всем шагам классификатора
+  // РїСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ РІСЃРµРј С€Р°РіР°Рј РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°
   for( int k = 0; k < st_num; k++ ){
     real v = (_cl[k]->classify(x) == 0) ? -1.0 : 1.0;
     classify_sum += _alpha[k] * v;
     cl_value[k] = classify_sum;
   }
 
-  // дозаполняем вектор, если надо
+  // РґРѕР·Р°РїРѕР»РЅСЏРµРј РІРµРєС‚РѕСЂ, РµСЃР»Рё РЅР°РґРѕ
   if( cl_value.len() > step_num() ){
     for( int k = st_num; k < cl_value.len(); k++ )
       cl_value[k] = cl_value[st_num-1];
@@ -294,17 +294,17 @@ void adaboost::calc_errors( const i_vector_set& vs1, const i_vector_set& vs2, ve
   test_size(vs1.dim(), _dim);
   test_size(vs2.dim(), _dim);
 
-  // сколько шагов классификатора выполнять
+  // СЃРєРѕР»СЊРєРѕ С€Р°РіРѕРІ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР° РІС‹РїРѕР»РЅСЏС‚СЊ
   int st_num = t_min(errors.len(), step_num());
 
   vector x(vs1.dim());
   errors.set_val(0.0);
   vector cl(st_num, 0.0);
-  // пробегаемся по всем точкам из обучающего набора
+  // РїСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ РІСЃРµРј С‚РѕС‡РєР°Рј РёР· РѕР±СѓС‡Р°СЋС‰РµРіРѕ РЅР°Р±РѕСЂР°
   for( int j = 0; j < vs1.len(); j++ ){
     vs1.get(x, j);
     classify(x, cl);
-    // бежим по всем шагам классификатора
+    // Р±РµР¶РёРј РїРѕ РІСЃРµРј С€Р°РіР°Рј РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°
     for( int k = 0; k < st_num; k++ )
       errors[k] += (cl[k] < 0) ? 0 : 1;
   }
@@ -316,7 +316,7 @@ void adaboost::calc_errors( const i_vector_set& vs1, const i_vector_set& vs2, ve
   }
 
   errors /= (vs1.len() + vs2.len());
-  // если вектор бОльшей длинны чем количество шагов классификатора, то дозаполняем крайним значением
+  // РµСЃР»Рё РІРµРєС‚РѕСЂ Р±РћР»СЊС€РµР№ РґР»РёРЅРЅС‹ С‡РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ С€Р°РіРѕРІ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°, С‚Рѕ РґРѕР·Р°РїРѕР»РЅСЏРµРј РєСЂР°Р№РЅРёРј Р·РЅР°С‡РµРЅРёРµРј
   if( errors.len() > st_num )
     for( int k = st_num; k < errors.len(); k++ ){
       errors[k] = errors[st_num-1];
@@ -360,28 +360,28 @@ real adaboost::get_confidence( const vector& x, int num ) const
     num = 1;
 
   if( classify(x, num) == 0 )
-    return _p1[num-1]; // num -количество шагов классификатора
+    return _p1[num-1]; // num -РєРѕР»РёС‡РµСЃС‚РІРѕ С€Р°РіРѕРІ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°
   else
     return _p2[num-1];
 }
 
 void adaboost::save_result( referer<luaconf> res, const char* root ) const
 {
-  // основная таблица с параметрами обученного классификатора
+  // РѕСЃРЅРѕРІРЅР°СЏ С‚Р°Р±Р»РёС†Р° СЃ РїР°СЂР°РјРµС‚СЂР°РјРё РѕР±СѓС‡РµРЅРЅРѕРіРѕ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°
   res->exec("%s.adaboost = {}", root);
-  // размерность вектора признака
+  // СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ РІРµРєС‚РѕСЂР° РїСЂРёР·РЅР°РєР°
   res->exec("%s.adaboost.dim = %d", root, _dim);
-  // количество шагов классификатора
+  // РєРѕР»РёС‡РµСЃС‚РІРѕ С€Р°РіРѕРІ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°
   res->exec("%s.adaboost.classifier_num = %d", root, _step_num);
-  // тип используемого простого классификатора
+  // С‚РёРї РёСЃРїРѕР»СЊР·СѓРµРјРѕРіРѕ РїСЂРѕСЃС‚РѕРіРѕ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР°
   res->exec("%s.adaboost.simple_classifier = \"%s\"", root, _cl[0]->get_name());
 
-  // массив alpha
+  // РјР°СЃСЃРёРІ alpha
   res->exec("%s.adaboost.alpha = {}", root);
   for( int i = 0; i < _step_num; i++ )
     res->exec("%s.adaboost.alpha[%d] = %.12g", root, i+1, _alpha[i]);
 
-  // массив p1 p2 для подсчета уверенности классификации
+  // РјР°СЃСЃРёРІ p1 p2 РґР»СЏ РїРѕРґСЃС‡РµС‚Р° СѓРІРµСЂРµРЅРЅРѕСЃС‚Рё РєР»Р°СЃСЃРёС„РёРєР°С†РёРё
   res->exec("%s.adaboost.p1 = {}", root);
   for( int i = 0; i < _p1.len(); i++ )
     res->exec("%s.adaboost.p1[%d] = %.12g", root, i+1, _p1[i]);
@@ -390,15 +390,15 @@ void adaboost::save_result( referer<luaconf> res, const char* root ) const
   for( int i = 0; i < _p2.len(); i++ )
     res->exec("%s.adaboost.p2[%d] = %.12g", root, i+1, _p2[i]);
 
-  // сереализация простых классификаторов
+  // СЃРµСЂРµР°Р»РёР·Р°С†РёСЏ РїСЂРѕСЃС‚С‹С… РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂРѕРІ
   res->exec("%s.adaboost.simple_classifiers = {}", root);
   for( int i = 0; i < _step_num; i++ ){
     strng str = cstrng::form("%s.adaboost.simple_classifiers[%d]", root, i+1);
     _cl[i]->serialize(res, str.ascstr());
   }
 
-  // вывод качества признаков
-  // для каждого шага adaboost, выводится качество для каждого признака
+  // РІС‹РІРѕРґ РєР°С‡РµСЃС‚РІР° РїСЂРёР·РЅР°РєРѕРІ
+  // РґР»СЏ РєР°Р¶РґРѕРіРѕ С€Р°РіР° adaboost, РІС‹РІРѕРґРёС‚СЃСЏ РєР°С‡РµСЃС‚РІРѕ РґР»СЏ РєР°Р¶РґРѕРіРѕ РїСЂРёР·РЅР°РєР°
   res->exec("%s.adaboost.qualities = {}", root);
   if( !_is_test ){
     res->exec("%s.adaboost.qualities[%d] = {}", root, 1);

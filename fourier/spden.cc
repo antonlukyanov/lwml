@@ -1,7 +1,7 @@
-#include "spden.h"
-#include "fft.h"
-#include "pwspest.h"
-#include "sliding.h"
+#include "lwml/fourier/spden.h"
+#include "lwml/fourier/fft.h"
+#include "lwml/fourier/pwspest.h"
+#include "lwml/m_types/sliding.h"
 
 /*#lake:stop*/
 

@@ -1,4 +1,4 @@
-#include "geom3d.h"
+#include "lwml/geometry/geom3d.h"
 
 /*#lake:stop*/
 

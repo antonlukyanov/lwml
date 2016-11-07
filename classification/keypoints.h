@@ -4,21 +4,21 @@
 #ifndef _KEYPOINTS_
 #define _KEYPOINTS_
 
-#include "defs.h"
-#include "mdefs.h"
-#include "i_vset.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/m_base/i_vset.h"
 
-#include "igeom.h"
-#include "t_list.h"
-#include "ivector.h"
-#include "vector.h"
-#include "randcomb.h"
+#include "lwml/geometry/igeom.h"
+#include "lwml/types/t_list.h"
+#include "lwml/m_types/ivector.h"
+#include "lwml/m_types/vector.h"
+#include "lwml/random/randcomb.h"
 
 /*#build_stop*/
 
 namespace lwml {
 
-// Контейнер ключевых точек картинок и их дескрипторов.
+// РљРѕРЅС‚РµР№РЅРµСЂ РєР»СЋС‡РµРІС‹С… С‚РѕС‡РµРє РєР°СЂС‚РёРЅРѕРє Рё РёС… РґРµСЃРєСЂРёРїС‚РѕСЂРѕРІ.
 
 class keypoint_list : public value {
 public:
@@ -59,24 +59,24 @@ public:
   }
 
 private:
-  t_list<int_point> _pt_list;         // список ключевых точек
-  t_list<vector> _dsc_list;           // список дескрипторов
-  t_list<int> _id_list, _class_list;  // списки id и классов точек
+  t_list<int_point> _pt_list;         // СЃРїРёСЃРѕРє РєР»СЋС‡РµРІС‹С… С‚РѕС‡РµРє
+  t_list<vector> _dsc_list;           // СЃРїРёСЃРѕРє РґРµСЃРєСЂРёРїС‚РѕСЂРѕРІ
+  t_list<int> _id_list, _class_list;  // СЃРїРёСЃРєРё id Рё РєР»Р°СЃСЃРѕРІ С‚РѕС‡РµРє
 };
 
-// Интерфейс объекта, хранящего нагруженный набор векторов.
-// Обычно используется в алгоритмах кластеризации.
+// РРЅС‚РµСЂС„РµР№СЃ РѕР±СЉРµРєС‚Р°, С…СЂР°РЅСЏС‰РµРіРѕ РЅР°РіСЂСѓР¶РµРЅРЅС‹Р№ РЅР°Р±РѕСЂ РІРµРєС‚РѕСЂРѕРІ.
+// РћР±С‹С‡РЅРѕ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ Р°Р»РіРѕСЂРёС‚РјР°С… РєР»Р°СЃС‚РµСЂРёР·Р°С†РёРё.
 //
-// Потомки переопределяют следующие виртуальные функции:
+// РџРѕС‚РѕРјРєРё РїРµСЂРµРѕРїСЂРµРґРµР»СЏСЋС‚ СЃР»РµРґСѓСЋС‰РёРµ РІРёСЂС‚СѓР°Р»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё:
 //
-//   len() - возвращает число векторов
-//   dim() - возвращает размерность векторов
-//   get(j) - возвращает d-ю компоненту вектора с номером j
-//   get( vector&, j ) - помещает в переданный хранимый вектор с номером j
+//   len() - РІРѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ РІРµРєС‚РѕСЂРѕРІ
+//   dim() - РІРѕР·РІСЂР°С‰Р°РµС‚ СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ РІРµРєС‚РѕСЂРѕРІ
+//   get(j) - РІРѕР·РІСЂР°С‰Р°РµС‚ d-СЋ РєРѕРјРїРѕРЅРµРЅС‚Сѓ РІРµРєС‚РѕСЂР° СЃ РЅРѕРјРµСЂРѕРј j
+//   get( vector&, j ) - РїРѕРјРµС‰Р°РµС‚ РІ РїРµСЂРµРґР°РЅРЅС‹Р№ С…СЂР°РЅРёРјС‹Р№ РІРµРєС‚РѕСЂ СЃ РЅРѕРјРµСЂРѕРј j
 //
-//   ldim() - возвращает число значений нагружения
-//   loading(j) - возвращает нагружение вектора с номером j
-// Контракт: нагружение принимает значения из диапазона [0, ldim()-1].
+//   ldim() - РІРѕР·РІСЂР°С‰Р°РµС‚ С‡РёСЃР»Рѕ Р·РЅР°С‡РµРЅРёР№ РЅР°РіСЂСѓР¶РµРЅРёСЏ
+//   loading(j) - РІРѕР·РІСЂР°С‰Р°РµС‚ РЅР°РіСЂСѓР¶РµРЅРёРµ РІРµРєС‚РѕСЂР° СЃ РЅРѕРјРµСЂРѕРј j
+// РљРѕРЅС‚СЂР°РєС‚: РЅР°РіСЂСѓР¶РµРЅРёРµ РїСЂРёРЅРёРјР°РµС‚ Р·РЅР°С‡РµРЅРёСЏ РёР· РґРёР°РїР°Р·РѕРЅР° [0, ldim()-1].
 
 class i_loaded_vector_set : public interface {
 public:
@@ -91,7 +91,7 @@ public:
   real operator()( int j, int d ) const { return get(j, d); }
 };
 
-// Реализация интерфейса i_loaded_vector_set поверх keypoint_list.
+// Р РµР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂС„РµР№СЃР° i_loaded_vector_set РїРѕРІРµСЂС… keypoint_list.
 
 class keypoint_list_lvset : public i_loaded_vector_set {
 public:
@@ -163,10 +163,10 @@ private:
   int _dim;
 };
 
-// Реализация интерфейса i_vector_set поверх keypoint_list_lvset.
-// Разбиение задается вектором pattern и значением cl.
-// Из i_loaded_vector_set отбираются элементы, для которых
-// соответствующий элемент векторв pattern равен cl.
+// Р РµР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂС„РµР№СЃР° i_vector_set РїРѕРІРµСЂС… keypoint_list_lvset.
+// Р Р°Р·Р±РёРµРЅРёРµ Р·Р°РґР°РµС‚СЃСЏ РІРµРєС‚РѕСЂРѕРј pattern Рё Р·РЅР°С‡РµРЅРёРµРј cl.
+// РР· i_loaded_vector_set РѕС‚Р±РёСЂР°СЋС‚СЃСЏ СЌР»РµРјРµРЅС‚С‹, РґР»СЏ РєРѕС‚РѕСЂС‹С…
+// СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ СЌР»РµРјРµРЅС‚ РІРµРєС‚РѕСЂРІ pattern СЂР°РІРµРЅ cl.
 
 class mkeypoint_vset : public i_vector_set {
 public:
@@ -196,7 +196,7 @@ private:
   t_list<int> _index;
 };
 
-// proportion точек из src_kpl помещает в test_kpl, остальные помещает в training_kpl
+// proportion С‚РѕС‡РµРє РёР· src_kpl РїРѕРјРµС‰Р°РµС‚ РІ test_kpl, РѕСЃС‚Р°Р»СЊРЅС‹Рµ РїРѕРјРµС‰Р°РµС‚ РІ training_kpl
 void rand_partition(
   const keypoint_list& src_kpl,
   keypoint_list& training_kpl,

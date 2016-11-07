@@ -1,4 +1,4 @@
-#include "mcontr.h"
+#include "lwml/m_alg_spec/mcontr.h"
 
 /*#lake:stop*/
 
@@ -30,7 +30,7 @@ void mcontr::upcontr( matrix& m, real par, real sh )
 
   real ax = m.min();
   real bx = m.max();
-  real d = par * (bx-ax);                  // сдвиг от углов квадрата
+  real d = par * (bx-ax);                  // СЃРґРІРёРі РѕС‚ СѓРіР»РѕРІ РєРІР°РґСЂР°С‚Р°
   real e = sh * (bx - ax);
 
   line_func cf(ax+d, ax, bx-d, bx);
@@ -47,7 +47,7 @@ void mcontr::decontr( matrix& m, real par, real sh )
 
   real ax = m.min();
   real bx = m.max();
-  real d = par * (bx-ax);                  // сдвиг от углов квадрата
+  real d = par * (bx-ax);                  // СЃРґРІРёРі РѕС‚ СѓРіР»РѕРІ РєРІР°РґСЂР°С‚Р°
   real e = sh * (bx - ax);
 
   line_func cf(ax, ax+d, bx, bx-d);

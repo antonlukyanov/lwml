@@ -1,9 +1,9 @@
-#include "eplib.h"
-#include "stdmem.h"
-#include "cstrng.h"
-#include "basex.h"
-#include "filename.h"
-#include "stream.h"
+#include "lwml/m_alg_spec/eplib.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/types/cstrng.h"
+#include "lwml/base/basex.h"
+#include "lwml/io/filename.h"
+#include "lwml/io/stream.h"
 
 /*#lake:stop*/
 

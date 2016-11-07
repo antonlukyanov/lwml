@@ -1,6 +1,6 @@
-#include "rgb.h"
-#include "mdefs.h"
-#include "basex.h"
+#include "lwml/types/rgb.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 
@@ -63,16 +63,16 @@ hsbcolor color_conv::rgb2hsb( const rgbcolor& rgb )
   real g = rgb.green();
   real b = rgb.blue();
 
-  // определение "светлоты"2
+  // РѕРїСЂРµРґРµР»РµРЅРёРµ "СЃРІРµС‚Р»РѕС‚С‹"2
   real max = t_max<real>(r, g, b);
   v = max;
 
-  // определение насыщенности
+  // РѕРїСЂРµРґРµР»РµРЅРёРµ РЅР°СЃС‹С‰РµРЅРЅРѕСЃС‚Рё
   real min = t_min<real>(r, g, b);
   if( v == 0.0 ) s = 0.0;
     else s = (v - min) / v;
 
-  // Определение цветового тона
+  // РћРїСЂРµРґРµР»РµРЅРёРµ С†РІРµС‚РѕРІРѕРіРѕ С‚РѕРЅР°
   if( s == 0 )
     h = UNDEFINED_COLOR;
   else{
@@ -83,16 +83,16 @@ hsbcolor color_conv::rgb2hsb( const rgbcolor& rgb )
 
     h = 0; // has no mean!
     if( r == max ) 
-      h = cb - cg;            // цвет между желтым и пурпурным
+      h = cb - cg;            // С†РІРµС‚ РјРµР¶РґСѓ Р¶РµР»С‚С‹Рј Рё РїСѓСЂРїСѓСЂРЅС‹Рј
     else if( g == max ) 
-      h = 2.0 + cr - cb; // цвет между голубым и желтым
+      h = 2.0 + cr - cb; // С†РІРµС‚ РјРµР¶РґСѓ РіРѕР»СѓР±С‹Рј Рё Р¶РµР»С‚С‹Рј
     else if( b == max ) 
-      h = 4.0 + cg - cr; // цвет между пурпурным и голубым
+      h = 4.0 + cg - cr; // С†РІРµС‚ РјРµР¶РґСѓ РїСѓСЂРїСѓСЂРЅС‹Рј Рё РіРѕР»СѓР±С‹Рј
     else 
       fail_unexpected();
 
     h *= 60.0;
-    if( h < 0 ) h += 360.0; // приведение к положительным величинам
+    if( h < 0 ) h += 360.0; // РїСЂРёРІРµРґРµРЅРёРµ Рє РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рј РІРµР»РёС‡РёРЅР°Рј
   }
 
   return hsbcolor(h / 360.0, s, v); // important: hsbcolor.hue as real

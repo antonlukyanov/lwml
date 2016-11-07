@@ -4,10 +4,10 @@
 #ifndef _CWT_DRV_
 #define _CWT_DRV_
 
-#include "defs.h"
-#include "mdefs.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
 
-#include "cwt.h"
+#include "lwml/wavelets/cwt.h"
 
 /*#build_stop*/
 

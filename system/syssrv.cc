@@ -1,6 +1,6 @@
-#include "syssrv.h"
+#include "lwml/system/syssrv.h"
 
-#include "lwmlconf.h"
+#include "lwml/lwmlconf.h"
 
 /*#lake:stop*/
 

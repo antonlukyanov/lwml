@@ -1,11 +1,11 @@
-// Гауссово размытие изображения (c) asm
+// Р“Р°СѓСЃСЃРѕРІРѕ СЂР°Р·РјС‹С‚РёРµ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ (c) asm
 // lwml, (c) ltwood
 
-#include "gauss_blur.h"
+#include "lwml/fourier/gauss_blur.h"
 
-#include "matrix.h"
-#include "fft2d.h"
-#include "geom.h"
+#include "lwml/m_types/matrix.h"
+#include "lwml/fourier/fft2d.h"
+#include "lwml/geometry/geom.h"
 
 namespace lwml {
 
@@ -28,11 +28,11 @@ void gauss_blur::proc( const matrix& src, real sigma_x, real sigma_y, real phi, 
   test_size2(src.str(), _ly, src.col(), _lx);
 
   _rg.set_zero();
-  // дискретизируем гауссиану и находим спектр
+  // РґРёСЃРєСЂРµС‚РёР·РёСЂСѓРµРј РіР°СѓСЃСЃРёР°РЅСѓ Рё РЅР°С…РѕРґРёРј СЃРїРµРєС‚СЂ
   for( int jy = 0; jy < _ny2; jy++ ){
-    int iy = (jy < _ny2 / 2) ? jy : jy-_ny2; // отражение
+    int iy = (jy < _ny2 / 2) ? jy : jy-_ny2; // РѕС‚СЂР°Р¶РµРЅРёРµ
     for( int jx = 0; jx < _nx2; jx++ ){
-      int ix = (jx < _nx2 / 2) ? jx : jx-_nx2; // отражение
+      int ix = (jx < _nx2 / 2) ? jx : jx-_nx2; // РѕС‚СЂР°Р¶РµРЅРёРµ
       _rg(jy, jx) = gauss2d(sigma_x, sigma_y, phi, ix, iy);
     }
   }
@@ -50,10 +50,10 @@ void gauss_blur::proc( const matrix& src, real sigma_x, real sigma_y, real phi, 
     for( int jx = 0; jx < _nx2; jx++ ){
       real re_k = 1.0, im_k = 0.0;
       if( sigma_x != 0.0 || sigma_y != 0.0 ){
-        re_k *= _rg(jy, jx); // свернуть с размытием
+        re_k *= _rg(jy, jx); // СЃРІРµСЂРЅСѓС‚СЊ СЃ СЂР°Р·РјС‹С‚РёРµРј
         im_k = _ig(jy, jx);
       }
-      //!! NB: быстрое комплексное умножение ??
+      //!! NB: Р±С‹СЃС‚СЂРѕРµ РєРѕРјРїР»РµРєСЃРЅРѕРµ СѓРјРЅРѕР¶РµРЅРёРµ ??
       real a = (_rx(jy, jx) + _ix(jy, jx)) * (re_k + im_k);
       real b = _rx(jy, jx) * re_k, c = _ix(jy, jx) * im_k;
       _rx(jy, jx) = b - c;

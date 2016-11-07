@@ -1,5 +1,5 @@
-#include "mdefs.h"
-#include "basex.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 

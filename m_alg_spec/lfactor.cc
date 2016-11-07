@@ -1,4 +1,4 @@
-#include "lfactor.h"
+#include "lwml/m_alg_spec/lfactor.h"
 
 /*#lake:stop*/
 

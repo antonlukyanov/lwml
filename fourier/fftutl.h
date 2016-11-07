@@ -4,10 +4,10 @@
 #ifndef _FFTUTL_
 #define _FFTUTL_
 
-#include "defs.h"
-#include "mdefs.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
 
-#include "matrix.h"
+#include "lwml/m_types/matrix.h"
 
 /*#lake:stop*/
 

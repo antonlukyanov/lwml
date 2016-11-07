@@ -1,5 +1,5 @@
-#include "font.h"
-#include "chrfont.h"
+#include "lwml/psgraph/font.h"
+#include "lwml/system/chrfont.h"
 
 /*#lake:stop*/
 
@@ -80,9 +80,9 @@ void font::puts(
 
   real ml = mult(height);
 
-  real tx = cos(alpha);  // вектор вдоль строки
+  real tx = cos(alpha);  // РІРµРєС‚РѕСЂ РІРґРѕР»СЊ СЃС‚СЂРѕРєРё
   real ty = sin(alpha);
-  real nx = -ty;         // вектор вверх от строки
+  real nx = -ty;         // РІРµРєС‚РѕСЂ РІРІРµСЂС… РѕС‚ СЃС‚СЂРѕРєРё
   real ny = tx;
 
   real hl = 0.0;

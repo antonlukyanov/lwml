@@ -1,10 +1,10 @@
 #ifndef _SVMCLASSIFIER_
 #define _SVMCLASSIFIER_
 
-#include "adaboost.h"
-#include "mboost.h"
-#include "vector.h"
-#include "defs.h"
+#include "lwml/classification/adaboost.h"
+#include "lwml/classification/mboost.h"
+#include "lwml/m_types/vector.h"
+#include "lwml/base/defs.h"
 #include "svm.h"
 
 namespace lwml {
@@ -21,14 +21,14 @@ public:
    */
   svm(const keypoint_list_lvset& kpl, bool train_immediately = true);
   /**
-   * Load model in libsvm's format (Загрузить модель из текстовых файлов в формате чтения libsvm)
+   * Load model in libsvm's format (Р—Р°РіСЂСѓР·РёС‚СЊ РјРѕРґРµР»СЊ РёР· С‚РµРєСЃС‚РѕРІС‹С… С„Р°Р№Р»РѕРІ РІ С„РѕСЂРјР°С‚Рµ С‡С‚РµРЅРёСЏ libsvm)
    * (http://www.csie.ntu.edu.tw/~cjlin/libsvm/)
    *
    * file_name_prefix+"_model.txt" - name of file which contains model data.
    * file_name_prefix+"_range.txt" - name of file which contains scaling params (out of svm-scale command).
    */
   svm(const char* file_name_prefix = "");
-  // Load model from luaconf (Загрузить модель из файла конфигурации в формате luaconf)
+  // Load model from luaconf (Р—Р°РіСЂСѓР·РёС‚СЊ РјРѕРґРµР»СЊ РёР· С„Р°Р№Р»Р° РєРѕРЅС„РёРіСѓСЂР°С†РёРё РІ С„РѕСЂРјР°С‚Рµ luaconf)
   svm(referer<luaconf> cnf, const char* root);
   ~svm();
 
@@ -45,15 +45,15 @@ public:
   virtual int step_num() const;
 
   /**
-   * Классифицировать вектор признаков (получить класс)
+   * РљР»Р°СЃСЃРёС„РёС†РёСЂРѕРІР°С‚СЊ РІРµРєС‚РѕСЂ РїСЂРёР·РЅР°РєРѕРІ (РїРѕР»СѓС‡РёС‚СЊ РєР»Р°СЃСЃ)
    */
   virtual int classify(const vector&, int num = 0) const;
 
-  // трудность классификации, для точек из обучающего набора
+  // С‚СЂСѓРґРЅРѕСЃС‚СЊ РєР»Р°СЃСЃРёС„РёРєР°С†РёРё, РґР»СЏ С‚РѕС‡РµРє РёР· РѕР±СѓС‡Р°СЋС‰РµРіРѕ РЅР°Р±РѕСЂР°
   //~virtual real get_complexity( int cl, int idx ) const = 0;
 
   /**
-   * Оценивает качество признаков на заданной тестовой выборке.
+   * РћС†РµРЅРёРІР°РµС‚ РєР°С‡РµСЃС‚РІРѕ РїСЂРёР·РЅР°РєРѕРІ РЅР° Р·Р°РґР°РЅРЅРѕР№ С‚РµСЃС‚РѕРІРѕР№ РІС‹Р±РѕСЂРєРµ.
    */
   virtual void get_feature_quality(vector& q, int num = 0, int m_idx = -1) const;
 
@@ -65,11 +65,11 @@ public:
   virtual real get_confidence_for_one_class(const vector& x, int num = 0, int class_idx = 0) const;
 
   /**
-   * Сохранение обученного классификатора в формате luaconf
+   * РЎРѕС…СЂР°РЅРµРЅРёРµ РѕР±СѓС‡РµРЅРЅРѕРіРѕ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР° РІ С„РѕСЂРјР°С‚Рµ luaconf
    */
   virtual void save_result(referer<luaconf> cnf, const char* root) const;
   /**
-   * Сохранение обученного классификатора в формате libsvm
+   * РЎРѕС…СЂР°РЅРµРЅРёРµ РѕР±СѓС‡РµРЅРЅРѕРіРѕ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР° РІ С„РѕСЂРјР°С‚Рµ libsvm
    */
   virtual void save_result_file(const char *file_name_prefix = "") const;
 
@@ -158,28 +158,28 @@ public:
 
 private:
   /**
-   * Модель SVM (support vectors, kernel, etc.)
+   * РњРѕРґРµР»СЊ SVM (support vectors, kernel, etc.)
    */
   svm_model *_model;
   /**
-   * Параметры-настройки для обучения (параметры ядра и пр.)s
+   * РџР°СЂР°РјРµС‚СЂС‹-РЅР°СЃС‚СЂРѕР№РєРё РґР»СЏ РѕР±СѓС‡РµРЅРёСЏ (РїР°СЂР°РјРµС‚СЂС‹ СЏРґСЂР° Рё РїСЂ.)s
    */
   svm_parameter *_params;
   /**
-   * Размерность вектора признаков
+   * Р Р°Р·РјРµСЂРЅРѕСЃС‚СЊ РІРµРєС‚РѕСЂР° РїСЂРёР·РЅР°РєРѕРІ
    */
   int _dim;
   /**
-   * Обучающая выборка
+   * РћР±СѓС‡Р°СЋС‰Р°СЏ РІС‹Р±РѕСЂРєР°
    */
   svm_problem *_svm_problem;
 
   /**
-   * Значения для масштабирования(нормализации) параметров
+   * Р—РЅР°С‡РµРЅРёСЏ РґР»СЏ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ(РЅРѕСЂРјР°Р»РёР·Р°С†РёРё) РїР°СЂР°РјРµС‚СЂРѕРІ
    */
   scaling_params* _scaling_params;
   /**
-   * Нижняя и верхняя граница для параметров при маштабировании.
+   * РќРёР¶РЅСЏСЏ Рё РІРµСЂС…РЅСЏСЏ РіСЂР°РЅРёС†Р° РґР»СЏ РїР°СЂР°РјРµС‚СЂРѕРІ РїСЂРё РјР°С€С‚Р°Р±РёСЂРѕРІР°РЅРёРё.
    */
   real _lower, _upper;
   /**
@@ -188,37 +188,37 @@ private:
    */
   static svm_parameter* get_default_params(int num_features = 2);
   /**
-   * Вычисление _scaling_params по обучающей выборке
+   * Р’С‹С‡РёСЃР»РµРЅРёРµ _scaling_params РїРѕ РѕР±СѓС‡Р°СЋС‰РµР№ РІС‹Р±РѕСЂРєРµ
    */
   void init_scaling_params();
   /**
-   * Освобождение памяти для _scaling_params
+   * РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё РґР»СЏ _scaling_params
    */
   void free_scaling_params();
   /**
-   * Нормализовать вектор, используя _scaling_params
+   * РќРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ РІРµРєС‚РѕСЂ, РёСЃРїРѕР»СЊР·СѓСЏ _scaling_params
    */
   void scale_vector(vector& vec) const;
   /**
-   * Нормализовать обучающую выборку
+   * РќРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ РѕР±СѓС‡Р°СЋС‰СѓСЋ РІС‹Р±РѕСЂРєСѓ
    */
   void scale_svm_problem();
   /**
-   * Нормализовать признак
-   * @param feature_value - изначальное значение пизнака
-   * @param ind - номер признака в векторе признаков
+   * РќРѕСЂРјР°Р»РёР·РѕРІР°С‚СЊ РїСЂРёР·РЅР°Рє
+   * @param feature_value - РёР·РЅР°С‡Р°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРёР·РЅР°РєР°
+   * @param ind - РЅРѕРјРµСЂ РїСЂРёР·РЅР°РєР° РІ РІРµРєС‚РѕСЂРµ РїСЂРёР·РЅР°РєРѕРІ
    */
   real scale_feature(real feature_value, int ind) const;
   /**
-   * Загрузить параметры нормализации из файла в формате libsvm
+   * Р—Р°РіСЂСѓР·РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РЅРѕСЂРјР°Р»РёР·Р°С†РёРё РёР· С„Р°Р№Р»Р° РІ С„РѕСЂРјР°С‚Рµ libsvm
    */
   void restore_scaling_params(const char* fname);
   /**
-   * Сохранить параметры нормализации в файл в формате libsvm
+   * РЎРѕС…СЂР°РЅРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РЅРѕСЂРјР°Р»РёР·Р°С†РёРё РІ С„Р°Р№Р» РІ С„РѕСЂРјР°С‚Рµ libsvm
    */
   void save_scaling_params(const char* fname) const;
   /**
-   * Структура для хранения параметров нормализации для одного признака
+   * РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ РЅРѕСЂРјР°Р»РёР·Р°С†РёРё РґР»СЏ РѕРґРЅРѕРіРѕ РїСЂРёР·РЅР°РєР°
    */
   struct scaling_params {
     real min_value;
@@ -226,7 +226,7 @@ private:
   };
 
   /**
-   * Нужно ли обучаться (защита от повторного обучения)
+   * РќСѓР¶РЅРѕ Р»Рё РѕР±СѓС‡Р°С‚СЊСЃСЏ (Р·Р°С‰РёС‚Р° РѕС‚ РїРѕРІС‚РѕСЂРЅРѕРіРѕ РѕР±СѓС‡РµРЅРёСЏ)
    */
   bool _need_learn;
 

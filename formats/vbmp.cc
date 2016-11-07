@@ -1,14 +1,14 @@
-#include "vbmp.h"
+#include "lwml/formats/vbmp.h"
 
-#include "limlib.h"
-#include "t_utils.h"
+#include "lwml/formats/limlib.h"
+#include "lwml/utils/t_utils.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// Переворот картинки в буфере.
-// Работает в предположении что img.len() делится на lx без остатка.
+// РџРµСЂРµРІРѕСЂРѕС‚ РєР°СЂС‚РёРЅРєРё РІ Р±СѓС„РµСЂРµ.
+// Р Р°Р±РѕС‚Р°РµС‚ РІ РїСЂРµРґРїРѕР»РѕР¶РµРЅРёРё С‡С‚Рѕ img.len() РґРµР»РёС‚СЃСЏ РЅР° lx Р±РµР· РѕСЃС‚Р°С‚РєР°.
 void vbmp::revers()
 {
   for( int y = 0; y < _ly/2; y++ ){
@@ -20,7 +20,7 @@ void vbmp::revers()
   }
 }
 
-// Обращение яркостей картинки в буфере.
+// РћР±СЂР°С‰РµРЅРёРµ СЏСЂРєРѕСЃС‚РµР№ РєР°СЂС‚РёРЅРєРё РІ Р±СѓС„РµСЂРµ.
 void vbmp::col_rev()
 {
   int sz = _img.len();

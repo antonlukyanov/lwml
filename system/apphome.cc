@@ -1,9 +1,9 @@
-#include "apphome.h"
+#include "lwml/system/apphome.h"
 
-#include "debug.h"
-#include "syssrv.h"
-#include "filename.h"
-#include "llogsrv.h"
+#include "lwml/utils/debug.h"
+#include "lwml/system/syssrv.h"
+#include "lwml/io/filename.h"
+#include "lwml/utils/llogsrv.h"
 
 #if OS_WIN
   #include <sys/types.h>
@@ -38,12 +38,12 @@ namespace {
       *psl = 0;
   }
 
-  cstrng get_app_path() //!! TODO: вычислять строку один раз в начале?
+  cstrng get_app_path() //!! TODO: РІС‹С‡РёСЃР»СЏС‚СЊ СЃС‚СЂРѕРєСѓ РѕРґРёРЅ СЂР°Р· РІ РЅР°С‡Р°Р»Рµ?
   {
     if( getenv("LWML_APP_HOME") ){
       return filename::norm_path(getenv("LWML_APP_HOME"));
     } else {
-      // Локальный буфер потоко-безопасней.
+      // Р›РѕРєР°Р»СЊРЅС‹Р№ Р±СѓС„РµСЂ РїРѕС‚РѕРєРѕ-Р±РµР·РѕРїР°СЃРЅРµР№.
       char buf[APP_PATH_BUFLEN];
 
 #if OS_WIN
@@ -74,7 +74,7 @@ namespace {
       strcpy(buf, out);
 #endif
 
-      // Убираем имя исполнимого файла.
+      // РЈР±РёСЂР°РµРј РёРјСЏ РёСЃРїРѕР»РЅРёРјРѕРіРѕ С„Р°Р№Р»Р°.
       remove_last_part(buf);
 
       return cstrng(buf);

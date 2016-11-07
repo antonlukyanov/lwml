@@ -1,10 +1,10 @@
-#include "iterstat.h"
+#include "lwml/m_alg_spec/iterstat.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// вычисление среднего и вариации по данным и флагам
+// РІС‹С‡РёСЃР»РµРЅРёРµ СЃСЂРµРґРЅРµРіРѕ Рё РІР°СЂРёР°С†РёРё РїРѕ РґР°РЅРЅС‹Рј Рё С„Р»Р°РіР°Рј
 void iter_stat::calc_mid(
   real* mid, real* dev, const vector& d, const t_array<bool>& fl, const vector* w
 )

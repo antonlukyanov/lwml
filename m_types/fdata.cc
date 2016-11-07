@@ -1,8 +1,8 @@
-#include "fdata.h"
-#include "cstrng.h"
-#include "search.h"
-#include "t_sorter.h"
-#include "basex.h"
+#include "lwml/m_types/fdata.h"
+#include "lwml/types/cstrng.h"
+#include "lwml/alg/search.h"
+#include "lwml/alg/t_sorter.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 

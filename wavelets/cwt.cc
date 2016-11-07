@@ -1,5 +1,5 @@
-#include "cwt.h"
-#include "fft.h"
+#include "lwml/wavelets/cwt.h"
+#include "lwml/fourier/fft.h"
 
 /*#build_stop*/
 

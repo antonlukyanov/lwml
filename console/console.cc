@@ -1,17 +1,17 @@
-#include "console.h"
+#include "lwml/console/console.h"
 
-#include "filename.h"
-#include "refowner.h"
-#include "debug.h"
-#include "syssrv.h"
-#include "stdmem.h"
-#include "lwmlconf.h"
+#include "lwml/io/filename.h"
+#include "lwml/base/refowner.h"
+#include "lwml/utils/debug.h"
+#include "lwml/system/syssrv.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/lwmlconf.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// Консольная реализация рендерера прогресс-индикатора
+// РљРѕРЅСЃРѕР»СЊРЅР°СЏ СЂРµР°Р»РёР·Р°С†РёСЏ СЂРµРЅРґРµСЂРµСЂР° РїСЂРѕРіСЂРµСЃСЃ-РёРЅРґРёРєР°С‚РѕСЂР°
 
 const int CONSOLE_PROGRESS_LEN = 50;
 
@@ -29,9 +29,9 @@ public:
   virtual bool up( int st );
 
 private:
-  bool _is_active;      // флаг активности прогресс-индикатора
-  int _size;            // логический размер прогресс-индикатора
-  int _vlaststate;      // состояние при последнем вызове
+  bool _is_active;      // С„Р»Р°Рі Р°РєС‚РёРІРЅРѕСЃС‚Рё РїСЂРѕРіСЂРµСЃСЃ-РёРЅРґРёРєР°С‚РѕСЂР°
+  int _size;            // Р»РѕРіРёС‡РµСЃРєРёР№ СЂР°Р·РјРµСЂ РїСЂРѕРіСЂРµСЃСЃ-РёРЅРґРёРєР°С‚РѕСЂР°
+  int _vlaststate;      // СЃРѕСЃС‚РѕСЏРЅРёРµ РїСЂРё РїРѕСЃР»РµРґРЅРµРј РІС‹Р·РѕРІРµ
 
   void pch( int ch, int num ) const;
 };
@@ -62,8 +62,8 @@ void console_progress_renderer::start( const char* nm, int sz )
   fflush(stderr);
 
   if( _size >= 0 ){
-    pch('.', CONSOLE_PROGRESS_LEN);       // выводим точечки
-    pch(0x08, CONSOLE_PROGRESS_LEN);      // возвращаемся назад
+    pch('.', CONSOLE_PROGRESS_LEN);       // РІС‹РІРѕРґРёРј С‚РѕС‡РµС‡РєРё
+    pch(0x08, CONSOLE_PROGRESS_LEN);      // РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ РЅР°Р·Р°Рґ
   }
 }
 
@@ -74,12 +74,12 @@ void console_progress_renderer::finish()
   _is_active = false;
 
   if( _size >= 0 ){
-    if( _vlaststate < CONSOLE_PROGRESS_LEN )      // выводим недостающие отметки
+    if( _vlaststate < CONSOLE_PROGRESS_LEN )      // РІС‹РІРѕРґРёРј РЅРµРґРѕСЃС‚Р°СЋС‰РёРµ РѕС‚РјРµС‚РєРё
       pch('o', CONSOLE_PROGRESS_LEN - _vlaststate);
-    pch(0x08, CONSOLE_PROGRESS_LEN);              // возвращаемся назад
-    pch(' ', CONSOLE_PROGRESS_LEN);               // стираем отметки
-    pch(0x08, CONSOLE_PROGRESS_LEN);              // снова назад
-    fprintf(stderr, "Ok\n");                      // выводим 'Ok'
+    pch(0x08, CONSOLE_PROGRESS_LEN);              // РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ РЅР°Р·Р°Рґ
+    pch(' ', CONSOLE_PROGRESS_LEN);               // СЃС‚РёСЂР°РµРј РѕС‚РјРµС‚РєРё
+    pch(0x08, CONSOLE_PROGRESS_LEN);              // СЃРЅРѕРІР° РЅР°Р·Р°Рґ
+    fprintf(stderr, "Ok\n");                      // РІС‹РІРѕРґРёРј 'Ok'
     fflush(stderr);
   }
   else {
@@ -142,15 +142,15 @@ namespace {
            (strlen(s) >= 3 && s[0] == '-' && s[1] == '-' && isalpha(s[2]));
   }
 
-  // Запись этих переменных делает только init(), которая должна вызываться
-  // один раз. Немного опасно, но проблемы возникнут только при совершенно
-  // нелепой оплошности.
+  // Р—Р°РїРёСЃСЊ СЌС‚РёС… РїРµСЂРµРјРµРЅРЅС‹С… РґРµР»Р°РµС‚ С‚РѕР»СЊРєРѕ init(), РєРѕС‚РѕСЂР°СЏ РґРѕР»Р¶РЅР° РІС‹Р·С‹РІР°С‚СЊСЃСЏ
+  // РѕРґРёРЅ СЂР°Р·. РќРµРјРЅРѕРіРѕ РѕРїР°СЃРЅРѕ, РЅРѕ РїСЂРѕР±Р»РµРјС‹ РІРѕР·РЅРёРєРЅСѓС‚ С‚РѕР»СЊРєРѕ РїСЂРё СЃРѕРІРµСЂС€РµРЅРЅРѕ
+  // РЅРµР»РµРїРѕР№ РѕРїР»РѕС€РЅРѕСЃС‚Рё.
   bool     _is_active = false;
   int      _sys_argc;
   char**   _sys_argv;
   int      _sys_argnum;
 
-  referer<i_progress_renderer> _progress; //!! TODO: многопоточность?
+  referer<i_progress_renderer> _progress; //!! TODO: РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕСЃС‚СЊ?
 
   int count_arg()
   {
@@ -221,7 +221,7 @@ void console::init( int argc, char *argv[], errmsg_mode errmsg )
   _sys_argv = argv;
   _sys_argnum = count_arg();
 
-  // создаем рендерер прогресс-индикатора
+  // СЃРѕР·РґР°РµРј СЂРµРЅРґРµСЂРµСЂ РїСЂРѕРіСЂРµСЃСЃ-РёРЅРґРёРєР°С‚РѕСЂР°
   _progress = console_progress_renderer::create();
   progress::set_renderer(_progress);
 
@@ -267,7 +267,7 @@ strng console::argv( int k )
 }
 
 namespace {
-  // Возвращает -1, если опция не найдена.
+  // Р’РѕР·РІСЂР°С‰Р°РµС‚ -1, РµСЃР»Рё РѕРїС†РёСЏ РЅРµ РЅР°Р№РґРµРЅР°.
   int get_opt_pos( char ch )
   {
     for( int j = 1; j < _sys_argc; j++ ){

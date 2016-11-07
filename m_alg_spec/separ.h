@@ -1,9 +1,9 @@
 #ifndef _SEPAR_
 #define _SEPAR_
 
-#include "defs.h"
-#include "vector.h"
-#include "i_vset.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_types/vector.h"
+#include "lwml/m_base/i_vset.h"
 
 /*#lake:stop*/
 

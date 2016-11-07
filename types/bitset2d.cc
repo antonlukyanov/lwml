@@ -1,4 +1,4 @@
-#include "bitset2d.h"
+#include "lwml/types/bitset2d.h"
 
 /*#lake:stop*/
 

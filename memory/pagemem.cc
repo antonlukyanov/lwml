@@ -1,5 +1,5 @@
-#include "pagemem.h"
-#include "stream.h"
+#include "lwml/memory/pagemem.h"
+#include "lwml/io/stream.h"
 /*#lake:stop*/
 
 namespace lwml {

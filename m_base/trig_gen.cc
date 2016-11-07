@@ -1,4 +1,4 @@
-#include "trig_gen.h"
+#include "lwml/m_base/trig_gen.h"
 
 /*#lake:stop*/
 

@@ -1,8 +1,8 @@
-#include "vpobject.h"
+#include "lwml/psgraph/vpobject.h"
 
-#include "mdefs.h"
-#include "basex.h"
-#include "progress.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/base/basex.h"
+#include "lwml/console/progress.h"
 
 /*#lake:stop*/
 
@@ -134,7 +134,7 @@ matrix_as_constline::matrix_as_constline(
   _eps = eps;
 }
 
-// обработать отрезок
+// РѕР±СЂР°Р±РѕС‚Р°С‚СЊ РѕС‚СЂРµР·РѕРє
 void matrix_as_constline::cline( fpoint3d p1, fpoint3d p2, real c )
 {
   if( fabs(p1.z() - p2.z()) < _eps * (1.0 + hypot(p1.z(), p2.z())) )
@@ -151,7 +151,7 @@ void matrix_as_constline::cline( fpoint3d p1, fpoint3d p2, real c )
     _vp->point(x, (_col-1) - y);
 }
 
-// обработать треугольник
+// РѕР±СЂР°Р±РѕС‚Р°С‚СЊ С‚СЂРµСѓРіРѕР»СЊРЅРёРє
 void matrix_as_constline::trcline( fpoint3d p1, fpoint3d p2, fpoint3d p3, real c )
 {
   _vp->reset();

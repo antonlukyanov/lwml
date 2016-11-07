@@ -1,7 +1,7 @@
-#include "histogram.h"
-#include "mdefs.h"
-#include "statfn.h"
-#include "basex.h"
+#include "lwml/m_types/histogram.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/m_base/statfn.h"
+#include "lwml/base/basex.h"
 
 /*#lake:stop*/
 
@@ -62,12 +62,12 @@ void histogram::set_integral( int_vector& idx )
     idx[j] = idx[j-1] + _data[j];
 }
 
-// chisq: вычисление статистики хи-квадрат дл равномерного распределени
-// n - общее число шаров
-// m - число луз
-// p_j - веротность i-й лузы
-// n_j - число шаров в i-й лузе
-// r_j - частота i-й лузы (r_i=n_i/n)
+// chisq: РІС‹С‡РёСЃР»РµРЅРёРµ СЃС‚Р°С‚РёСЃС‚РёРєРё С…Рё-РєРІР°РґСЂР°С‚ РґР» СЂР°РІРЅРѕРјРµСЂРЅРѕРіРѕ СЂР°СЃРїСЂРµРґРµР»РµРЅРё
+// n - РѕР±С‰РµРµ С‡РёСЃР»Рѕ С€Р°СЂРѕРІ
+// m - С‡РёСЃР»Рѕ Р»СѓР·
+// p_j - РІРµСЂРѕС‚РЅРѕСЃС‚СЊ i-Р№ Р»СѓР·С‹
+// n_j - С‡РёСЃР»Рѕ С€Р°СЂРѕРІ РІ i-Р№ Р»СѓР·Рµ
+// r_j - С‡Р°СЃС‚РѕС‚Р° i-Р№ Р»СѓР·С‹ (r_i=n_i/n)
 // S = \sum_{j=1}^m \frac{(n_j - n p_j)^2}{n p_j} =
 //     n \sum_{j=1}^m \frac{(n_j/n - p_j)^2}{p_j} =
 //     n \sum_{j=1}^m \frac{(r_j - p_j)^2}{p_j}

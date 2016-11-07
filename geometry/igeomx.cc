@@ -1,4 +1,4 @@
-#include "igeomx.h"
+#include "lwml/geometry/igeomx.h"
 
 /*#lake:stop*/
 
@@ -58,10 +58,10 @@ void linegen::line_sp( i_pixel_map& pm, real x1, real y1, real x2, real y2, clos
 
 void circle::conv( int& x, int& y, int x0, int y0 )
 {
-  // переносим начало отсчета в центр окружности
+  // РїРµСЂРµРЅРѕСЃРёРј РЅР°С‡Р°Р»Рѕ РѕС‚СЃС‡РµС‚Р° РІ С†РµРЅС‚СЂ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё
   x -= x0;
   y -= y0;
-  // отражаем картинку в первый квадрант
+  // РѕС‚СЂР°Р¶Р°РµРј РєР°СЂС‚РёРЅРєСѓ РІ РїРµСЂРІС‹Р№ РєРІР°РґСЂР°РЅС‚
   if( x < 0 ) x = -x - 1;
   if( y < 0 ) y = -y - 1;
 }

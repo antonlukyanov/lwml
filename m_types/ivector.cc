@@ -1,8 +1,8 @@
-#include "ivector.h"
+#include "lwml/m_types/ivector.h"
 
-#include "stdmem.h"
-#include "mdefs.h"
-#include "debug.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/utils/debug.h"
 
 /*#lake:stop*/
 

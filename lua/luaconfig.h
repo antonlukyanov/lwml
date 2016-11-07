@@ -1,27 +1,27 @@
-// Файл конфигурации на основе интерпретатора lua
+// Р¤Р°Р№Р» РєРѕРЅС„РёРіСѓСЂР°С†РёРё РЅР° РѕСЃРЅРѕРІРµ РёРЅС‚РµСЂРїСЂРµС‚Р°С‚РѕСЂР° lua
 // lwml, (c) ltwood
 
 #ifndef _LUACONF_
 #define _LUACONF_
 
-#include "defs.h"
-#include "mdefs.h"
-#include "cstrng.h"
-#include "basex.h"
-#include "stdmem.h"
-#include "refcount.h"
+#include "lwml/base/defs.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/types/cstrng.h"
+#include "lwml/base/basex.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/base/refcount.h"
 
-#include "liblua.h"
+#include "lwml/lua/liblua.h"
 
 /*#lake:stop*/
 
 namespace lwml {
 
-// Ошибка при работе с интерпретатором
+// РћС€РёР±РєР° РїСЂРё СЂР°Р±РѕС‚Рµ СЃ РёРЅС‚РµСЂРїСЂРµС‚Р°С‚РѕСЂРѕРј
 
 DEF_EX_TYPE_MSG(ex_base, ex_luaconf, "luaconf error");
 
-// Внутренняя ошибка интерпретатора
+// Р’РЅСѓС‚СЂРµРЅРЅСЏСЏ РѕС€РёР±РєР° РёРЅС‚РµСЂРїСЂРµС‚Р°С‚РѕСЂР°
 
 DEF_EX_TYPE_MSG(ex_base, ex_luaint, "internal lua error");
 
@@ -33,10 +33,10 @@ private:
   ~luaconf();
 
 public:
-  // Конструирование поддержано только по имени файла и бинарному чанку.
-  // Для конструирования по строке можно либо создать объект умалчиваемым
-  // конструктором и вызвать run_str(), либо сконструировать объект
-  // вызовом create(prog, strlen(prog)).
+  // РљРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёРµ РїРѕРґРґРµСЂР¶Р°РЅРѕ С‚РѕР»СЊРєРѕ РїРѕ РёРјРµРЅРё С„Р°Р№Р»Р° Рё Р±РёРЅР°СЂРЅРѕРјСѓ С‡Р°РЅРєСѓ.
+  // Р”Р»СЏ РєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёСЏ РїРѕ СЃС‚СЂРѕРєРµ РјРѕР¶РЅРѕ Р»РёР±Рѕ СЃРѕР·РґР°С‚СЊ РѕР±СЉРµРєС‚ СѓРјР°Р»С‡РёРІР°РµРјС‹Рј
+  // РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРѕРј Рё РІС‹Р·РІР°С‚СЊ run_str(), Р»РёР±Рѕ СЃРєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°С‚СЊ РѕР±СЉРµРєС‚
+  // РІС‹Р·РѕРІРѕРј create(prog, strlen(prog)).
 
   static referer<luaconf> create(){
     return referer<luaconf>(new(lwml_alloc) luaconf());
@@ -48,9 +48,9 @@ public:
     return referer<luaconf>(new(lwml_alloc) luaconf(chunk, len));
   }
 
-  void run_file( const char* fname ) const;           // выполнить файл
-  void run_str( const char* prog ) const;             // выполнить строку
-  void run_chunk( const char* prog, int len ) const;  // выполнить бинарный chunk
+  void run_file( const char* fname ) const;           // РІС‹РїРѕР»РЅРёС‚СЊ С„Р°Р№Р»
+  void run_str( const char* prog ) const;             // РІС‹РїРѕР»РЅРёС‚СЊ СЃС‚СЂРѕРєСѓ
+  void run_chunk( const char* prog, int len ) const;  // РІС‹РїРѕР»РЅРёС‚СЊ Р±РёРЅР°СЂРЅС‹Р№ chunk
 
   strng vget_str( const char* expr, va_list va ) const;
   real  vget_real( const char* expr, va_list va ) const;

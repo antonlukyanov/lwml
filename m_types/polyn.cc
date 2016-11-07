@@ -1,4 +1,4 @@
-#include "polyn.h"
+#include "lwml/m_types/polyn.h"
 
 /*#lake:stop*/
 

@@ -1,5 +1,5 @@
-#include "utest.h"
-#include "stream.h"
+#include "lwml/utils/utest.h"
+#include "lwml/io/stream.h"
 
 /*#lake:stop*/
 

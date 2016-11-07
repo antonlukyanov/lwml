@@ -1,11 +1,11 @@
-#include "firfilt.h"
-#include "fft.h"
-#include "mdefs.h"
-#include "basex.h"
-#include "stdmem.h"
-#include "spwin.h"
-#include "fft.h"
-#include "progress.h"
+#include "lwml/fourier/firfilt.h"
+#include "lwml/fourier/fft.h"
+#include "lwml/m_base/mdefs.h"
+#include "lwml/base/basex.h"
+#include "lwml/memory/stdmem.h"
+#include "lwml/fourier/spwin.h"
+#include "lwml/fourier/fft.h"
+#include "lwml/console/progress.h"
 
 /*#lake:stop*/
 

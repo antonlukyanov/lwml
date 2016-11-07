@@ -1,4 +1,4 @@
-#include "timer.h"
+#include "lwml/utils/timer.h"
 
 /*#lake:stop*/
 
@@ -10,7 +10,7 @@ const int TIMESTAMP_BUFLEN = 64;
 
 strng timer::timestamp()
 {
-  char buf[TIMESTAMP_BUFLEN]; // локальный буфер потоко-безопасный
+  char buf[TIMESTAMP_BUFLEN]; // Р»РѕРєР°Р»СЊРЅС‹Р№ Р±СѓС„РµСЂ РїРѕС‚РѕРєРѕ-Р±РµР·РѕРїР°СЃРЅС‹Р№
   time_t t = ::time(NULL);
   prot_strcpy(buf, ctime(&t), TIMESTAMP_BUFLEN);
   { // kill '\n'
