@@ -28,8 +28,8 @@
     #define PRINTF( fmt_idx, arg_idx ) __attribute__((format(printf, fmt_idx, arg_idx)));
     #define DEPRECATED                 __attribute__((deprecated))
   #else
-    #define LWML_EXPORT                __attribute__((dllexport))
-    #define LWML_IMPORT                __attribute__((dllimport))
+    #define LWML_EXPORT                __declspec(dllexport)
+    #define LWML_IMPORT                __declspec(dllimport)
     #define UNUSED
     #define PACKED
     #define PRINTF( fmt_idx, arg_idx )
