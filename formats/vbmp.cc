@@ -1,7 +1,7 @@
 #include "lwml/formats/vbmp.h"
 
 #include "lwml/formats/limlib.h"
-#include "lwml/utils/t_utils.h"
+#include "lwml/alg/t_utils.h"
 
 /*#lake:stop*/
 
