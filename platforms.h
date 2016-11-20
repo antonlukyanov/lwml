@@ -1,5 +1,5 @@
-// Определения макросов, специфичных для компиляторов
-// lwml, (c) ltwood
+// Определения макросов, специфичных для компиляторов и платформ.
+// Anton Lukyanov, 2016.
 
 #ifndef _PLATFORMS_
 #define _PLATFORMS_
@@ -8,7 +8,7 @@
 #define OS_OSX   0
 #define OS_LINUX 0
 
-#if defined(__MINGW32__ ) || defined(__MINGW64__)
+#if defined(_WIN32) || defined(__MINGW32__ ) || defined(__MINGW64__)
   #undef  OS_WIN
   #define OS_WIN 1
 #elif defined(__APPLE__)
@@ -20,21 +20,34 @@
 #endif
 
 #if OS_WIN
-  #define LWML_EXPORT extern "C"     __attribute__((dllexport))
-  #define LWML_IMPORT extern "C"     __attribute__((dllimport))
-
-  #define UNUSED                     __attribute__((unused))
-  #define PACKED                     __attribute__((packed))
-  #define PRINTF( fmt_idx, arg_idx ) __attribute__((format(printf, fmt_idx, arg_idx)));
-  #define DEPRECATED                 __attribute__((deprecated))
+  #ifdef __GNUC__
+    #define LWML_EXPORT                __attribute__((dllexport))
+    #define LWML_IMPORT                __attribute__((dllimport))
+    #define UNUSED                     __attribute__((unused))
+    #define PACKED                     __attribute__((packed))
+    #define PRINTF( fmt_idx, arg_idx ) __attribute__((format(printf, fmt_idx, arg_idx)));
+    #define DEPRECATED                 __attribute__((deprecated))
+  #else
+    #define LWML_EXPORT                __attribute__((dllexport))
+    #define LWML_IMPORT                __attribute__((dllimport))
+    #define UNUSED
+    #define PACKED
+    #define PRINTF( fmt_idx, arg_idx )
+    #define DEPRECATED                 __declspec(deprecated)
+  #endif
 #else
-  #define LWML_EXPORT extern "C"     __attribute__((visibility("default")))
-  #define LWML_IMPORT extern "C"     __attribute__((visibility("hidden")))
+  #define LWML_EXPORT                  __attribute__((visibility("default")))
+  #define LWML_IMPORT                  __attribute__((visibility("hidden")))
+  #define UNUSED                       __attribute__((unused))
+  #define PACKED                       __attribute__((packed))
+  #define PRINTF( fmt_idx, arg_idx )   __attribute__((format(printf, fmt_idx, arg_idx)));
+  #define DEPRECATED                   __attribute__((deprecated))
+#endif
 
-  #define UNUSED 
-  #define PACKED
-  #define PRINTF( fmt_idx, arg_idx ) __attribute__((format(printf, fmt_idx, arg_idx)));
-  #define DEPRECATED                 __declspec(deprecated)
+#ifdef LWML_DYNAMIC
+  #define LWML_API LWML_EXPORT
+#else
+  #define LWML_API LWML_IMPORT
 #endif
 
 #endif // _PLATFORMS_
