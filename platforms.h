@@ -44,10 +44,16 @@
   #define DEPRECATED                   __attribute__((deprecated))
 #endif
 
-#ifdef LWML_DYNAMIC
+#ifdef LWML_BUILD_DYNAMIC
   #define LWML_API LWML_EXPORT
-#else
+#endif
+
+#ifdef LWML_LINK_DYNAMIC
   #define LWML_API LWML_IMPORT
+#endif
+
+#ifndef LWML_API
+  #define LWML_API
 #endif
 
 #endif // _PLATFORMS_

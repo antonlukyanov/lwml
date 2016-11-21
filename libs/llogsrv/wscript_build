@@ -1,1 +1,5 @@
-bld.shlib(source='llogsrv.cc', target='llogsrv')
+bld.shlib(
+    source='llogsrv.cc',
+    target='llogsrv',
+    install_path='lib'
+)
