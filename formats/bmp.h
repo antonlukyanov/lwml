@@ -104,7 +104,7 @@ public:
 
   // Запись палитры в файл BMP
   // file - двоичный файл, в который производится запись
-  void save( referer<stream> file, int offset ) { write(file, offset); }
+  void save( referer<stream> file, int offset ) const { write(file, offset); }
 
 private:
   int _len;
@@ -114,7 +114,7 @@ private:
   // полностью заново конструирует палитру
   // используется только методами класса bitmap
   void read( referer<stream> file, int size, int offset );
-  void write( referer<stream> file, int offset );
+  void write( referer<stream> file, int offset ) const;
 };
 
 // Класс реализует чтение и запись заголовка bmp-файла
@@ -132,7 +132,7 @@ public:
   bmp_header( int height, int width, int palsize );
 
   // Сохранить заголовок в двоичный файл
-  void save( referer<stream> file ) { write(file); }
+  void save( referer<stream> file ) const { write(file); }
 
   // Получить сдвиг блока пикселов изображения в файле.
   int image_offset() const { return _imageoffset; }
@@ -163,12 +163,12 @@ private:
   int _bitsperpixel;
   int _bpl;
 
-  void write16( referer<stream>, int );
-  void write32( referer<stream>, int );
+  void write16( referer<stream>, int ) const;
+  void write32( referer<stream>, int ) const;
   int read16( referer<stream>, int ofs );
   int read32( referer<stream>, int ofs );
 
-  void write( referer<stream> file );
+  void write( referer<stream> file ) const;
   void read( referer<stream> file );
 
   int width2bpl( int width );
@@ -195,7 +195,7 @@ public:
   bitmap( int height, int width, const bmp_pal& pal );
 
   // Сохранение изображения в файле
-  void save( const char* name );
+  void save( const char* name ) const;
 
   // Получение ширины изображения в пикселах
   int width() const { return _hdr.width(); }
@@ -236,10 +236,10 @@ private:
   t_membuf<uchar> _image;
 
   uchar read_byte( referer<stream> );
-  void write_byte( referer<stream>, uchar );
+  void write_byte( referer<stream>, uchar ) const;
 
   void read( referer<stream>, int offset );
-  void write( referer<stream>, int offset );
+  void write( referer<stream>, int offset ) const;
 
   uchar getcolidx( int lidx, int x ) const;
   void  setcolidx( int lidx, int x, int cidx );

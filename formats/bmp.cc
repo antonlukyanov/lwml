@@ -53,7 +53,7 @@ void bmp_pal::read( referer<stream> file, int size, int offset )
   }
 }
 
-void bmp_pal::write( referer<stream> file, int offset )
+void bmp_pal::write( referer<stream> file, int offset ) const
 {
   if( _len != 0 ){
     file->seek(offset);
@@ -101,13 +101,13 @@ void bmp_pal::put( int idx, bmp_rgb rgb )
 
 // bmp_header
 
-void bmp_header::write16( referer<stream> file, int x )
+void bmp_header::write16( referer<stream> file, int x ) const
 {
   uint16 buf = x;
   file->write(&buf, sizeof(buf));
 }
 
-void bmp_header::write32( referer<stream> file, int x )
+void bmp_header::write32( referer<stream> file, int x ) const
 {
   uint32 buf = x;
   file->write(&buf, sizeof(buf));
@@ -138,7 +138,7 @@ int bmp_header::read32( referer<stream> file, int ofs )
 // Важные поля:
 //   image offset, width, height, bits per pixel
 
-void bmp_header::write( referer<stream> file )
+void bmp_header::write( referer<stream> file ) const
 {
   write16(file, MAGIC);                          // magic
   write32(file, 0);                              // file size
@@ -256,7 +256,7 @@ uchar bitmap::read_byte( referer<stream> file )
   return x;
 }
 
-void bitmap::write_byte( referer<stream> file, uchar x )
+void bitmap::write_byte( referer<stream> file, uchar x ) const
 {
   file->write(&x, sizeof(x));
 }
@@ -269,7 +269,7 @@ void bitmap::read( referer<stream> file, int offset )
     _image[j] = read_byte(file);
 }
 
-void bitmap::write( referer<stream> file, int offset )
+void bitmap::write( referer<stream> file, int offset ) const
 {
   file->seek(offset);
   int byte_num = _hdr.bytesperline() * _hdr.height();
@@ -293,7 +293,7 @@ bitmap::bitmap( int height, int width, const bmp_pal& pal )
 {
 }
 
-void bitmap::save( const char* name )
+void bitmap::save( const char* name ) const
 {
   referer<stream> file = stream::create(name, fmWRITE, fmBINARY);
   _hdr.save(file);
