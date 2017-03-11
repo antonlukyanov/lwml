@@ -38,6 +38,7 @@ public:
 
   int len() const { return _pt_list.len(); }
   const int_point& get_point( int idx ) const { return _pt_list[idx]; }
+  void set_point( int idx,  int_point& p ) { _pt_list[idx] = p; }
   const vector& get_descr( int idx ) const { return _dsc_list[idx]; }
   int get_id( int idx ) const { return _id_list[idx]; }
   int get_class( int idx ) const { return _class_list[idx]; }
