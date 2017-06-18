@@ -230,6 +230,10 @@ public:
   // cidx - индекс цвета в текущей палитре.
   void fill( int cidx );
 
+  // functions for byer format
+  void read_bayer( const char* name ); 
+  void save_as_bayer( const char* name ) const;
+
 private:
   bmp_header _hdr;
   bmp_pal _pal;
@@ -243,6 +247,8 @@ private:
 
   uchar getcolidx( int lidx, int x ) const;
   void  setcolidx( int lidx, int x, int cidx );
+  // преобразовать rgb в bayer, размер массива - количество пикселей lx*ly
+  void rgb2bayer( t_membuf<uchar>& res ) const;
 };
 
 }; // namespace lwml
