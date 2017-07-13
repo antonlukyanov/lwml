@@ -456,7 +456,6 @@ void bitmap::rgb2bayer( t_membuf<uchar>& res ) const
   int width = _hdr.width();
   // Demosaic using a basic nearest-neighbor algorithm, operating on groups of four pixels.
   int res_idx = 0;
-  int img_idx = 0;
   for( int y = 0; y < height; y++ ){
     for( int x = 0; x < width; x++ ){
       if( y % 2 == 0 && x % 2 == 0)
@@ -493,8 +492,6 @@ void bitmap::read_bayer( const char* name )
   for( int j = 0; j < byte_num; j++ )
     bayer[j] = read_byte(file);
     
-  int res_idx = 0;
-  int img_idx = 0;
   for( int y = 0; y < height; y++ ){
     for( int x = 0; x < width; x++ ){
       int xPos = x - (x - 1) % 2;
