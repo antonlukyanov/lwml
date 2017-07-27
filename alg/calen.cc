@@ -1,4 +1,4 @@
-#include "lwml/alg_spec/calen.h"
+#include "lwml/alg/calen.h"
 
 #include "lwml/base/basex.h"
 

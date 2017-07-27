@@ -1,4 +1,4 @@
-#include "lwml/alg_spec/crc32.h"
+#include "lwml/alg/crc32.h"
 
 /*#lake:stop*/
 

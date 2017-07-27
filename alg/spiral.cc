@@ -1,4 +1,4 @@
-#include "lwml/alg_spec/spiral.h"
+#include "lwml/alg/spiral.h"
 
 /*#build_stop*/
 
