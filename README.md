@@ -2,8 +2,7 @@
 
 lwml structure:
 
-- `alg` base algorithms (sorting, searching, connected components filling etc)
-- `alg_spec` specific algorithms
+- `alg` different algorithms (sorting, searching, connected components filling etc)
 - `base` base definitions, types and other base stuff
 - `classification` interfaces for abstract classifier, AdaBoost implementation, SVM support
 - `console` execution environment for apps
