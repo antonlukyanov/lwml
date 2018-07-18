@@ -527,7 +527,7 @@ void bitmap::read_bayer( const char* name, bool is_bayerGR )
   }
 }
 
-void bitmap::read_bayer_sharp( const char* name, bool is_bayerGR )
+void bitmap::demosaicing_bayer_IN( const char* name, bool is_bayerGR )
 {  
   int height = _hdr.height();
   int width = _hdr.width();
@@ -541,55 +541,153 @@ void bitmap::read_bayer_sharp( const char* name, bool is_bayerGR )
   
   int ln_bt = _hdr.bytesperline();
   int px_bt = _hdr.bitsperpixel();
-  for( int y = 1; y < height-1; y++ ){
-    for( int x = 1; x < width-1; x++ ){
-      int r, g, b;
-      if( is_bayerGR ){
-        if( y % 2 == 0 && x % 2 == 0){
+  int sh = 0;// сдвиг по координате y 
+  // для bayerBG эмулируем сдвиг, тогда он преврашается в bayerGR
+  if( !is_bayerGR )
+    sh = 1;
+  int r, g, b;
+  for( int y = 0; y < height; y++ ){
+    for( int x = 0; x < width; x++ ){
+      // вычисляем индекс в сырых данных картинки
+      int idx = y*ln_bt + x * (px_bt / 8);
+      // если граница, то не вычисляем
+      if( x == 0 || x == width-1 || y == 0 || y == height-1 ){
+        _image[idx+2] = 0;
+        _image[idx+1] = 0;
+        _image[idx] = 0;
+        continue;
+      }
+      if( (y + sh + x) % 2 == 0 ){
+        r = (bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 2;
+        b = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width]) / 2;
+        g = (bayer[x + y*width] + bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
+             bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 5;
+      }else if( (y + sh + x) % 2 == 1 ){
+        r = bayer[x + y*width];
+        g = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width] + bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 4;
+        b = (bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
+             bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 4;
+      }
+      // если строка нечетная, то значения каналов B и R надо поменять местами
+      if( (y+sh) % 2 == 1 ){
+        uchar tmp = b;
+        b = r;
+        r = tmp;
+      }
+      _image[idx+2] = r;
+      _image[idx+1] = g;
+      _image[idx] = b;
+    }
+  }
+}
+
+void bitmap::demosaicing_bayer( const char* name, bool is_bayerGR )
+{  
+  int height = _hdr.height();
+  int width = _hdr.width();
+  int byte_num = width * height;
+  t_membuf<uchar> bayer(byte_num);
+
+  referer<stream> file = stream::create(name, fmREAD, fmBINARY);
+  file->seek(0);
+  for( int j = 0; j < byte_num; j++ )
+    bayer[j] = read_byte(file);
+  
+  int ln_bt = _hdr.bytesperline();
+  int px_bt = _hdr.bitsperpixel();
+  int sh = 0;// сдвиг по координате y 
+  // для bayerBG эмулируем сдвиг, тогда он преврашается в bayerGR
+  if( !is_bayerGR )
+    sh = 1;
+  int r, g, b;
+  for( int y = 0; y < height; y++ ){
+    for( int x = 0; x < width; x++ ){
+      if( (y + sh + x) % 2 == 0 ){
+        if( x == 0 ){
+          r =  bayer[x+1 + y*width];
+          if( y == 0 ){
+            g = (bayer[x + y*width] + bayer[x+1 + (y+1)*width]) / 2;
+            b = bayer[x + (y+1)*width];
+          }else if( y == height - 1 ){
+            g = (bayer[x + y*width] + bayer[x+1 + (y-1)*width]) / 2;
+            b = bayer[x + (y-1)*width];
+          }else{
+            g = (bayer[x + y*width] + bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width]) / 3;
+            b = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width]) / 2;
+          }
+        }else if( x == width-1 ){
+          r = bayer[x-1 + y*width];
+          if( y == 0 ){
+            g = (bayer[x + y*width] + bayer[x-1 + (y+1)*width]) / 2;
+            b = bayer[x + (y+1)*width];
+          }else if( y == height - 1){
+            g = (bayer[x + y*width] + bayer[x-1 + (y-1)*width]) / 2;
+            b = bayer[x + (y-1)*width];
+          }else{
+            g = (bayer[x + y*width] + bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 3;
+            b = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width]) / 2;
+          }
+        }
+        else{
           r = (bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 2;
-          b = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width]) / 2;
-          g = (bayer[x + y*width] + bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
-               bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 5;
-        }else if( y % 2 == 0 && x % 2 == 1){
-          r = bayer[x + y*width];
-          g = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width] + bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 4;
-          b = (bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
-               bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 4;
-        }else if( y % 2 == 1 && x % 2 == 0){
-          b = bayer[x + y*width];
-          g = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width] + bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 4;
-          r = (bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
-               bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 4;
-        }else if( y % 2 == 1 && x % 2 == 1){
-          b = (bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 2;
-          r = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width]) / 2;
-          g = (bayer[x + y*width] + bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
-               bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 5;          
+          if( y == 0 ){
+            b = bayer[x + (y+1)*width];
+            g = (bayer[x + y*width] + bayer[x+1 + (y+1)*width] + bayer[x-1 + (y+1)*width]) / 3;
+          }else if( y == height - 1){
+            b = bayer[x + (y-1)*width];
+            g = (bayer[x + y*width] + bayer[x+1 + (y-1)*width] + bayer[x-1 + (y-1)*width]) / 3;
+          }else{
+           b = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width]) / 2;
+           g = (bayer[x + y*width] + bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
+             bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 5;
+          }
         }
       }
       else{
-        if( y % 2 == 0 && x % 2 == 0){
-          b = bayer[x + y*width];
-          g = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width] + bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 4;
-          r = (bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
-               bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 4;
-        }else if( y % 2 == 0 && x % 2 == 1){
-          b = (bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 2;
-          r = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width]) / 2;
-          g = (bayer[x + y*width] + bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
-               bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 5;                    
-        }else if( y % 2 == 1 && x % 2 == 0){
-          r = (bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 2;
-          b = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width]) / 2;
-          g = (bayer[x + y*width] + bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
-               bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 5;
-        }else if( y % 2 == 1 && x % 2 == 1){
-          r = bayer[x + y*width];
-          g = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width] + bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 4;
-          b = (bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
-               bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 4;
+        r = bayer[x + y*width];
+        if( x == 0 ){
+          if( y == 0 ){
+            g = (bayer[x + (y+1)*width] + bayer[x+1 + y*width]) / 2;
+            b = bayer[x+1 + (y+1)*width];
+          }else if( y == height - 1 ){
+            g = (bayer[x + (y-1)*width] + bayer[x+1 + y*width]) / 2;
+            b = bayer[x+1 + (y-1)*width];
+          }else{
+            g = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width] + bayer[x+1 + y*width]) / 3;
+            b = (bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] ) / 2;
+          }
+        }else if( x == width- 1 ){
+          if( y == 0 ){
+            g = (bayer[x + (y+1)*width] + bayer[x-1 + y*width]) / 2;
+            b = bayer[x-1 + (y+1)*width];
+          }else if( y == height - 1 ){
+            g = (bayer[x + (y-1)*width] + bayer[x-1 + y*width]) / 2;
+            b = bayer[x-1 + (y-1)*width];
+          }else{
+            g = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width] + bayer[x-1 + y*width]) / 3;
+            b = ( bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 2;
+          }
+        }else{
+          if( y == 0 ){
+            g = (bayer[x + (y+1)*width] + bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 3;
+            b = (bayer[x+1 + (y+1)*width] + bayer[x-1 + (y+1)*width]) / 2;
+          }else if( y == height - 1 ){
+            g = (bayer[x + (y-1)*width] + bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 3;
+            b = (bayer[x+1 + (y-1)*width] + bayer[x-1 + (y-1)*width]) / 2;
+          }else{       
+            g = (bayer[x + (y-1)*width] + bayer[x + (y+1)*width] + bayer[x-1 + y*width] + bayer[x+1 + y*width]) / 4;
+            b = (bayer[x+1 + (y+1)*width] + bayer[x+1 + (y-1)*width] +
+             bayer[x-1 + (y+1)*width] + bayer[x-1 + (y-1)*width]) / 4;
+          }
         }
       }
+      // если строка нечетная, то значения каналов B и R надо поменять местами
+      if( (y+sh) % 2 == 1 ){
+        uchar tmp = b;
+        b = r;
+        r = tmp;
+      }
+      
       int idx = y*ln_bt + x * (px_bt / 8); // добавляем смещение RGB; 
       _image[idx+2] = r;
       _image[idx+1] = g;

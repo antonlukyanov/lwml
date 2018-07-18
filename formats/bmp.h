@@ -239,7 +239,11 @@ public:
   
   // »спользует демозаик сырых данных (demosaicing method)
   // дл€ каждого пиксела смотрит всех соседей и по ним усредн€ет каждый цвет.
-  void read_bayer_sharp( const char* name, bool is_bayerGR = true );
+  // на границе картинки работает честно, но долго
+  void demosaicing_bayer( const char* name, bool is_bayerGR );
+  
+  // ”скоренный вариант. Ќа границе(в один пиксел) картинка просто черна€.
+  void demosaicing_bayer_IN( const char* name, bool is_bayerGR );
   
   // ѕреобразует RGB в Bayer и записывает в файл
   void save_as_bayer( const char* name, bool is_bayerGR = true ) const;
