@@ -231,12 +231,23 @@ public:
   void fill( int cidx );
 
   // functions for byer format
-  void read_bayer( const char* name ); 
-  void save_as_bayer( const char* name ) const;
+  
+  // формирование картинки по файлу с сырыми данными Bayer
+  // “упо берет ближайшее значение по каждому цвету,
+  // при этом идет смещение на один пиксел вправо вверх
+  void read_bayer( const char* name, bool is_bayerGR = true );
+  
+  // »спользует демозаик сырых данных (demosaicing method)
+  // дл€ каждого пиксела смотрит всех соседей и по ним усредн€ет каждый цвет.
+  void read_bayer_sharp( const char* name, bool is_bayerGR = true );
+  
+  // ѕреобразует RGB в Bayer и записывает в файл
+  void save_as_bayer( const char* name, bool is_bayerGR = true ) const;
 
 private:
   bmp_header _hdr;
   bmp_pal _pal;
+  // !! в сыром виде хранитс€ последовательность BGR
   t_membuf<uchar> _image;
 
   uchar read_byte( referer<stream> );
@@ -247,8 +258,9 @@ private:
 
   uchar getcolidx( int lidx, int x ) const;
   void  setcolidx( int lidx, int x, int cidx );
+  
   // преобразовать rgb в bayer, размер массива - количество пикселей lx*ly
-  void rgb2bayer( t_membuf<uchar>& res ) const;
+  void rgb2bayer( t_membuf<uchar>& res, bool is_bayerGR = true ) const;
 };
 
 }; // namespace lwml
